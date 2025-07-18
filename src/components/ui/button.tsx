@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
@@ -19,11 +20,11 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         
-        // Asian Fusion Variants
-        bamboo: "bg-primary text-primary-foreground hover:bg-primary-glow shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1",
-        blossom: "bg-accent-vibrant text-white hover:bg-accent-vibrant/80 shadow-lg hover:shadow-xl transition-all duration-300 animate-gentle-bounce",
-        warm: "bg-gradient-to-r from-secondary to-accent text-secondary-foreground hover:from-secondary/90 hover:to-accent/90 shadow-md hover:shadow-lg transition-all duration-300",
-        zen: "bg-card border border-border text-card-foreground hover:bg-muted hover:shadow-md transition-all duration-300",
+        // Restaurant-Themed Variants
+        restaurant: "bg-primary text-primary-foreground hover:bg-primary-glow shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 warm-lighting",
+        golden: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-lg hover:shadow-xl transition-all duration-300 warm-lighting",
+        warm: "bg-gradient-to-r from-secondary to-accent-vibrant text-secondary-foreground hover:from-secondary/90 hover:to-accent-vibrant/90 shadow-md hover:shadow-lg transition-all duration-300",
+        cozy: "bg-card border border-border text-card-foreground hover:bg-muted hover:shadow-md transition-all duration-300 warm-lighting",
       },
       size: {
         default: "h-10 px-4 py-2",

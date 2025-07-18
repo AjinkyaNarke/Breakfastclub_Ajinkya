@@ -42,23 +42,23 @@ const upcomingEvents = [
 
 export default function EventsPreview() {
   return (
-    <section className="py-20 bg-muted/30">
+    <section className="py-20 bg-background restaurant-texture">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16 animate-fade-in">
-          <div className="inline-flex items-center px-4 py-2 bg-accent/20 rounded-full text-sm font-medium text-accent-foreground border border-accent/30 mb-6">
+          <div className="inline-flex items-center px-6 py-3 bg-secondary/20 rounded-full text-sm font-medium text-secondary-foreground border border-secondary/30 mb-6 restaurant-glow">
             <Calendar className="w-4 h-4 mr-2" />
             Community Events
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Experience Asian Culture{" "}
-            <span className="text-brand">Together</span>
+            Cultural Gatherings &{" "}
+            <span className="text-brand">Community</span>
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Join our weekend events that blend traditional Asian breakfast culture 
             with Berlin's vibrant community spirit. Every gathering is a chance to 
-            connect, learn, and taste something amazing.
+            connect, learn, and taste something amazing together.
           </p>
         </div>
 
@@ -68,8 +68,8 @@ export default function EventsPreview() {
             {upcomingEvents.map((event, index) => (
               <Card 
                 key={event.id} 
-                className={`hover-lift transition-all duration-300 ${
-                  event.featured ? 'border-accent-vibrant bg-accent/5' : ''
+                className={`restaurant-lift transition-all duration-300 warm-lighting ${
+                  event.featured ? 'border-primary bg-primary/5' : ''
                 }`}
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
@@ -77,10 +77,10 @@ export default function EventsPreview() {
                   <div className="flex items-start justify-between">
                     <div className="space-y-2">
                       <div className="flex items-center space-x-2">
-                        <CardTitle className="text-lg">{event.title}</CardTitle>
+                        <CardTitle className="text-lg text-primary">{event.title}</CardTitle>
                         {event.featured && (
-                          <Badge variant="secondary" className="bg-accent-vibrant/20 text-accent-vibrant border-accent-vibrant/30">
-                            Featured
+                          <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                            Featured Event
                           </Badge>
                         )}
                       </div>
@@ -112,13 +112,13 @@ export default function EventsPreview() {
                   <div className="flex items-center justify-between">
                     <div className="flex flex-wrap gap-2">
                       {event.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs">
+                        <Badge key={tag} variant="outline" className="text-xs border-secondary/30">
                           {tag}
                         </Badge>
                       ))}
                     </div>
                     
-                    <Button variant="zen" size="sm" className="group">
+                    <Button variant="restaurant" size="sm" className="group">
                       Join Event
                       <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
                     </Button>
@@ -128,7 +128,7 @@ export default function EventsPreview() {
             ))}
             
             <div className="text-center pt-6">
-              <Button variant="outline" size="lg" className="group">
+              <Button variant="warm" size="lg" className="group">
                 View All Events
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
@@ -147,15 +147,15 @@ export default function EventsPreview() {
               
               {/* Overlay Content */}
               <div className="absolute bottom-6 left-6 right-6">
-                <Card className="p-4 bg-white/90 backdrop-blur-sm shadow-lg">
+                <Card className="p-4 bg-white/95 backdrop-blur-sm shadow-lg warm-lighting">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-semibold text-lg">Last Saturday's Event</h3>
+                      <h3 className="font-semibold text-lg text-primary">Last Weekend's Success</h3>
                       <p className="text-sm text-muted-foreground">Korean Breakfast Cultural Exchange</p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-primary">45</div>
-                      <div className="text-xs text-muted-foreground">Attendees</div>
+                      <div className="text-xs text-muted-foreground">Happy Guests</div>
                     </div>
                   </div>
                 </Card>
@@ -164,7 +164,7 @@ export default function EventsPreview() {
             
             {/* Floating Stats */}
             <div className="absolute -top-4 -right-4">
-              <Card className="p-3 bg-accent-vibrant text-white shadow-lg animate-gentle-bounce">
+              <Card className="p-3 bg-primary text-primary-foreground shadow-lg animate-gentle-bounce warm-lighting">
                 <div className="text-center">
                   <div className="text-xl font-bold">250+</div>
                   <div className="text-xs opacity-90">Community Members</div>

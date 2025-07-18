@@ -1,110 +1,97 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Red Chinese Design System - fckingbreakfastclub
-All colors MUST be HSL. Inspired by traditional Chinese red, gold, and lacquer.
+/* Red Chinese Restaurant Design System - fckingbreakfastclub
+All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and warm restaurant ambiance.
 */
 
 @layer base {
   :root {
-    /* Core Brand Colors - Red Chinese Palette */
-    --background: 50 25% 97%;
-    --foreground: 0 15% 12%;
+    /* Core Restaurant Colors - Chinese Red Palette */
+    --background: 45 20% 98%;
+    --foreground: 0 10% 10%;
 
-    --card: 50 20% 95%;
-    --card-foreground: 0 15% 12%;
+    --card: 45 15% 96%;
+    --card-foreground: 0 10% 10%;
 
-    --popover: 50 25% 97%;
-    --popover-foreground: 0 15% 12%;
+    --popover: 45 20% 98%;
+    --popover-foreground: 0 10% 10%;
 
-    /* Primary - Deep Chinese Red */
-    --primary: 0 75% 40%;
-    --primary-foreground: 50 25% 97%;
-    --primary-glow: 0 85% 55%;
+    /* Primary - Deep Chinese Red (Restaurant Signature) */
+    --primary: 0 70% 45%;
+    --primary-foreground: 45 20% 98%;
+    --primary-glow: 0 80% 55%;
 
-    /* Secondary - Imperial Gold */
-    --secondary: 45 85% 75%;
-    --secondary-foreground: 0 15% 12%;
+    /* Secondary - Imperial Gold (Warm Accents) */
+    --secondary: 42 90% 70%;
+    --secondary-foreground: 0 10% 10%;
     
-    /* Lacquer Red Accent */
-    --accent: 355 70% 85%;
-    --accent-foreground: 0 15% 12%;
-    --accent-vibrant: 0 85% 60%;
+    /* Accent - Warm Restaurant Red */
+    --accent: 5 60% 80%;
+    --accent-foreground: 0 10% 10%;
+    --accent-vibrant: 0 75% 50%;
 
-    /* Warm Neutral Tones */
-    --muted: 40 15% 90%;
-    --muted-foreground: 0 10% 45%;
+    /* Warm Restaurant Neutrals */
+    --muted: 40 20% 92%;
+    --muted-foreground: 0 5% 40%;
 
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 50 25% 97%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 45 20% 98%;
 
-    --border: 40 20% 88%;
-    --input: 40 20% 88%;
-    --ring: 0 75% 40%;
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 0 70% 45%;
 
-    /* Red Chinese Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0 75% 40%), hsl(0 85% 55%));
-    --gradient-warm: linear-gradient(45deg, hsl(45 85% 75%), hsl(35 80% 65%));
-    --gradient-blossom: linear-gradient(135deg, hsl(355 70% 85%), hsl(0 85% 60%));
-    --gradient-hero: linear-gradient(180deg, hsl(50 25% 97%), hsl(40 15% 90%));
+    /* Restaurant Atmosphere Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 70% 45%), hsl(0 80% 55%));
+    --gradient-warm: linear-gradient(45deg, hsl(42 90% 70%), hsl(38 85% 65%));
+    --gradient-restaurant: linear-gradient(135deg, hsl(5 60% 80%), hsl(0 75% 50%));
+    --gradient-hero: linear-gradient(180deg, hsl(45 20% 98%), hsl(40 20% 92%));
 
-    /* Shadows with Chinese Red Warmth */
-    --shadow-soft: 0 4px 20px hsl(0 15% 12% / 0.08);
-    --shadow-warm: 0 8px 30px hsl(45 85% 75% / 0.15);
-    --shadow-glow: 0 0 40px hsl(0 85% 55% / 0.2);
+    /* Restaurant Lighting Effects */
+    --shadow-soft: 0 4px 20px hsl(0 10% 10% / 0.08);
+    --shadow-warm: 0 8px 30px hsl(42 90% 70% / 0.2);
+    --shadow-glow: 0 0 40px hsl(0 80% 55% / 0.25);
+    --shadow-restaurant: 0 12px 40px hsl(0 70% 45% / 0.15);
 
-    /* Smooth Transitions */
+    /* Smooth Restaurant Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --background: 0 15% 8%;
+    --foreground: 45 20% 95%;
+    --card: 0 15% 8%;
+    --card-foreground: 45 20% 95%;
+    --popover: 0 15% 8%;
+    --popover-foreground: 45 20% 95%;
+    --primary: 0 80% 55%;
+    --primary-foreground: 0 15% 8%;
+    --secondary: 42 90% 70%;
+    --secondary-foreground: 0 15% 8%;
+    --muted: 0 10% 15%;
+    --muted-foreground: 45 10% 60%;
+    --accent: 0 70% 20%;
+    --accent-foreground: 45 20% 95%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 45 20% 95%;
+    --border: 0 10% 15%;
+    --input: 0 10% 15%;
+    --ring: 0 80% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -126,49 +113,50 @@ All colors MUST be HSL. Inspired by traditional Chinese red, gold, and lacquer.
   }
 }
 
-/* Custom Component Styles */
+/* Restaurant Atmosphere Styles */
 @layer components {
-  /* Hero Section Styles */
+  /* Hero Section with Restaurant Warmth */
   .hero-gradient {
     background: var(--gradient-hero);
   }
 
-  /* Asian-inspired Patterns */
-  .bamboo-pattern {
+  /* Chinese-inspired Patterns */
+  .restaurant-texture {
     background-image: 
-      radial-gradient(circle at 20% 50%, hsl(140 30% 25% / 0.05) 1px, transparent 1px),
-      radial-gradient(circle at 80% 50%, hsl(140 30% 25% / 0.05) 1px, transparent 1px);
-    background-size: 30px 30px;
+      radial-gradient(circle at 25% 25%, hsl(0 70% 45% / 0.03) 2px, transparent 2px),
+      radial-gradient(circle at 75% 75%, hsl(42 90% 70% / 0.03) 2px, transparent 2px);
+    background-size: 50px 50px;
   }
 
-  /* Cherry Blossom Accent */
-  .blossom-accent {
+  /* Warm Restaurant Glow */
+  .restaurant-glow {
     position: relative;
   }
   
-  .blossom-accent::before {
+  .restaurant-glow::before {
     content: '';
     position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 20px;
-    height: 20px;
-    background: var(--gradient-blossom);
+    top: -5px;
+    right: -5px;
+    width: 15px;
+    height: 15px;
+    background: var(--gradient-primary);
     border-radius: 50%;
-    opacity: 0.6;
+    opacity: 0.7;
+    animation: gentle-pulse 3s ease-in-out infinite;
   }
 
-  /* Smooth Hover Effects */
-  .hover-lift {
+  /* Restaurant Hover Effects */
+  .restaurant-lift {
     transition: var(--transition-smooth);
   }
   
-  .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-warm);
+  .restaurant-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-restaurant);
   }
 
-  /* Typography Classes */
+  /* Restaurant Typography */
   .text-brand {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
@@ -176,17 +164,24 @@ All colors MUST be HSL. Inspired by traditional Chinese red, gold, and lacquer.
     background-clip: text;
   }
 
-  /* Custom Scrollbar */
-  .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
+  /* Warm Lighting Effect */
+  .warm-lighting {
+    box-shadow: 
+      inset 0 1px 0 hsl(42 90% 70% / 0.1),
+      0 4px 20px hsl(0 70% 45% / 0.1);
+  }
+
+  /* Custom Restaurant Scrollbar */
+  .restaurant-scrollbar::-webkit-scrollbar {
+    width: 8px;
   }
   
-  .custom-scrollbar::-webkit-scrollbar-track {
+  .restaurant-scrollbar::-webkit-scrollbar-track {
     background: hsl(var(--muted));
   }
   
-  .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary));
-    border-radius: 3px;
+  .restaurant-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 4px;
   }
 }

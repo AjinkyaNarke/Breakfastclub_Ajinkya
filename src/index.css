@@ -2,57 +2,57 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Asian Fusion Design System - fckingbreakfastclub
-All colors MUST be HSL. Inspired by bamboo, cherry blossoms, and warm earth tones.
+/* Red Chinese Design System - fckingbreakfastclub
+All colors MUST be HSL. Inspired by traditional Chinese red, gold, and lacquer.
 */
 
 @layer base {
   :root {
-    /* Core Brand Colors - Asian Inspired Palette */
-    --background: 30 15% 97%;
-    --foreground: 25 35% 15%;
+    /* Core Brand Colors - Red Chinese Palette */
+    --background: 50 25% 97%;
+    --foreground: 0 15% 12%;
 
-    --card: 28 20% 95%;
-    --card-foreground: 25 35% 15%;
+    --card: 50 20% 95%;
+    --card-foreground: 0 15% 12%;
 
-    --popover: 30 15% 97%;
-    --popover-foreground: 25 35% 15%;
+    --popover: 50 25% 97%;
+    --popover-foreground: 0 15% 12%;
 
-    /* Primary - Deep Bamboo Green */
-    --primary: 140 30% 25%;
-    --primary-foreground: 30 15% 97%;
-    --primary-glow: 140 45% 35%;
+    /* Primary - Deep Chinese Red */
+    --primary: 0 75% 40%;
+    --primary-foreground: 50 25% 97%;
+    --primary-glow: 0 85% 55%;
 
-    /* Secondary - Warm Amber Gold */
-    --secondary: 45 65% 85%;
-    --secondary-foreground: 25 35% 15%;
+    /* Secondary - Imperial Gold */
+    --secondary: 45 85% 75%;
+    --secondary-foreground: 0 15% 12%;
     
-    /* Cherry Blossom Accent */
-    --accent: 330 55% 88%;
-    --accent-foreground: 25 35% 15%;
-    --accent-vibrant: 330 75% 65%;
+    /* Lacquer Red Accent */
+    --accent: 355 70% 85%;
+    --accent-foreground: 0 15% 12%;
+    --accent-vibrant: 0 85% 60%;
 
-    /* Warm Earth Tones */
-    --muted: 35 25% 90%;
-    --muted-foreground: 25 25% 45%;
+    /* Warm Neutral Tones */
+    --muted: 40 15% 90%;
+    --muted-foreground: 0 10% 45%;
 
     --destructive: 0 75% 55%;
-    --destructive-foreground: 30 15% 97%;
+    --destructive-foreground: 50 25% 97%;
 
-    --border: 35 20% 88%;
-    --input: 35 20% 88%;
-    --ring: 140 30% 25%;
+    --border: 40 20% 88%;
+    --input: 40 20% 88%;
+    --ring: 0 75% 40%;
 
-    /* Asian Fusion Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(140 30% 25%), hsl(140 45% 35%));
-    --gradient-warm: linear-gradient(45deg, hsl(45 65% 85%), hsl(35 55% 75%));
-    --gradient-blossom: linear-gradient(135deg, hsl(330 55% 88%), hsl(330 75% 65%));
-    --gradient-hero: linear-gradient(180deg, hsl(30 15% 97%), hsl(35 25% 90%));
+    /* Red Chinese Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 75% 40%), hsl(0 85% 55%));
+    --gradient-warm: linear-gradient(45deg, hsl(45 85% 75%), hsl(35 80% 65%));
+    --gradient-blossom: linear-gradient(135deg, hsl(355 70% 85%), hsl(0 85% 60%));
+    --gradient-hero: linear-gradient(180deg, hsl(50 25% 97%), hsl(40 15% 90%));
 
-    /* Shadows with Asian Warmth */
-    --shadow-soft: 0 4px 20px hsl(25 35% 15% / 0.08);
-    --shadow-warm: 0 8px 30px hsl(45 65% 85% / 0.15);
-    --shadow-glow: 0 0 40px hsl(140 45% 35% / 0.2);
+    /* Shadows with Chinese Red Warmth */
+    --shadow-soft: 0 4px 20px hsl(0 15% 12% / 0.08);
+    --shadow-warm: 0 8px 30px hsl(45 85% 75% / 0.15);
+    --shadow-glow: 0 0 40px hsl(0 85% 55% / 0.2);
 
     /* Smooth Transitions */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

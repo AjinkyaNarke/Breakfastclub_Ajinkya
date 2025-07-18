@@ -3,6 +3,7 @@ import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import EventsPreview from "@/components/EventsPreview";
 import MenuShowcase from "@/components/MenuShowcase";
+import RestaurantVideo from "@/components/RestaurantVideo";
 import RestaurantGallery from "@/components/RestaurantGallery";
 import Footer from "@/components/Footer";
 
@@ -14,6 +15,7 @@ const Index = () => {
         <HeroSection />
         <EventsPreview />
         <MenuShowcase />
+        <RestaurantVideo />
         <RestaurantGallery />
       </main>
       <Footer />

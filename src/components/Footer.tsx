@@ -1,3 +1,4 @@
+
 import { Coffee, Instagram, Clock, MapPin, Phone, Mail, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -49,13 +50,13 @@ export default function Footer() {
               </p>
               
               <div className="flex space-x-3">
-                <Button variant="zen" size="sm" className="group">
+                <Button variant="outline" size="sm" className="group">
                   <Instagram className="h-4 w-4" />
                 </Button>
-                <Button variant="zen" size="sm">
+                <Button variant="outline" size="sm">
                   <Mail className="h-4 w-4" />
                 </Button>
-                <Button variant="zen" size="sm">
+                <Button variant="outline" size="sm">
                   <Phone className="h-4 w-4" />
                 </Button>
               </div>
@@ -132,12 +133,6 @@ export default function Footer() {
                     <p className="text-sm text-muted-foreground">Kreuzberg District</p>
                     <p className="text-sm text-muted-foreground">Berlin, Germany</p>
                   </div>
-                </div>
-                
-                <div className="pt-4">
-                  <Button variant="bamboo" size="sm" className="w-full">
-                    Get Directions
-                  </Button>
                 </div>
               </div>
             </div>

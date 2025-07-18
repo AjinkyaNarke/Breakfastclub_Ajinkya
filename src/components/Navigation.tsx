@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Coffee, Users, Calendar, BookOpen, Info } from "lucide-react";
@@ -61,7 +62,7 @@ export default function Navigation() {
               );
             })}
             
-            <Button variant="bamboo" size="sm" className="ml-4">
+            <Button variant="secondary" size="sm" className="ml-4 text-foreground">
               Student Login
             </Button>
           </div>
@@ -103,7 +104,7 @@ export default function Navigation() {
             })}
             
             <div className="pt-4 border-t border-border">
-              <Button variant="bamboo" size="sm" className="w-full">
+              <Button variant="secondary" size="sm" className="w-full text-foreground">
                 Student Login
               </Button>
             </div>

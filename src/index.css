@@ -24,9 +24,9 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
     --primary-foreground: 45 20% 98%;
     --primary-glow: 0 80% 55%;
 
-    /* Secondary - Imperial Gold (Warm Accents) */
-    --secondary: 42 90% 70%;
-    --secondary-foreground: 0 10% 10%;
+    /* Secondary - Imperial Gold (More Visible) */
+    --secondary: 42 90% 50%;
+    --secondary-foreground: 0 15% 15%;
     
     /* Accent - Warm Restaurant Red */
     --accent: 5 60% 80%;
@@ -46,13 +46,13 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
 
     /* Restaurant Atmosphere Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(0 70% 45%), hsl(0 80% 55%));
-    --gradient-warm: linear-gradient(45deg, hsl(42 90% 70%), hsl(38 85% 65%));
+    --gradient-warm: linear-gradient(45deg, hsl(42 90% 50%), hsl(38 85% 45%));
     --gradient-restaurant: linear-gradient(135deg, hsl(5 60% 80%), hsl(0 75% 50%));
     --gradient-hero: linear-gradient(180deg, hsl(45 20% 98%), hsl(40 20% 92%));
 
     /* Restaurant Lighting Effects */
     --shadow-soft: 0 4px 20px hsl(0 10% 10% / 0.08);
-    --shadow-warm: 0 8px 30px hsl(42 90% 70% / 0.2);
+    --shadow-warm: 0 8px 30px hsl(42 90% 50% / 0.2);
     --shadow-glow: 0 0 40px hsl(0 80% 55% / 0.25);
     --shadow-restaurant: 0 12px 40px hsl(0 70% 45% / 0.15);
 
@@ -81,7 +81,7 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
     --popover-foreground: 45 20% 95%;
     --primary: 0 80% 55%;
     --primary-foreground: 0 15% 8%;
-    --secondary: 42 90% 70%;
+    --secondary: 42 90% 60%;
     --secondary-foreground: 0 15% 8%;
     --muted: 0 10% 15%;
     --muted-foreground: 45 10% 60%;
@@ -124,7 +124,7 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
   .restaurant-texture {
     background-image: 
       radial-gradient(circle at 25% 25%, hsl(0 70% 45% / 0.03) 2px, transparent 2px),
-      radial-gradient(circle at 75% 75%, hsl(42 90% 70% / 0.03) 2px, transparent 2px);
+      radial-gradient(circle at 75% 75%, hsl(42 90% 50% / 0.03) 2px, transparent 2px);
     background-size: 50px 50px;
   }
 
@@ -167,7 +167,7 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
   /* Warm Lighting Effect */
   .warm-lighting {
     box-shadow: 
-      inset 0 1px 0 hsl(42 90% 70% / 0.1),
+      inset 0 1px 0 hsl(42 90% 50% / 0.1),
       0 4px 20px hsl(0 70% 45% / 0.1);
   }
 
@@ -183,5 +183,20 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
   .restaurant-scrollbar::-webkit-scrollbar-thumb {
     background: var(--gradient-primary);
     border-radius: 4px;
+  }
+
+  /* Animation Keyframes */
+  @keyframes gentle-pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  @keyframes cherry-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-cherry-float {
+    animation: cherry-float 3s ease-in-out infinite;
   }
 }

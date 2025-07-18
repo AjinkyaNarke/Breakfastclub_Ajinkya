@@ -1,6 +1,5 @@
 
-import { Star, Utensils, Clock, ArrowRight, Award } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Star, Clock, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import dimSumImage from "@/assets/dim-sum-spread.jpg";
@@ -16,7 +15,7 @@ const featuredDishes = [
     tags: ["Signature", "Comfort Food"],
     rating: 4.9,
     popular: true,
-    dietary: ["gluten-free-option"]
+    image: "/placeholder.svg"
   },
   {
     id: 2,
@@ -28,7 +27,7 @@ const featuredDishes = [
     tags: ["Chef's Special", "Instagram Hit"],
     rating: 4.8,
     popular: true,
-    dietary: ["vegetarian"]
+    image: "/placeholder.svg"
   },
   {
     id: 3,
@@ -40,7 +39,7 @@ const featuredDishes = [
     tags: ["Premium", "Traditional"],
     rating: 4.7,
     popular: false,
-    dietary: ["vegetarian"]
+    image: "/placeholder.svg"
   },
   {
     id: 4,
@@ -52,7 +51,7 @@ const featuredDishes = [
     tags: ["Protein Rich", "Authentic"],
     rating: 4.9,
     popular: true,
-    dietary: []
+    image: "/placeholder.svg"
   }
 ];
 
@@ -118,15 +117,12 @@ export default function MenuShowcase() {
             <Card className="bg-secondary/10 border-secondary/30 warm-lighting">
               <CardContent className="p-6 text-center">
                 <div className="w-12 h-12 bg-secondary/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Utensils className="h-6 w-6 text-secondary-foreground" />
+                  <Award className="h-6 w-6 text-secondary-foreground" />
                 </div>
                 <h4 className="font-bold text-lg mb-2 text-primary">Student Special</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Show your habait student ID and enjoy 25% off our entire menu
+                <p className="text-sm text-muted-foreground">
+                  Show your student ID and enjoy 25% off our entire menu
                 </p>
-                <Button variant="golden" size="sm" className="w-full">
-                  Learn More
-                </Button>
               </CardContent>
             </Card>
           </div>
@@ -141,7 +137,17 @@ export default function MenuShowcase() {
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start gap-6">
+                      {/* Dish Image */}
+                      <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                        <img 
+                          src={dish.image} 
+                          alt={dish.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      
+                      {/* Dish Details */}
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-3">
                           <h3 className="text-xl font-bold text-primary">{dish.name}</h3>
@@ -164,42 +170,32 @@ export default function MenuShowcase() {
                           ))}
                         </div>
                         
-                        <div className="flex items-center space-x-6">
-                          <div className="flex items-center">
-                            <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                            <span className="text-sm font-medium">{dish.rating}</span>
-                            <span className="text-xs text-muted-foreground ml-1">(250+ reviews)</span>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-6">
+                            <div className="flex items-center">
+                              <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                              <span className="text-sm font-medium">{dish.rating}</span>
+                              <span className="text-xs text-muted-foreground ml-1">(250+ reviews)</span>
+                            </div>
+                            
+                            <div className="flex items-center text-sm text-muted-foreground">
+                              <Clock className="w-4 h-4 mr-1" />
+                              Fresh made to order
+                            </div>
                           </div>
                           
-                          <div className="flex items-center text-sm text-muted-foreground">
-                            <Clock className="w-4 h-4 mr-1" />
-                            Fresh made to order
+                          <div className="text-right">
+                            <div className="text-xl font-bold text-primary">{dish.price}</div>
+                            <div className="text-sm font-medium" style={{ color: 'hsl(42 90% 50%)' }}>
+                              {dish.studentPrice} student price
+                            </div>
                           </div>
                         </div>
-                      </div>
-                      
-                      <div className="text-right ml-6">
-                        <div className="text-2xl font-bold text-primary mb-1">{dish.price}</div>
-                        <div className="text-sm text-secondary font-medium mb-3">
-                          {dish.studentPrice} student price
-                        </div>
-                        <Button variant="restaurant" size="sm" className="group">
-                          Order Now
-                          <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                        </Button>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               ))}
-            </div>
-            
-            {/* Full Menu CTA */}
-            <div className="text-center pt-6">
-              <Button variant="warm" size="lg" className="group">
-                Explore Full Menu
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Button>
             </div>
           </div>
         </div>
@@ -219,13 +215,10 @@ export default function MenuShowcase() {
                 <h3 className="text-3xl md:text-4xl font-bold mb-4">
                   Traditional Techniques, Modern Atmosphere
                 </h3>
-                <p className="text-lg opacity-90 mb-6">
+                <p className="text-lg opacity-90">
                   Watch our chefs prepare your meal in our open kitchen using 
                   authentic methods passed down through generations.
                 </p>
-                <Button variant="golden" size="lg" className="warm-lighting">
-                  Reserve Your Experience
-                </Button>
               </div>
             </div>
           </div>

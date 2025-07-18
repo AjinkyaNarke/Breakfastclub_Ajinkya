@@ -1,6 +1,5 @@
 
-import { ArrowRight, Clock, MapPin, Users, Utensils } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Clock, MapPin, Users, Utensils } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import heroImage from "@/assets/hero-breakfast.jpg";
 
@@ -30,17 +29,6 @@ export default function HeroSection() {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button variant="restaurant" size="xl" className="group">
-                View Our Menu
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-              
-              <Button variant="golden" size="xl">
-                Reserve Your Table
-              </Button>
-            </div>
-
             {/* Restaurant Info Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8">
               <Card className="p-4 bg-card/70 backdrop-blur-sm border border-border/50 restaurant-lift warm-lighting">
@@ -62,7 +50,7 @@ export default function HeroSection() {
                   </div>
                   <div>
                     <p className="font-semibold text-sm">Student Welcome</p>
-                    <p className="text-xs text-muted-foreground">25% off with habait</p>
+                    <p className="text-xs text-muted-foreground">25% off with ID</p>
                   </div>
                 </div>
               </Card>

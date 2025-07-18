@@ -2,39 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Asian Fusion Design System - fckingbreakfastclub
+All colors MUST be HSL. Inspired by bamboo, cherry blossoms, and warm earth tones.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Brand Colors - Asian Inspired Palette */
+    --background: 30 15% 97%;
+    --foreground: 25 35% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 28 20% 95%;
+    --card-foreground: 25 35% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 30 15% 97%;
+    --popover-foreground: 25 35% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep Bamboo Green */
+    --primary: 140 30% 25%;
+    --primary-foreground: 30 15% 97%;
+    --primary-glow: 140 45% 35%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm Amber Gold */
+    --secondary: 45 65% 85%;
+    --secondary-foreground: 25 35% 15%;
+    
+    /* Cherry Blossom Accent */
+    --accent: 330 55% 88%;
+    --accent-foreground: 25 35% 15%;
+    --accent-vibrant: 330 75% 65%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Warm Earth Tones */
+    --muted: 35 25% 90%;
+    --muted-foreground: 25 25% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 30 15% 97%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --border: 35 20% 88%;
+    --input: 35 20% 88%;
+    --ring: 140 30% 25%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Asian Fusion Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(140 30% 25%), hsl(140 45% 35%));
+    --gradient-warm: linear-gradient(45deg, hsl(45 65% 85%), hsl(35 55% 75%));
+    --gradient-blossom: linear-gradient(135deg, hsl(330 55% 88%), hsl(330 75% 65%));
+    --gradient-hero: linear-gradient(180deg, hsl(30 15% 97%), hsl(35 25% 90%));
+
+    /* Shadows with Asian Warmth */
+    --shadow-soft: 0 4px 20px hsl(25 35% 15% / 0.08);
+    --shadow-warm: 0 8px 30px hsl(45 65% 85% / 0.15);
+    --shadow-glow: 0 0 40px hsl(140 45% 35% / 0.2);
+
+    /* Smooth Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
@@ -101,5 +123,70 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Custom Component Styles */
+@layer components {
+  /* Hero Section Styles */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  /* Asian-inspired Patterns */
+  .bamboo-pattern {
+    background-image: 
+      radial-gradient(circle at 20% 50%, hsl(140 30% 25% / 0.05) 1px, transparent 1px),
+      radial-gradient(circle at 80% 50%, hsl(140 30% 25% / 0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  /* Cherry Blossom Accent */
+  .blossom-accent {
+    position: relative;
+  }
+  
+  .blossom-accent::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: var(--gradient-blossom);
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+
+  /* Smooth Hover Effects */
+  .hover-lift {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-warm);
+  }
+
+  /* Typography Classes */
+  .text-brand {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: hsl(var(--primary));
+    border-radius: 3px;
   }
 }

@@ -19,7 +19,7 @@ import About from "./pages/About";
 import Impressum from "./pages/Impressum";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
-import './i18n/config';
+
 
 const queryClient = new QueryClient();
 

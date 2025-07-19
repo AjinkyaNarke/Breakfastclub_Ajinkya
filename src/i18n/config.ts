@@ -2,8 +2,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import HttpApi from 'i18next-http-backend';
 
 i18n
+  .use(HttpApi)
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -21,17 +23,8 @@ i18n
       escapeValue: false,
     },
 
-    resources: {
-      en: {
-        common: require('../../public/locales/en/common.json'),
-        homepage: require('../../public/locales/en/homepage.json'),
-        admin: require('../../public/locales/en/admin.json'),
-      },
-      de: {
-        common: require('../../public/locales/de/common.json'),
-        homepage: require('../../public/locales/de/homepage.json'),
-        admin: require('../../public/locales/de/admin.json'),
-      },
+    backend: {
+      loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
   });
 

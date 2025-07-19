@@ -75,20 +75,78 @@ serve(async (req) => {
       )
     }
 
+    // Get Recraft API key
+    const recraftApiKey = Deno.env.get('RECRAFT_API_KEY')
+    if (!recraftApiKey) {
+      return new Response(
+        JSON.stringify({ error: 'Recraft API key not configured' }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
+    }
+
     // Generate the prompt
     const prompt = generateFoodPrompt(dishName, ingredients, cuisineType, category)
     console.log('Generated prompt:', prompt)
 
-    // For demo purposes, we'll simulate image generation
-    // In production, you would integrate with your preferred AI image generation service
-    const mockImageUrl = `https://picsum.photos/1024/1024?random=${Date.now()}`
+    // Call Recraft API for image generation
+    const recraftResponse = await fetch('https://external.api.recraft.ai/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${recraftApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        style: "realistic_image",
+        size: "1024x1024",
+        response_format: "url"
+      })
+    })
+
+    if (!recraftResponse.ok) {
+      const errorData = await recraftResponse.json()
+      console.error('Recraft API error:', errorData)
+      return new Response(
+        JSON.stringify({ 
+          error: `Image generation failed: ${errorData.error?.message || 'Unknown error'}` 
+        }),
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500 
+        }
+      )
+    }
+
+    const recraftData = await recraftResponse.json()
+    const generatedImageUrl = recraftData.data[0].url
     const generationCost = 0.001 // $0.001 per image
 
-    // Upload mock image to Supabase storage (in production, upload the actual generated image)
+    // Download and store image in Supabase storage
+    const imageResponse = await fetch(generatedImageUrl)
+    const imageBlob = await imageResponse.arrayBuffer()
+    
     const fileName = `menu-images/${dishName.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.jpg`
     
-    // For now, we'll just return the mock URL as if it was uploaded
-    const finalImageUrl = mockImageUrl
+    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+      .from('restaurant-images')
+      .upload(fileName, imageBlob, {
+        contentType: 'image/jpeg',
+        upsert: false
+      })
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError)
+      // Use the temporary URL if storage fails
+    }
+
+    const { data: { publicUrl } } = supabaseClient.storage
+      .from('restaurant-images')
+      .getPublicUrl(fileName)
+
+    const finalImageUrl = uploadError ? generatedImageUrl : publicUrl
 
     // Save generation metadata
     const { error: saveError } = await supabaseClient

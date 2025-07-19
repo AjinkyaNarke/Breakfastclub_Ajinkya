@@ -60,8 +60,8 @@ export default function HeroSection() {
       <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         <div className="space-y-8 animate-fade-in">
           {/* Neon Title */}
-          <h1 className="neon-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-none mb-6 tracking-tight">
-            fckingbreakfastclub
+          <h1 className="neon-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-none mb-6 tracking-widest">
+            FCKING BREAKFAST CLUB
           </h1>
 
           {/* Neon Subtitle */}
@@ -98,31 +98,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Status Overlays */}
-      <div className="absolute top-6 right-6 z-30">
-        <Card className="p-3 bg-white/95 backdrop-blur-sm shadow-lg animate-cherry-float warm-lighting">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">Now Open</span>
-          </div>
-        </Card>
-      </div>
-
-      <div className="absolute bottom-6 left-6 z-30">
-        <Card className="p-4 bg-white/95 backdrop-blur-sm shadow-lg warm-lighting">
-          <div className="flex items-center space-x-3">
-            <div className="flex -space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-full border-2 border-white"></div>
-              <div className="w-8 h-8 bg-secondary rounded-full border-2 border-white"></div>
-              <div className="w-8 h-8 bg-accent-vibrant rounded-full border-2 border-white"></div>
-            </div>
-            <div>
-              <p className="text-sm font-semibold">150+ This Weekend</p>
-              <p className="text-xs text-muted-foreground">Happy Diners</p>
-            </div>
-          </div>
-        </Card>
-      </div>
     </section>
   );
 }

@@ -8,41 +8,68 @@ import heroImage from "@/assets/hero-breakfast.jpg";
 export default function HeroSection() {
   const [heroVideo, setHeroVideo] = useState<any>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const fetchHeroVideo = async () => {
-      const { data } = await supabase
-        .from('restaurant_videos')
-        .select('*')
-        .eq('featured_for_hero', true)
-        .maybeSingle();
-      
-      if (data) {
-        setHeroVideo(data);
+      try {
+        const { data, error } = await supabase
+          .from('restaurant_videos')
+          .select('*')
+          .eq('featured_for_hero', true)
+          .maybeSingle();
+        
+        if (error) {
+          console.error('Error fetching hero video:', error);
+          return;
+        }
+        
+        if (data) {
+          console.log('Hero video found:', data);
+          setHeroVideo(data);
+        } else {
+          console.log('No hero video found');
+        }
+      } catch (error) {
+        console.error('Exception fetching hero video:', error);
       }
     };
 
     fetchHeroVideo();
   }, []);
 
+  const handleVideoError = () => {
+    console.error('Video failed to load:', heroVideo?.video_url);
+    setVideoError(true);
+  };
+
+  const handleVideoLoad = () => {
+    console.log('Video loaded successfully');
+    setIsVideoLoaded(true);
+    setVideoError(false);
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Video Background */}
-      {heroVideo && (
+      {heroVideo && !videoError && (
         <video
           className="hero-video"
-          autoPlay
+          autoPlay={heroVideo.autoplay}
           loop
           muted
           playsInline
-          onLoadedData={() => setIsVideoLoaded(true)}
+          onLoadedData={handleVideoLoad}
+          onError={handleVideoError}
+          onCanPlay={() => console.log('Video can play')}
         >
           <source src={heroVideo.video_url} type="video/mp4" />
+          Your browser does not support the video tag.
         </video>
       )}
       
       {/* Fallback Background Image */}
-      {(!heroVideo || !isVideoLoaded) && (
+      {(!heroVideo || !isVideoLoaded || videoError) && (
         <div 
           className="hero-video"
           style={{

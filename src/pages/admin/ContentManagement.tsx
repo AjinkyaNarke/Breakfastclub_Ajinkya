@@ -287,7 +287,7 @@ E-Mail: [E-Mail]
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {legalSections.map((section) => {
                   const existing = contentBlocks?.find(block => block.section_name === section);
-                  const sectionNames = {
+                  const sectionNames: Record<string, string> = {
                     impressum: 'Impressum',
                     business_info: 'Business Information',
                     privacy_policy: 'Privacy Policy',

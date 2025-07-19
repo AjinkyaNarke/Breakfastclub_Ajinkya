@@ -18,6 +18,7 @@ export default function HeroSection() {
         .maybeSingle();
       
       if (data) {
+        console.log('Hero video data:', data);
         setHeroVideo(data);
       }
     };

@@ -1,68 +1,108 @@
 
+import { useState, useEffect } from "react";
 import { Star, Clock, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 import dimSumImage from "@/assets/dim-sum-spread.jpg";
 
-const featuredDishes = [
-  {
-    id: 1,
-    name: "Traditional Congee Set",
-    description: "Silky rice porridge with century egg, pork floss, and pickled vegetables. A comforting classic.",
-    price: "€12",
-    studentPrice: "€9",
-    category: "Traditional",
-    tags: ["Signature", "Comfort Food"],
-    rating: 4.9,
-    popular: true,
-    image: "/placeholder.svg"
-  },
-  {
-    id: 2,
-    name: "Fusion Breakfast Bao",
-    description: "Fluffy steamed buns with scrambled eggs, avocado, and Korean gochujang. Instagram favorite!",
-    price: "€14",
-    studentPrice: "€10.50",
-    category: "Fusion",
-    tags: ["Chef's Special", "Instagram Hit"],
-    rating: 4.8,
-    popular: true,
-    image: "/placeholder.svg"
-  },
-  {
-    id: 3,
-    name: "Ceremonial Matcha Pancakes",
-    description: "Japanese matcha pancakes with red bean paste and premium matcha syrup. Made with ceremony-grade matcha.",
-    price: "€13",
-    studentPrice: "€9.75",
-    category: "Sweet",
-    tags: ["Premium", "Traditional"],
-    rating: 4.7,
-    popular: false,
-    image: "/placeholder.svg"
-  },
-  {
-    id: 4,
-    name: "Korean BBQ Breakfast Bowl",
-    description: "Marinated bulgogi, kimchi fried rice, soft egg, and traditional banchan selection. Hearty and authentic.",
-    price: "€16",
-    studentPrice: "€12",
-    category: "Hearty",
-    tags: ["Protein Rich", "Authentic"],
-    rating: 4.9,
-    popular: true,
-    image: "/placeholder.svg"
-  }
-];
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string;
+  regular_price: number;
+  student_price: number;
+  is_featured: boolean;
+  is_available: boolean;
+  dietary_tags: string[];
+  category: {
+    name: string;
+  };
+}
 
-const menuCategories = [
-  { name: "Traditional", count: 12, color: "bg-primary", description: "Authentic Asian classics" },
-  { name: "Fusion", count: 8, color: "bg-accent-vibrant", description: "Modern interpretations" },
-  { name: "Sweet", count: 6, color: "bg-secondary", description: "Desserts & treats" },
-  { name: "Hearty", count: 10, color: "bg-primary-glow", description: "Filling favorites" }
-];
+interface MenuCategory {
+  id: string;
+  name: string;
+  description: string;
+  item_count: number;
+}
 
 export default function MenuShowcase() {
+  const [featuredItems, setFeaturedItems] = useState<MenuItem[]>([]);
+  const [categories, setCategories] = useState<MenuCategory[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMenuData();
+  }, []);
+
+  const fetchMenuData = async () => {
+    try {
+      // Fetch featured menu items
+      const { data: menuItems, error: menuError } = await supabase
+        .from('menu_items')
+        .select(`
+          *,
+          category:menu_categories(name)
+        `)
+        .eq('is_featured', true)
+        .eq('is_available', true)
+        .order('display_order')
+        .limit(4);
+
+      if (menuError) throw menuError;
+
+      // Fetch categories with item counts
+      const { data: categoriesData, error: categoriesError } = await supabase
+        .from('menu_categories')
+        .select(`
+          id,
+          name,
+          description,
+          menu_items(count)
+        `)
+        .order('display_order');
+
+      if (categoriesError) throw categoriesError;
+
+      // Transform categories data to include item count
+      const transformedCategories = categoriesData?.map(cat => ({
+        id: cat.id,
+        name: cat.name,
+        description: cat.description || `Authentic ${cat.name.toLowerCase()} dishes`,
+        item_count: cat.menu_items?.[0]?.count || 0
+      })) || [];
+
+      setFeaturedItems(menuItems || []);
+      setCategories(transformedCategories);
+    } catch (error) {
+      console.error('Error fetching menu data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getCategoryColor = (index: number) => {
+    const colors = [
+      "bg-primary", 
+      "bg-accent-vibrant", 
+      "bg-secondary", 
+      "bg-primary-glow"
+    ];
+    return colors[index % colors.length];
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-muted/30 restaurant-texture">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-pulse">Loading menu...</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 bg-muted/30 restaurant-texture">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -90,20 +130,20 @@ export default function MenuShowcase() {
             <div>
               <h3 className="text-2xl font-bold mb-6 text-primary">Menu Categories</h3>
               <div className="space-y-4">
-                {menuCategories.map((category, index) => (
+                {categories.map((category, index) => (
                   <Card 
-                    key={category.name} 
+                    key={category.id} 
                     className="restaurant-lift cursor-pointer transition-all duration-300 warm-lighting"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     <CardContent className="p-5">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center space-x-3">
-                          <div className={`w-4 h-4 rounded-full ${category.color}`}></div>
+                          <div className={`w-4 h-4 rounded-full ${getCategoryColor(index)}`}></div>
                           <span className="font-bold text-lg">{category.name}</span>
                         </div>
                         <Badge variant="outline" className="text-xs border-primary/20">
-                          {category.count} dishes
+                          {category.item_count} dishes
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground">{category.description}</p>
@@ -121,7 +161,7 @@ export default function MenuShowcase() {
                 </div>
                 <h4 className="font-bold text-lg mb-2 text-primary">Student Special</h4>
                 <p className="text-sm text-muted-foreground">
-                  Show your student ID and enjoy 25% off our entire menu
+                  Show your student ID and enjoy special pricing on our entire menu
                 </p>
               </CardContent>
             </Card>
@@ -130,72 +170,78 @@ export default function MenuShowcase() {
           {/* Featured Dishes */}
           <div className="lg:col-span-2 space-y-6 animate-fade-in">
             <div className="grid gap-6">
-              {featuredDishes.map((dish, index) => (
-                <Card 
-                  key={dish.id} 
-                  className="restaurant-lift transition-all duration-300 warm-lighting"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-6">
-                      {/* Dish Image */}
-                      <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
-                        <img 
-                          src={dish.image} 
-                          alt={dish.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      
-                      {/* Dish Details */}
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-3">
-                          <h3 className="text-xl font-bold text-primary">{dish.name}</h3>
-                          {dish.popular && (
+              {featuredItems.length > 0 ? (
+                featuredItems.map((dish, index) => (
+                  <Card 
+                    key={dish.id} 
+                    className="restaurant-lift transition-all duration-300 warm-lighting"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-6">
+                        {/* Dish Image */}
+                        <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                          <img 
+                            src={dish.image_url || "/placeholder.svg"} 
+                            alt={dish.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        
+                        {/* Dish Details */}
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-3">
+                            <h3 className="text-xl font-bold text-primary">{dish.name}</h3>
                             <Badge className="bg-primary/20 text-primary border-primary/30">
-                              Popular Choice
+                              Featured
                             </Badge>
-                          )}
-                        </div>
-                        
-                        <p className="text-muted-foreground mb-4 leading-relaxed">
-                          {dish.description}
-                        </p>
-                        
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {dish.tags.map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-xs border-secondary/30 text-secondary-foreground">
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-6">
-                            <div className="flex items-center">
-                              <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                              <span className="text-sm font-medium">{dish.rating}</span>
-                              <span className="text-xs text-muted-foreground ml-1">(250+ reviews)</span>
-                            </div>
-                            
-                            <div className="flex items-center text-sm text-muted-foreground">
-                              <Clock className="w-4 h-4 mr-1" />
-                              Fresh made to order
-                            </div>
                           </div>
                           
-                          <div className="text-right">
-                            <div className="text-xl font-bold text-primary">{dish.price}</div>
-                            <div className="text-sm font-medium" style={{ color: 'hsl(42 90% 50%)' }}>
-                              {dish.studentPrice} student price
+                          <p className="text-muted-foreground mb-4 leading-relaxed">
+                            {dish.description}
+                          </p>
+                          
+                          {dish.dietary_tags && dish.dietary_tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {dish.dietary_tags.map((tag) => (
+                                <Badge key={tag} variant="outline" className="text-xs border-secondary/30 text-secondary-foreground">
+                                  {tag}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+                          
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-6">
+                              <div className="flex items-center">
+                                <Star className="w-4 h-4 text-yellow-500 mr-1" />
+                                <span className="text-sm font-medium">4.8</span>
+                                <span className="text-xs text-muted-foreground ml-1">(50+ reviews)</span>
+                              </div>
+                              
+                              <div className="flex items-center text-sm text-muted-foreground">
+                                <Clock className="w-4 h-4 mr-1" />
+                                Fresh made to order
+                              </div>
+                            </div>
+                            
+                            <div className="text-right">
+                              <div className="text-xl font-bold text-primary">₹{dish.regular_price}</div>
+                              <div className="text-sm font-medium" style={{ color: 'hsl(42 90% 50%)' }}>
+                                ₹{dish.student_price} student price
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">No featured items available at the moment.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, Edit, Trash2, Eye, EyeOff, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MenuItemDialog } from '@/components/admin/MenuItemDialog';
+import { AIUsageDashboard } from '@/components/admin/AIUsageDashboard';
 
 interface MenuItem {
   id: string;
@@ -181,6 +182,19 @@ export const MenuManagement = () => {
           Add Menu Item
         </Button>
       </div>
+
+      {/* AI Usage Dashboard */}
+      <Card>
+        <CardHeader>
+          <CardTitle>AI Image Generation</CardTitle>
+          <CardDescription>
+            Monitor your AI usage and manage generation costs
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AIUsageDashboard />
+        </CardContent>
+      </Card>
 
       {/* Filters */}
       <Card>

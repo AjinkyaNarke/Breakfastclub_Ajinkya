@@ -38,6 +38,83 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_image_generations: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          cuisine_type: string | null
+          error_message: string | null
+          generation_cost: number
+          id: string
+          image_url: string
+          menu_item_id: string | null
+          prompt_used: string
+          status: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          cuisine_type?: string | null
+          error_message?: string | null
+          generation_cost: number
+          id?: string
+          image_url: string
+          menu_item_id?: string | null
+          prompt_used: string
+          status?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          cuisine_type?: string | null
+          error_message?: string | null
+          generation_cost?: number
+          id?: string
+          image_url?: string
+          menu_item_id?: string | null
+          prompt_used?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_image_generations_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_usage_tracking: {
+        Row: {
+          budget_limit: number | null
+          created_at: string | null
+          id: string
+          images_generated: number | null
+          month_year: string
+          total_cost: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          budget_limit?: number | null
+          created_at?: string | null
+          id?: string
+          images_generated?: number | null
+          month_year: string
+          total_cost?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          budget_limit?: number | null
+          created_at?: string | null
+          id?: string
+          images_generated?: number | null
+          month_year?: string
+          total_cost?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       content_blocks: {
         Row: {
           content: string | null
@@ -166,13 +243,18 @@ export type Database = {
       }
       menu_items: {
         Row: {
+          ai_generated_image: boolean | null
+          ai_prompt_used: string | null
           category_id: string | null
           created_at: string | null
+          cuisine_type: string | null
           description: string | null
           dietary_tags: string[] | null
           display_order: number | null
           id: string
+          image_generation_cost: number | null
           image_url: string | null
+          ingredients: string | null
           is_available: boolean | null
           is_featured: boolean | null
           name: string
@@ -181,13 +263,18 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ai_generated_image?: boolean | null
+          ai_prompt_used?: string | null
           category_id?: string | null
           created_at?: string | null
+          cuisine_type?: string | null
           description?: string | null
           dietary_tags?: string[] | null
           display_order?: number | null
           id?: string
+          image_generation_cost?: number | null
           image_url?: string | null
+          ingredients?: string | null
           is_available?: boolean | null
           is_featured?: boolean | null
           name: string
@@ -196,13 +283,18 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ai_generated_image?: boolean | null
+          ai_prompt_used?: string | null
           category_id?: string | null
           created_at?: string | null
+          cuisine_type?: string | null
           description?: string | null
           dietary_tags?: string[] | null
           display_order?: number | null
           id?: string
+          image_generation_cost?: number | null
           image_url?: string | null
+          ingredients?: string | null
           is_available?: boolean | null
           is_featured?: boolean | null
           name?: string

@@ -72,6 +72,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => {
     localStorage.removeItem('adminToken');
     setIsAuthenticated(false);
+    window.location.href = '/admin/login';
   };
 
   return (

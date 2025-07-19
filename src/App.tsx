@@ -13,7 +13,9 @@ import { VideoManagement } from "@/pages/admin/VideoManagement";
 import { PressManagement } from "@/pages/admin/PressManagement";
 import { GalleryManagement } from "@/pages/admin/GalleryManagement";
 import { EventsManagement } from "@/pages/admin/EventsManagement";
+import { ContentManagement } from "@/pages/admin/ContentManagement";
 import Index from "./pages/Index";
+import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,6 +29,7 @@ const App = () => (
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
             
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -37,7 +40,7 @@ const App = () => (
               <Route path="press" element={<PressManagement />} />
               <Route path="gallery" element={<GalleryManagement />} />
               <Route path="events" element={<EventsManagement />} />
-              <Route path="content" element={<div>Content Management - Coming Soon</div>} />
+              <Route path="content" element={<ContentManagement />} />
               <Route path="settings" element={<div>Settings - Coming Soon</div>} />
             </Route>
             

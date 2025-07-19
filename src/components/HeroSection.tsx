@@ -1,112 +1,145 @@
 
 import { Clock, MapPin, Users, Utensils } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import heroImage from "@/assets/hero-breakfast.jpg";
 
 export default function HeroSection() {
+  const [heroVideo, setHeroVideo] = useState<any>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchHeroVideo = async () => {
+      const { data } = await supabase
+        .from('restaurant_videos')
+        .select('*')
+        .eq('featured_for_hero', true)
+        .maybeSingle();
+      
+      if (data) {
+        setHeroVideo(data);
+      }
+    };
+
+    fetchHeroVideo();
+  }, []);
+
   return (
-    <section className="relative min-h-[90vh] flex items-center hero-gradient restaurant-texture">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
-          <div className="space-y-8 animate-fade-in">
-            <div className="space-y-4">
-              <div className="inline-flex items-center px-6 py-3 bg-primary/10 rounded-full text-sm font-medium text-primary border border-primary/20 restaurant-glow">
-                <Utensils className="w-4 h-4 mr-2" />
-                Asian Fusion Restaurant • Berlin Kreuzberg
-              </div>
-              
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-                Authentic{" "}
-                <span className="text-brand">Asian Breakfast</span>{" "}
-                in the Heart of Berlin
-              </h1>
-              
-              <p className="text-xl text-muted-foreground max-w-lg leading-relaxed">
-                Experience the warmth of traditional Asian hospitality every weekend. 
-                Our cozy restaurant serves authentic fusion breakfast that brings 
-                communities together over incredible flavors.
-              </p>
-            </div>
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Video Background */}
+      {heroVideo && (
+        <video
+          className="hero-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          onLoadedData={() => setIsVideoLoaded(true)}
+        >
+          <source src={heroVideo.video_url} type="video/mp4" />
+        </video>
+      )}
+      
+      {/* Fallback Background Image */}
+      {(!heroVideo || !isVideoLoaded) && (
+        <div 
+          className="hero-video"
+          style={{
+            backgroundImage: `url(${heroImage})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+      )}
 
-            {/* Restaurant Info Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8">
-              <Card className="p-4 bg-card/70 backdrop-blur-sm border border-border/50 restaurant-lift warm-lighting">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Clock className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Weekend Hours</p>
-                    <p className="text-xs text-muted-foreground">Fri-Sun 9AM-3PM</p>
-                  </div>
-                </div>
-              </Card>
+      {/* Dark Overlay */}
+      <div className="video-overlay absolute inset-0 z-10" />
 
-              <Card className="p-4 bg-card/70 backdrop-blur-sm border border-border/50 restaurant-lift warm-lighting">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-secondary/20 rounded-lg">
-                    <Users className="h-5 w-5 text-secondary-foreground" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Student Welcome</p>
-                    <p className="text-xs text-muted-foreground">25% off with ID</p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 bg-card/70 backdrop-blur-sm border border-border/50 restaurant-lift warm-lighting">
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 bg-accent-vibrant/20 rounded-lg">
-                    <MapPin className="h-5 w-5 text-accent-vibrant" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">Location</p>
-                    <p className="text-xs text-muted-foreground">Kreuzberg, Berlin</p>
-                  </div>
-                </div>
-              </Card>
-            </div>
+      {/* Main Content */}
+      <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+        <div className="space-y-8 animate-fade-in">
+          {/* Restaurant Badge */}
+          <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/20 restaurant-glow">
+            <Utensils className="w-4 h-4 mr-2" />
+            Asian Fusion Restaurant • Berlin Kreuzberg
           </div>
 
-          {/* Hero Image */}
-          <div className="relative animate-slide-in">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src={heroImage}
-                alt="Warm restaurant interior with Asian fusion breakfast"
-                className="w-full h-[600px] object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-              
-              {/* Restaurant Atmosphere Overlays */}
-              <div className="absolute top-6 right-6">
-                <Card className="p-3 bg-white/95 backdrop-blur-sm shadow-lg animate-cherry-float warm-lighting">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium">Now Open</span>
-                  </div>
-                </Card>
-              </div>
+          {/* Neon Title */}
+          <h1 className="neon-title text-6xl md:text-8xl lg:text-9xl leading-none mb-6">
+            fckingbreakfastclub
+          </h1>
 
-              <div className="absolute bottom-6 left-6">
-                <Card className="p-4 bg-white/95 backdrop-blur-sm shadow-lg warm-lighting">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex -space-x-2">
-                      <div className="w-8 h-8 bg-primary rounded-full border-2 border-white"></div>
-                      <div className="w-8 h-8 bg-secondary rounded-full border-2 border-white"></div>
-                      <div className="w-8 h-8 bg-accent-vibrant rounded-full border-2 border-white"></div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold">150+ This Weekend</p>
-                      <p className="text-xs text-muted-foreground">Happy Diners</p>
-                    </div>
-                  </div>
-                </Card>
+          {/* Neon Subtitle */}
+          <p className="neon-subtitle text-lg md:text-xl lg:text-2xl mb-12">
+            Authentic Asian Breakfast in the Heart of Berlin
+          </p>
+
+          {/* Restaurant Info Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mt-16">
+            <Card className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-primary/20 rounded-lg">
+                  <Clock className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-white">Weekend Hours</p>
+                  <p className="text-xs text-white/70">Fri-Sun 9AM-3PM</p>
+                </div>
               </div>
-            </div>
+            </Card>
+
+            <Card className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-secondary/20 rounded-lg">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-white">Student Welcome</p>
+                  <p className="text-xs text-white/70">25% off with ID</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-accent-vibrant/20 rounded-lg">
+                  <MapPin className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-white">Location</p>
+                  <p className="text-xs text-white/70">Kreuzberg, Berlin</p>
+                </div>
+              </div>
+            </Card>
           </div>
         </div>
+      </div>
+
+      {/* Status Overlays */}
+      <div className="absolute top-6 right-6 z-30">
+        <Card className="p-3 bg-white/95 backdrop-blur-sm shadow-lg animate-cherry-float warm-lighting">
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 bg-primary rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">Now Open</span>
+          </div>
+        </Card>
+      </div>
+
+      <div className="absolute bottom-6 left-6 z-30">
+        <Card className="p-4 bg-white/95 backdrop-blur-sm shadow-lg warm-lighting">
+          <div className="flex items-center space-x-3">
+            <div className="flex -space-x-2">
+              <div className="w-8 h-8 bg-primary rounded-full border-2 border-white"></div>
+              <div className="w-8 h-8 bg-secondary rounded-full border-2 border-white"></div>
+              <div className="w-8 h-8 bg-accent-vibrant rounded-full border-2 border-white"></div>
+            </div>
+            <div>
+              <p className="text-sm font-semibold">150+ This Weekend</p>
+              <p className="text-xs text-muted-foreground">Happy Diners</p>
+            </div>
+          </div>
+        </Card>
       </div>
     </section>
   );

@@ -13,6 +13,7 @@ interface RestaurantVideo {
   video_url: string;
   thumbnail_url: string;
   is_featured: boolean;
+  featured_for_hero: boolean;
   display_order: number;
   autoplay: boolean;
   show_controls: boolean;
@@ -75,6 +76,30 @@ export const VideoManagement = () => {
     }
   };
 
+  const toggleHeroVideo = async (id: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('restaurant_videos')
+        .update({ featured_for_hero: !currentStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchVideos();
+      toast({
+        title: "Success",
+        description: currentStatus ? "Removed from hero section" : "Set as hero video",
+      });
+    } catch (error) {
+      console.error('Error updating hero video:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update hero video",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return <div>Loading videos...</div>;
   }
@@ -117,9 +142,14 @@ export const VideoManagement = () => {
             <CardHeader>
               <div className="flex justify-between items-start">
                 <CardTitle className="text-lg">{video.title}</CardTitle>
-                {video.is_featured && (
-                  <Badge variant="secondary">Featured</Badge>
-                )}
+                <div className="flex gap-2">
+                  {video.is_featured && (
+                    <Badge variant="secondary">Featured</Badge>
+                  )}
+                  {video.featured_for_hero && (
+                    <Badge className="bg-primary text-primary-foreground">Hero</Badge>
+                  )}
+                </div>
               </div>
               <CardDescription className="line-clamp-2">
                 {video.description}
@@ -141,17 +171,27 @@ export const VideoManagement = () => {
                   Order: {video.display_order}
                 </div>
                 
-                <div className="flex justify-end gap-2 pt-2">
-                  <Button size="sm" variant="outline">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => deleteVideo(video.id)}
+                <div className="flex flex-col gap-2 pt-2">
+                  <Button 
+                    size="sm" 
+                    variant={video.featured_for_hero ? "default" : "outline"}
+                    onClick={() => toggleHeroVideo(video.id, video.featured_for_hero)}
+                    className="w-full"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {video.featured_for_hero ? "Remove from Hero" : "Set as Hero"}
                   </Button>
+                  <div className="flex justify-end gap-2">
+                    <Button size="sm" variant="outline">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteVideo(video.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>

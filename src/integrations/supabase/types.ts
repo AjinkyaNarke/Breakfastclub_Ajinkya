@@ -226,6 +226,7 @@ export type Database = {
           created_at: string | null
           description: string | null
           display_order: number | null
+          featured_for_hero: boolean | null
           id: string
           is_featured: boolean | null
           show_controls: boolean | null
@@ -238,6 +239,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           display_order?: number | null
+          featured_for_hero?: boolean | null
           id?: string
           is_featured?: boolean | null
           show_controls?: boolean | null
@@ -250,6 +252,7 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           display_order?: number | null
+          featured_for_hero?: boolean | null
           id?: string
           is_featured?: boolean | null
           show_controls?: boolean | null

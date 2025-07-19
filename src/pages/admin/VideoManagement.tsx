@@ -3,6 +3,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Edit, Trash2, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,6 +28,18 @@ interface RestaurantVideo {
 export const VideoManagement = () => {
   const [videos, setVideos] = useState<RestaurantVideo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    video_url: '',
+    thumbnail_url: '',
+    is_featured: false,
+    featured_for_hero: false,
+    autoplay: false,
+    show_controls: true,
+    display_order: 0
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -100,6 +117,41 @@ export const VideoManagement = () => {
     }
   };
 
+  const handleAddVideo = async () => {
+    try {
+      const { error } = await supabase
+        .from('restaurant_videos')
+        .insert([formData]);
+
+      if (error) throw error;
+      
+      await fetchVideos();
+      setIsDialogOpen(false);
+      setFormData({
+        title: '',
+        description: '',
+        video_url: '',
+        thumbnail_url: '',
+        is_featured: false,
+        featured_for_hero: false,
+        autoplay: false,
+        show_controls: true,
+        display_order: 0
+      });
+      toast({
+        title: "Success",
+        description: "Video added successfully",
+      });
+    } catch (error) {
+      console.error('Error adding video:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add video",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return <div>Loading videos...</div>;
   }
@@ -113,10 +165,109 @@ export const VideoManagement = () => {
             Manage restaurant videos and promotional content
           </p>
         </div>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Video
-        </Button>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Video
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Add New Video</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Video title"
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Video description"
+                />
+              </div>
+              <div>
+                <Label htmlFor="video_url">Video URL</Label>
+                <Input
+                  id="video_url"
+                  value={formData.video_url}
+                  onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                  placeholder="https://example.com/video.mp4"
+                />
+              </div>
+              <div>
+                <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
+                <Input
+                  id="thumbnail_url"
+                  value={formData.thumbnail_url}
+                  onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                  placeholder="https://example.com/thumbnail.jpg"
+                />
+              </div>
+              <div>
+                <Label htmlFor="display_order">Display Order</Label>
+                <Input
+                  id="display_order"
+                  type="number"
+                  value={formData.display_order}
+                  onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+                  placeholder="0"
+                />
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="is_featured"
+                    checked={formData.is_featured}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: !!checked })}
+                  />
+                  <Label htmlFor="is_featured">Featured Video</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="featured_for_hero"
+                    checked={formData.featured_for_hero}
+                    onCheckedChange={(checked) => setFormData({ ...formData, featured_for_hero: !!checked })}
+                  />
+                  <Label htmlFor="featured_for_hero">Use for Hero Section</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="autoplay"
+                    checked={formData.autoplay}
+                    onCheckedChange={(checked) => setFormData({ ...formData, autoplay: !!checked })}
+                  />
+                  <Label htmlFor="autoplay">Autoplay</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="show_controls"
+                    checked={formData.show_controls}
+                    onCheckedChange={(checked) => setFormData({ ...formData, show_controls: !!checked })}
+                  />
+                  <Label htmlFor="show_controls">Show Controls</Label>
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleAddVideo}>
+                  Add Video
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -202,10 +353,14 @@ export const VideoManagement = () => {
       {videos.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No videos found.</p>
-          <Button className="mt-4">
-            <Plus className="h-4 w-4 mr-2" />
-            Add your first video
-          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="mt-4">
+                <Plus className="h-4 w-4 mr-2" />
+                Add your first video
+              </Button>
+            </DialogTrigger>
+          </Dialog>
         </div>
       )}
     </div>

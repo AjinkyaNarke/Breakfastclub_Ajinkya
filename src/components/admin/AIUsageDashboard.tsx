@@ -137,7 +137,7 @@ export const AIUsageDashboard = () => {
           <CardContent>
             <div className="text-2xl font-bold">{remainingCredits.toFixed(3)}</div>
             <p className="text-xs text-muted-foreground">
-              {remainingCredits > 0 ? "Available" : "Exceeded"}
+              Available
             </p>
           </CardContent>
         </Card>
@@ -192,7 +192,7 @@ export const AIUsageDashboard = () => {
               <p className="text-muted-foreground">Generated: {usage?.images_generated || 0} images</p>
             </div>
             <div>
-              <p className="font-medium">Average Cost per Image</p>
+              <p className="font-medium">Average per Image</p>
               <p className="text-muted-foreground">
                 {usage?.images_generated 
                   ? (usage.total_cost / usage.images_generated).toFixed(4)
@@ -206,26 +206,26 @@ export const AIUsageDashboard = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => updateBudgetLimit(15.00)}
-              disabled={usage?.budget_limit === 15.00}
+              onClick={() => updateBudgetLimit(100)}
+              disabled={usage?.budget_limit === 100}
             >
-              Set Budget: 15.000
+              Set Limit: 100
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => updateBudgetLimit(25.00)}
-              disabled={usage?.budget_limit === 25.00}
+              onClick={() => updateBudgetLimit(250)}
+              disabled={usage?.budget_limit === 250}
             >
-              Set Budget: 25.000
+              Set Limit: 250
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => updateBudgetLimit(50.00)}
-              disabled={usage?.budget_limit === 50.00}
+              onClick={() => updateBudgetLimit(500)}
+              disabled={usage?.budget_limit === 500}
             >
-              Set Budget: 50.000
+              Set Limit: 500
             </Button>
           </div>
         </CardContent>

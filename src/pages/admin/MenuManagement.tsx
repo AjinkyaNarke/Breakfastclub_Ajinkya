@@ -10,6 +10,7 @@ import { Plus, Edit, Trash2, Eye, EyeOff, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MenuItemDialog } from '@/components/admin/MenuItemDialog';
 import { AIUsageDashboard } from '@/components/admin/AIUsageDashboard';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface MenuItem {
   id: string;
@@ -44,6 +45,7 @@ export const MenuManagement = () => {
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -177,24 +179,19 @@ export const MenuManagement = () => {
             Manage your restaurant menu items and categories
           </p>
         </div>
-        <Button onClick={handleAdd}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Menu Item
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="secondary" 
+            onClick={() => setCreditsDialogOpen(true)}
+          >
+            AI Image Credits
+          </Button>
+          <Button onClick={handleAdd}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Menu Item
+          </Button>
+        </div>
       </div>
-
-      {/* AI Usage Dashboard */}
-      <Card>
-        <CardHeader>
-          <CardTitle>AI Image Generation</CardTitle>
-          <CardDescription>
-            Monitor your AI usage and manage generation costs
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <AIUsageDashboard />
-        </CardContent>
-      </Card>
 
       {/* Filters */}
       <Card>
@@ -363,6 +360,16 @@ export const MenuManagement = () => {
         item={editingItem}
         onSave={handleDialogSave}
       />
+
+      {/* AI Credits Dialog */}
+      <Dialog open={creditsDialogOpen} onOpenChange={setCreditsDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>AI Image Generation Credits</DialogTitle>
+          </DialogHeader>
+          <AIUsageDashboard />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

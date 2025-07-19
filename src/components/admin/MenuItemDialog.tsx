@@ -507,7 +507,7 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
                 </Button>
                 
                 <p className="text-xs text-muted-foreground">
-                  Cost: ~0.001 credits per image
+                  Cost: ~1 credit per image
                 </p>
               </div>
             )}

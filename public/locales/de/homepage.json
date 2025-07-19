@@ -1,0 +1,27 @@
+
+{
+  "hero": {
+    "title": "fckingbreakfastclub",
+    "subtitle": "Wo asiatische Frühstückskultur auf Berlins lebendigen Gemeinschaftsgeist trifft",
+    "description": "Erlebe authentische asiatische Frühstücksgerichte im Herzen Berlins, wo traditionelle Aromen mit modernem Gemeinschaftsessen verschmelzen.",
+    "cta": "Unsere Speisekarte entdecken"
+  },
+  "sections": {
+    "menu": {
+      "title": "Unsere Speisekarte",
+      "description": "Entdecke unsere sorgfältig zubereiteten asiatischen Frühstücksspezialitäten"
+    },
+    "gallery": {
+      "title": "Galerie",
+      "description": "Eine visuelle Reise durch unsere Gerichte und Atmosphäre"
+    },
+    "events": {
+      "title": "Gemeinschaftsveranstaltungen",
+      "description": "Nimm an unseren Frühstücksgemeinschaftstreffen teil"
+    },
+    "press": {
+      "title": "In der Presse",
+      "description": "Was die Leute über uns sagen"
+    }
+  }
+}

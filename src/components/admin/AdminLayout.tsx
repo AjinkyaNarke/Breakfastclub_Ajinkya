@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Outlet, Link, useLocation, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,22 +16,25 @@ import {
   Newspaper
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const sidebarItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-  { icon: ChefHat, label: 'Menu', path: '/admin/menu' },
-  { icon: Image, label: 'Gallery', path: '/admin/gallery' },
-  { icon: Video, label: 'Videos', path: '/admin/videos' },
-  { icon: Newspaper, label: 'Press', path: '/admin/press' },
-  { icon: Calendar, label: 'Events', path: '/admin/events' },
-  { icon: FileText, label: 'Content', path: '/admin/content' },
-  { icon: Settings, label: 'Settings', path: '/admin/settings' },
-];
+import { useTranslation } from 'react-i18next';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export const AdminLayout = () => {
   const { isAuthenticated, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const location = useLocation();
+  const { t } = useTranslation('admin');
+
+  const sidebarItems = [
+    { icon: LayoutDashboard, label: t('navigation.dashboard'), path: '/admin' },
+    { icon: ChefHat, label: t('navigation.menu'), path: '/admin/menu' },
+    { icon: Image, label: t('navigation.gallery'), path: '/admin/gallery' },
+    { icon: Video, label: t('navigation.videos'), path: '/admin/videos' },
+    { icon: Newspaper, label: t('navigation.press'), path: '/admin/press' },
+    { icon: Calendar, label: t('navigation.events'), path: '/admin/events' },
+    { icon: FileText, label: t('navigation.content'), path: '/admin/content' },
+    { icon: Settings, label: t('navigation.settings'), path: '/admin/settings' },
+  ];
 
   if (!isAuthenticated) {
     return <Navigate to="/admin/login" replace />;
@@ -47,7 +51,7 @@ export const AdminLayout = () => {
           <div className="flex items-center gap-2">
             <ChefHat className="h-8 w-8 text-primary" />
             {sidebarOpen && (
-              <span className="font-bold text-lg">Admin Panel</span>
+              <span className="font-bold text-lg">{t('layout.adminPanel')}</span>
             )}
           </div>
         </div>
@@ -83,7 +87,7 @@ export const AdminLayout = () => {
             )}
           >
             <LogOut className="h-4 w-4" />
-            {sidebarOpen && "Logout"}
+            {sidebarOpen && t('layout.logout')}
           </Button>
         </div>
       </div>
@@ -101,10 +105,10 @@ export const AdminLayout = () => {
             </Button>
             
             <h1 className="text-xl font-semibold">
-              fckingbreakfastclub Admin
+              {t('layout.header')}
             </h1>
             
-            <div className="w-10" /> {/* Spacer */}
+            <LanguageSwitcher />
           </div>
         </header>
         

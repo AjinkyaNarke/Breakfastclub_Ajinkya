@@ -1,7 +1,9 @@
+
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChefHat, Image, Video, Calendar } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Stats {
   menuItems: number;
@@ -17,6 +19,7 @@ export const Dashboard = () => {
     videos: 0,
     events: 0,
   });
+  const { t } = useTranslation('admin');
 
   useEffect(() => {
     fetchStats();
@@ -44,37 +47,37 @@ export const Dashboard = () => {
 
   const statCards = [
     {
-      title: 'Menu Items',
+      title: t('dashboard.stats.menuItems'),
       value: stats.menuItems,
       icon: ChefHat,
-      description: 'Total dishes in menu',
+      description: t('dashboard.stats.menuItemsDesc'),
     },
     {
-      title: 'Gallery Images',
+      title: t('dashboard.stats.galleryImages'),
       value: stats.galleryImages,
       icon: Image,
-      description: 'Photos in gallery',
+      description: t('dashboard.stats.galleryImagesDesc'),
     },
     {
-      title: 'Videos',
+      title: t('dashboard.stats.videos'),
       value: stats.videos,
       icon: Video,
-      description: 'Restaurant videos',
+      description: t('dashboard.stats.videosDesc'),
     },
     {
-      title: 'Events',
+      title: t('dashboard.stats.events'),
       value: stats.events,
       icon: Calendar,
-      description: 'Community events',
+      description: t('dashboard.stats.eventsDesc'),
     },
   ];
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h1 className="text-3xl font-bold">{t('dashboard.title')}</h1>
         <p className="text-muted-foreground">
-          Welcome to the fckingbreakfastclub admin panel
+          {t('dashboard.description')}
         </p>
       </div>
 
@@ -103,24 +106,24 @@ export const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle>{t('dashboard.quickActions.title')}</CardTitle>
             <CardDescription>
-              Common management tasks
+              {t('dashboard.quickActions.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex flex-col space-y-2">
               <a href="/admin/menu" className="text-primary hover:underline">
-                → Add new menu item
+                {t('dashboard.quickActions.addMenuItem')}
               </a>
               <a href="/admin/gallery" className="text-primary hover:underline">
-                → Upload gallery images
+                {t('dashboard.quickActions.uploadImages')}
               </a>
               <a href="/admin/videos" className="text-primary hover:underline">
-                → Add restaurant video
+                {t('dashboard.quickActions.addVideo')}
               </a>
               <a href="/admin/events" className="text-primary hover:underline">
-                → Create community event
+                {t('dashboard.quickActions.createEvent')}
               </a>
             </div>
           </CardContent>
@@ -128,24 +131,24 @@ export const Dashboard = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>System Status</CardTitle>
+            <CardTitle>{t('dashboard.systemStatus.title')}</CardTitle>
             <CardDescription>
-              Current system information
+              {t('dashboard.systemStatus.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span>Database</span>
-                <span className="text-green-600">Connected</span>
+                <span>{t('dashboard.systemStatus.database')}</span>
+                <span className="text-green-600">{t('dashboard.systemStatus.connected')}</span>
               </div>
               <div className="flex justify-between">
-                <span>Storage</span>
-                <span className="text-green-600">Available</span>
+                <span>{t('dashboard.systemStatus.storage')}</span>
+                <span className="text-green-600">{t('dashboard.systemStatus.available')}</span>
               </div>
               <div className="flex justify-between">
-                <span>Admin Access</span>
-                <span className="text-green-600">Active</span>
+                <span>{t('dashboard.systemStatus.adminAccess')}</span>
+                <span className="text-green-600">{t('dashboard.systemStatus.active')}</span>
               </div>
             </div>
           </CardContent>

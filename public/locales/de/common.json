@@ -1,0 +1,37 @@
+
+{
+  "navigation": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "menu": "Speisekarte",
+    "gallery": "Galerie",
+    "events": "Veranstaltungen",
+    "press": "Presse",
+    "contact": "Kontakt"
+  },
+  "buttons": {
+    "learnMore": "Mehr erfahren",
+    "viewMenu": "Speisekarte ansehen",
+    "seeAll": "Alle anzeigen",
+    "joinEvent": "An Veranstaltung teilnehmen",
+    "readMore": "Weiterlesen",
+    "back": "Zurück",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "update": "Aktualisieren",
+    "close": "Schließen"
+  },
+  "footer": {
+    "copyright": "© 2025 fckingbreakfastclub - Asian Fusion • Berlin • Wo traditionelle asiatische Frühstückskultur auf Berlins lebendigen Gemeinschaftsgeist trifft",
+    "impressum": "Impressum",
+    "privacy": "Datenschutz"
+  },
+  "language": {
+    "switchTo": "Wechseln zu",
+    "english": "English",
+    "german": "Deutsch"
+  }
+}

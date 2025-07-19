@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { VideoUploadDialog } from '@/components/admin/VideoUploadDialog';
+import { useTranslation } from 'react-i18next';
 
 interface RestaurantVideo {
   id: string;
@@ -26,6 +28,7 @@ export const VideoManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation('admin');
 
   useEffect(() => {
     fetchVideos();
@@ -53,7 +56,7 @@ export const VideoManagement = () => {
   };
 
   const deleteVideo = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this video?')) return;
+    if (!confirm(t('videos.messages.deleteConfirm'))) return;
 
     try {
       // Get video data to delete the file from storage
@@ -85,13 +88,13 @@ export const VideoManagement = () => {
       await fetchVideos();
       toast({
         title: "Success",
-        description: "Video deleted successfully",
+        description: t('videos.messages.deleteSuccess'),
       });
     } catch (error) {
       console.error('Error deleting video:', error);
       toast({
         title: "Error",
-        description: "Failed to delete video",
+        description: t('videos.messages.deleteError'),
         variant: "destructive",
       });
     }
@@ -109,13 +112,13 @@ export const VideoManagement = () => {
       await fetchVideos();
       toast({
         title: "Success",
-        description: currentStatus ? "Removed from hero section" : "Set as hero video",
+        description: currentStatus ? t('videos.messages.heroRemoved') : t('videos.messages.heroSet'),
       });
     } catch (error) {
       console.error('Error updating hero video:', error);
       toast({
         title: "Error",
-        description: "Failed to update hero video",
+        description: t('videos.messages.heroUpdateError'),
         variant: "destructive",
       });
     }
@@ -129,14 +132,14 @@ export const VideoManagement = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Video Management</h1>
+          <h1 className="text-3xl font-bold">{t('videos.title')}</h1>
           <p className="text-muted-foreground">
-            Manage restaurant videos and promotional content
+            {t('videos.description')}
           </p>
         </div>
         <Button onClick={() => setShowUploadDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Video
+          {t('videos.addVideo')}
         </Button>
       </div>
 
@@ -165,10 +168,10 @@ export const VideoManagement = () => {
                 <CardTitle className="text-lg">{video.title}</CardTitle>
                 <div className="flex gap-2">
                   {video.is_featured && (
-                    <Badge variant="secondary">Featured</Badge>
+                    <Badge variant="secondary">{t('videos.badges.featured')}</Badge>
                   )}
                   {video.featured_for_hero && (
-                    <Badge className="bg-primary text-primary-foreground">Hero</Badge>
+                    <Badge className="bg-primary text-primary-foreground">{t('videos.badges.hero')}</Badge>
                   )}
                 </div>
               </div>
@@ -181,15 +184,15 @@ export const VideoManagement = () => {
               <div className="space-y-3">
                 <div className="flex flex-wrap gap-2">
                   {video.autoplay && (
-                    <Badge variant="outline">Autoplay</Badge>
+                    <Badge variant="outline">{t('videos.badges.autoplay')}</Badge>
                   )}
                   {video.show_controls && (
-                    <Badge variant="outline">Controls</Badge>
+                    <Badge variant="outline">{t('videos.badges.controls')}</Badge>
                   )}
                 </div>
                 
                 <div className="text-xs text-muted-foreground">
-                  Order: {video.display_order}
+                  {t('videos.order')} {video.display_order}
                 </div>
                 
                 <div className="flex flex-col gap-2 pt-2">
@@ -199,7 +202,7 @@ export const VideoManagement = () => {
                     onClick={() => toggleHeroVideo(video.id, video.featured_for_hero)}
                     className="w-full"
                   >
-                    {video.featured_for_hero ? "Remove from Hero" : "Set as Hero"}
+                    {video.featured_for_hero ? t('videos.actions.removeFromHero') : t('videos.actions.setAsHero')}
                   </Button>
                   <div className="flex justify-end gap-2">
                     <Button size="sm" variant="outline">
@@ -222,10 +225,10 @@ export const VideoManagement = () => {
 
       {videos.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No videos found.</p>
+          <p className="text-muted-foreground">{t('videos.noVideos')}</p>
           <Button className="mt-4" onClick={() => setShowUploadDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add your first video
+            {t('videos.addFirstVideo')}
           </Button>
         </div>
       )}

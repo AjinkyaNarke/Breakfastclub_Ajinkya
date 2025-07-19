@@ -1,0 +1,27 @@
+
+{
+  "hero": {
+    "title": "fckingbreakfastclub",
+    "subtitle": "Where Asian breakfast culture meets Berlin's vibrant community spirit",
+    "description": "Experience authentic Asian breakfast dishes in the heart of Berlin, where traditional flavors blend with modern community dining.",
+    "cta": "Explore Our Menu"
+  },
+  "sections": {
+    "menu": {
+      "title": "Our Menu",
+      "description": "Discover our carefully crafted Asian breakfast specialties"
+    },
+    "gallery": {
+      "title": "Gallery",
+      "description": "A visual journey through our dishes and atmosphere"
+    },
+    "events": {
+      "title": "Community Events",
+      "description": "Join our breakfast community gatherings"
+    },
+    "press": {
+      "title": "In the Press",
+      "description": "What people are saying about us"
+    }
+  }
+}

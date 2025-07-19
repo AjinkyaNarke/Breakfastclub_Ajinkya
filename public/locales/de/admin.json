@@ -1,0 +1,140 @@
+
+{
+  "login": {
+    "title": "Admin-Anmeldung",
+    "description": "Zugriff auf das fckingbreakfastclub Admin-Panel",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "loginButton": "Anmelden",
+    "loggingIn": "Anmeldung läuft...",
+    "success": "Anmeldung erfolgreich",
+    "successDescription": "Willkommen im Admin-Panel!",
+    "failed": "Anmeldung fehlgeschlagen",
+    "failedDescription": "Ungültiger Benutzername oder Passwort",
+    "error": "Anmeldungsfehler",
+    "errorDescription": "Etwas ist schief gelaufen. Bitte versuchen Sie es erneut.",
+    "defaultCredentials": "Standard-Anmeldedaten:",
+    "usernameLabel": "Benutzername: Admin",
+    "passwordLabel": "Passwort: Lami@007"
+  },
+  "layout": {
+    "adminPanel": "Admin-Panel",
+    "header": "fckingbreakfastclub Admin",
+    "logout": "Abmelden"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "menu": "Speisekarte",
+    "gallery": "Galerie",
+    "videos": "Videos",
+    "press": "Presse",
+    "events": "Veranstaltungen",
+    "content": "Inhalte",
+    "settings": "Einstellungen"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Willkommen im fckingbreakfastclub Admin-Panel",
+    "stats": {
+      "menuItems": "Menü-Artikel",
+      "galleryImages": "Galerie-Bilder",
+      "videos": "Videos",
+      "events": "Veranstaltungen",
+      "menuItemsDesc": "Gerichte in der Speisekarte",
+      "galleryImagesDesc": "Fotos in der Galerie",
+      "videosDesc": "Restaurant-Videos",
+      "eventsDesc": "Gemeinschaftsveranstaltungen"
+    },
+    "quickActions": {
+      "title": "Schnellaktionen",
+      "description": "Häufige Verwaltungsaufgaben",
+      "addMenuItem": "→ Neuen Menü-Artikel hinzufügen",
+      "uploadImages": "→ Galerie-Bilder hochladen",
+      "addVideo": "→ Restaurant-Video hinzufügen",
+      "createEvent": "→ Gemeinschaftsveranstaltung erstellen"
+    },
+    "systemStatus": {
+      "title": "System-Status",
+      "description": "Aktuelle Systeminformationen",
+      "database": "Datenbank",
+      "storage": "Speicher",
+      "adminAccess": "Admin-Zugriff",
+      "connected": "Verbunden",
+      "available": "Verfügbar",
+      "active": "Aktiv"
+    }
+  },
+  "content": {
+    "title": "Inhaltsverwaltung",
+    "description": "Verwalten Sie Ihre Website-Inhaltsblöcke",
+    "addContentBlock": "Inhaltsblock hinzufügen",
+    "tabs": {
+      "all": "Alle Inhalte",
+      "legal": "Rechtliches",
+      "active": "Aktiv",
+      "inactive": "Inaktiv"
+    },
+    "legal": {
+      "title": "Deutsche Rechtskonformität",
+      "description": "Erstellen und verwalten Sie Ihr Impressum, Ihre Datenschutzerklärung und andere rechtlich erforderliche Inhalte für deutsche Websites.",
+      "sections": {
+        "impressum": "Impressum",
+        "businessInfo": "Geschäftsinformationen",
+        "privacyPolicy": "Datenschutzerklärung",
+        "cookiePolicy": "Cookie-Richtlinie",
+        "contactDetails": "Kontaktdaten"
+      },
+      "notCreated": "Noch nicht erstellt",
+      "status": "Status",
+      "active": "✅ Aktiv",
+      "inactive": "❌ Inaktiv",
+      "createWithTemplate": "Mit Vorlage erstellen"
+    },
+    "form": {
+      "createNew": "Neuen Inhaltsblock erstellen",
+      "createDescription": "Fügen Sie einen neuen Inhaltsbereich zu Ihrer Website hinzu",
+      "sectionName": "Bereichsname",
+      "selectOrEnter": "Auswählen oder benutzerdefiniert eingeben",
+      "customSectionName": "Oder benutzerdefinierten Bereichsnamen eingeben",
+      "title": "Titel",
+      "content": "Inhalt",
+      "contentPlaceholder": "Geben Sie hier Ihren Inhalt ein. Für rechtliche Bereiche verwenden Sie die bereitgestellten Vorlagen.",
+      "imageUrl": "Bild-URL",
+      "imageUrlPlaceholder": "https://example.com/image.jpg",
+      "active": "Aktiv",
+      "lastUpdated": "Zuletzt aktualisiert:"
+    },
+    "messages": {
+      "updateSuccess": "Inhaltsblock erfolgreich aktualisiert",
+      "updateError": "Fehler beim Aktualisieren des Inhaltsblocks",
+      "createSuccess": "Inhaltsblock erfolgreich erstellt",
+      "createError": "Fehler beim Erstellen des Inhaltsblocks"
+    }
+  },
+  "videos": {
+    "title": "Video-Verwaltung",
+    "description": "Restaurant-Videos und Werbeinhalte verwalten",
+    "addVideo": "Video hinzufügen",
+    "noVideos": "Keine Videos gefunden.",
+    "addFirstVideo": "Ihr erstes Video hinzufügen",
+    "badges": {
+      "featured": "Empfohlen",
+      "hero": "Hero",
+      "autoplay": "Autoplay",
+      "controls": "Steuerelemente"
+    },
+    "actions": {
+      "setAsHero": "Als Hero setzen",
+      "removeFromHero": "Aus Hero entfernen"
+    },
+    "order": "Reihenfolge:",
+    "messages": {
+      "deleteConfirm": "Sind Sie sicher, dass Sie dieses Video löschen möchten?",
+      "deleteSuccess": "Video erfolgreich gelöscht",
+      "deleteError": "Fehler beim Löschen des Videos",
+      "heroSet": "Als Hero-Video gesetzt",
+      "heroRemoved": "Aus Hero-Bereich entfernt",
+      "heroUpdateError": "Fehler beim Aktualisieren des Hero-Videos"
+    }
+  }
+}

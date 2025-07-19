@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Edit, Save, X, Scale, FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ContentBlock {
   id: string;
@@ -42,6 +43,7 @@ export const ContentManagement = () => {
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation('admin');
 
   const { data: contentBlocks, isLoading } = useQuery({
     queryKey: ['admin-content-blocks'],
@@ -75,13 +77,13 @@ export const ContentManagement = () => {
       setEditingBlock(null);
       toast({
         title: "Success",
-        description: "Content block updated successfully",
+        description: t('content.messages.updateSuccess'),
       });
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to update content block",
+        description: t('content.messages.updateError'),
         variant: "destructive",
       });
       console.error('Update error:', error);
@@ -108,13 +110,13 @@ export const ContentManagement = () => {
       });
       toast({
         title: "Success",
-        description: "Content block created successfully",
+        description: t('content.messages.createSuccess'),
       });
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to create content block",
+        description: t('content.messages.createError'),
         variant: "destructive",
       });
       console.error('Create error:', error);
@@ -237,24 +239,24 @@ E-Mail: [E-Mail]
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Content Management</h1>
-          <p className="text-muted-foreground">Manage your website content blocks</p>
+          <h1 className="text-3xl font-bold">{t('content.title')}</h1>
+          <p className="text-muted-foreground">{t('content.description')}</p>
         </div>
         <Button onClick={() => setIsCreating(true)} className="gap-2">
           <Plus className="h-4 w-4" />
-          Add Content Block
+          {t('content.addContentBlock')}
         </Button>
       </div>
 
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All Content</TabsTrigger>
+          <TabsTrigger value="all">{t('content.tabs.all')}</TabsTrigger>
           <TabsTrigger value="legal" className="gap-2">
             <Scale className="h-4 w-4" />
-            Legal
+            {t('content.tabs.legal')}
           </TabsTrigger>
-          <TabsTrigger value="active">Active</TabsTrigger>
-          <TabsTrigger value="inactive">Inactive</TabsTrigger>
+          <TabsTrigger value="active">{t('content.tabs.active')}</TabsTrigger>
+          <TabsTrigger value="inactive">{t('content.tabs.inactive')}</TabsTrigger>
         </TabsList>
         
         <TabsContent value="all" className="space-y-4">
@@ -277,10 +279,10 @@ E-Mail: [E-Mail]
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-amber-800">
                 <FileText className="h-5 w-5" />
-                German Legal Compliance
+                {t('content.legal.title')}
               </CardTitle>
               <CardDescription>
-                Create and manage your Impressum, Privacy Policy, and other legally required content for German websites.
+                {t('content.legal.description')}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -288,11 +290,11 @@ E-Mail: [E-Mail]
                 {legalSections.map((section) => {
                   const existing = contentBlocks?.find(block => block.section_name === section);
                   const sectionNames: Record<string, string> = {
-                    impressum: 'Impressum',
-                    business_info: 'Business Information',
-                    privacy_policy: 'Privacy Policy',
-                    cookie_policy: 'Cookie Policy',
-                    contact_details: 'Contact Details'
+                    impressum: t('content.legal.sections.impressum'),
+                    business_info: t('content.legal.sections.businessInfo'),
+                    privacy_policy: t('content.legal.sections.privacyPolicy'),
+                    cookie_policy: t('content.legal.sections.cookiePolicy'),
+                    contact_details: t('content.legal.sections.contactDetails')
                   };
                   
                   return (
@@ -301,24 +303,24 @@ E-Mail: [E-Mail]
                       {existing ? (
                         <div className="space-y-2">
                           <p className="text-sm text-muted-foreground">
-                            Status: {existing.is_active ? '✅ Active' : '❌ Inactive'}
+                            {t('content.legal.status')}: {existing.is_active ? t('content.legal.active') : t('content.legal.inactive')}
                           </p>
                           <Button 
                             variant="outline" 
                             size="sm" 
                             onClick={() => handleEdit(existing)}
                           >
-                            Edit
+                            {t('buttons.edit')}
                           </Button>
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <p className="text-sm text-muted-foreground">Not created yet</p>
+                          <p className="text-sm text-muted-foreground">{t('content.legal.notCreated')}</p>
                           <Button 
                             size="sm" 
                             onClick={() => handleCreateWithTemplate(section)}
                           >
-                            Create with Template
+                            {t('content.legal.createWithTemplate')}
                           </Button>
                         </div>
                       )}
@@ -378,20 +380,20 @@ E-Mail: [E-Mail]
       {isCreating && (
         <Card className="border-2 border-primary">
           <CardHeader>
-            <CardTitle>Create New Content Block</CardTitle>
-            <CardDescription>Add a new content section to your website</CardDescription>
+            <CardTitle>{t('content.form.createNew')}</CardTitle>
+            <CardDescription>{t('content.form.createDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="section_name">Section Name</Label>
+                <Label htmlFor="section_name">{t('content.form.sectionName')}</Label>
                 <select
                   id="section_name"
                   className="w-full mt-1 px-3 py-2 border border-input bg-background rounded-md"
                   value={formData.section_name}
                   onChange={(e) => setFormData({ ...formData, section_name: e.target.value })}
                 >
-                  <option value="">Select or enter custom</option>
+                  <option value="">{t('content.form.selectOrEnter')}</option>
                   {predefinedSections.map((section) => (
                     <option key={section} value={section}>
                       {section.charAt(0).toUpperCase() + section.slice(1).replace('_', ' ')}
@@ -399,14 +401,14 @@ E-Mail: [E-Mail]
                   ))}
                 </select>
                 <Input
-                  placeholder="Or enter custom section name"
+                  placeholder={t('content.form.customSectionName')}
                   value={formData.section_name}
                   onChange={(e) => setFormData({ ...formData, section_name: e.target.value })}
                   className="mt-2"
                 />
               </div>
               <div>
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">{t('content.form.title')}</Label>
                 <Input
                   id="title"
                   value={formData.title}
@@ -416,24 +418,24 @@ E-Mail: [E-Mail]
             </div>
             
             <div>
-              <Label htmlFor="content">Content</Label>
+              <Label htmlFor="content">{t('content.form.content')}</Label>
               <Textarea
                 id="content"
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 rows={8}
-                placeholder="Enter your content here. For legal sections, use the templates provided."
+                placeholder={t('content.form.contentPlaceholder')}
               />
             </div>
             
             <div>
-              <Label htmlFor="image_url">Image URL</Label>
+              <Label htmlFor="image_url">{t('content.form.imageUrl')}</Label>
               <Input
                 id="image_url"
                 type="url"
                 value={formData.image_url}
                 onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
+                placeholder={t('content.form.imageUrlPlaceholder')}
               />
             </div>
             
@@ -443,17 +445,17 @@ E-Mail: [E-Mail]
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
-              <Label htmlFor="is_active">Active</Label>
+              <Label htmlFor="is_active">{t('content.form.active')}</Label>
             </div>
             
             <div className="flex gap-2">
               <Button onClick={handleCreate} disabled={createMutation.isPending}>
                 <Save className="h-4 w-4 mr-2" />
-                Create
+                {t('buttons.create')}
               </Button>
               <Button variant="outline" onClick={() => setIsCreating(false)}>
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                {t('buttons.cancel')}
               </Button>
             </div>
           </CardContent>
@@ -482,6 +484,8 @@ function ContentBlockCard({
   onCancel, 
   onUpdate 
 }: ContentBlockCardProps) {
+  const { t } = useTranslation('admin');
+
   return (
     <Card className={isEditing ? "border-2 border-primary" : ""}>
       <CardHeader>
@@ -494,7 +498,7 @@ function ContentBlockCard({
               )}
             </CardTitle>
             <CardDescription>
-              Last updated: {new Date(block.updated_at).toLocaleDateString()}
+              {t('content.form.lastUpdated')} {new Date(block.updated_at).toLocaleDateString()}
             </CardDescription>
           </div>
           {!isEditing && (
@@ -508,7 +512,7 @@ function ContentBlockCard({
         {isEditing && editingBlock ? (
           <div className="space-y-4">
             <div>
-              <Label htmlFor="edit-title">Title</Label>
+              <Label htmlFor="edit-title">{t('content.form.title')}</Label>
               <Input
                 id="edit-title"
                 value={editingBlock.title || ''}
@@ -517,7 +521,7 @@ function ContentBlockCard({
             </div>
             
             <div>
-              <Label htmlFor="edit-content">Content</Label>
+              <Label htmlFor="edit-content">{t('content.form.content')}</Label>
               <Textarea
                 id="edit-content"
                 value={editingBlock.content || ''}
@@ -527,7 +531,7 @@ function ContentBlockCard({
             </div>
             
             <div>
-              <Label htmlFor="edit-image">Image URL</Label>
+              <Label htmlFor="edit-image">{t('content.form.imageUrl')}</Label>
               <Input
                 id="edit-image"
                 type="url"
@@ -541,17 +545,17 @@ function ContentBlockCard({
                 checked={editingBlock.is_active}
                 onCheckedChange={(checked) => onUpdate({ ...editingBlock, is_active: checked })}
               />
-              <Label>Active</Label>
+              <Label>{t('content.form.active')}</Label>
             </div>
             
             <div className="flex gap-2">
               <Button onClick={onSave}>
                 <Save className="h-4 w-4 mr-2" />
-                Save
+                {t('buttons.save')}
               </Button>
               <Button variant="outline" onClick={onCancel}>
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                {t('buttons.cancel')}
               </Button>
             </div>
           </div>
@@ -559,14 +563,14 @@ function ContentBlockCard({
           <div className="space-y-4">
             {block.title && (
               <div>
-                <h4 className="font-semibold">Title</h4>
+                <h4 className="font-semibold">{t('content.form.title')}</h4>
                 <p className="text-muted-foreground">{block.title}</p>
               </div>
             )}
             
             {block.content && (
               <div>
-                <h4 className="font-semibold">Content</h4>
+                <h4 className="font-semibold">{t('content.form.content')}</h4>
                 <p className="text-muted-foreground line-clamp-3">{block.content}</p>
               </div>
             )}

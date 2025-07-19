@@ -1,0 +1,140 @@
+
+{
+  "login": {
+    "title": "Admin Login",
+    "description": "Access the fckingbreakfastclub admin panel",
+    "username": "Username",
+    "password": "Password",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "success": "Login successful",
+    "successDescription": "Welcome to the admin panel!",
+    "failed": "Login failed",
+    "failedDescription": "Invalid username or password",
+    "error": "Login error",
+    "errorDescription": "Something went wrong. Please try again.",
+    "defaultCredentials": "Default credentials:",
+    "usernameLabel": "Username: Admin",
+    "passwordLabel": "Password: Lami@007"
+  },
+  "layout": {
+    "adminPanel": "Admin Panel",
+    "header": "fckingbreakfastclub Admin",
+    "logout": "Logout"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "menu": "Menu",
+    "gallery": "Gallery",
+    "videos": "Videos",
+    "press": "Press",
+    "events": "Events",
+    "content": "Content",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Welcome to the fckingbreakfastclub admin panel",
+    "stats": {
+      "menuItems": "Menu Items",
+      "galleryImages": "Gallery Images",
+      "videos": "Videos",
+      "events": "Events",
+      "menuItemsDesc": "Total dishes in menu",
+      "galleryImagesDesc": "Photos in gallery",
+      "videosDesc": "Restaurant videos",
+      "eventsDesc": "Community events"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "description": "Common management tasks",
+      "addMenuItem": "→ Add new menu item",
+      "uploadImages": "→ Upload gallery images",
+      "addVideo": "→ Add restaurant video",
+      "createEvent": "→ Create community event"
+    },
+    "systemStatus": {
+      "title": "System Status",
+      "description": "Current system information",
+      "database": "Database",
+      "storage": "Storage",
+      "adminAccess": "Admin Access",
+      "connected": "Connected",
+      "available": "Available",
+      "active": "Active"
+    }
+  },
+  "content": {
+    "title": "Content Management",
+    "description": "Manage your website content blocks",
+    "addContentBlock": "Add Content Block",
+    "tabs": {
+      "all": "All Content",
+      "legal": "Legal",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "legal": {
+      "title": "German Legal Compliance",
+      "description": "Create and manage your Impressum, Privacy Policy, and other legally required content for German websites.",
+      "sections": {
+        "impressum": "Impressum",
+        "businessInfo": "Business Information",
+        "privacyPolicy": "Privacy Policy",
+        "cookiePolicy": "Cookie Policy",
+        "contactDetails": "Contact Details"
+      },
+      "notCreated": "Not created yet",
+      "status": "Status",
+      "active": "✅ Active",
+      "inactive": "❌ Inactive",
+      "createWithTemplate": "Create with Template"
+    },
+    "form": {
+      "createNew": "Create New Content Block",
+      "createDescription": "Add a new content section to your website",
+      "sectionName": "Section Name",
+      "selectOrEnter": "Select or enter custom",
+      "customSectionName": "Or enter custom section name",
+      "title": "Title",
+      "content": "Content",
+      "contentPlaceholder": "Enter your content here. For legal sections, use the templates provided.",
+      "imageUrl": "Image URL",
+      "imageUrlPlaceholder": "https://example.com/image.jpg",
+      "active": "Active",
+      "lastUpdated": "Last updated:"
+    },
+    "messages": {
+      "updateSuccess": "Content block updated successfully",
+      "updateError": "Failed to update content block",
+      "createSuccess": "Content block created successfully",
+      "createError": "Failed to create content block"
+    }
+  },
+  "videos": {
+    "title": "Video Management",
+    "description": "Manage restaurant videos and promotional content",
+    "addVideo": "Add Video",
+    "noVideos": "No videos found.",
+    "addFirstVideo": "Add your first video",
+    "badges": {
+      "featured": "Featured",
+      "hero": "Hero",
+      "autoplay": "Autoplay",
+      "controls": "Controls"
+    },
+    "actions": {
+      "setAsHero": "Set as Hero",
+      "removeFromHero": "Remove from Hero"
+    },
+    "order": "Order:",
+    "messages": {
+      "deleteConfirm": "Are you sure you want to delete this video?",
+      "deleteSuccess": "Video deleted successfully",
+      "deleteError": "Failed to delete video",
+      "heroSet": "Set as hero video",
+      "heroRemoved": "Removed from hero section",
+      "heroUpdateError": "Failed to update hero video"
+    }
+  }
+}

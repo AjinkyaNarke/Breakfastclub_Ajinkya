@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, Edit, Save, X } from 'lucide-react';
+import { Plus, Edit, Save, X, Scale, FileText } from 'lucide-react';
 
 interface ContentBlock {
   id: string;
@@ -136,7 +135,91 @@ export const ContentManagement = () => {
     createMutation.mutate(formData);
   };
 
-  const predefinedSections = ['hero', 'about', 'values', 'team', 'mission', 'story'];
+  const predefinedSections = [
+    'hero', 'about', 'values', 'team', 'mission', 'story',
+    'impressum', 'business_info', 'privacy_policy', 'cookie_policy', 'contact_details'
+  ];
+
+  const legalSections = ['impressum', 'business_info', 'privacy_policy', 'cookie_policy', 'contact_details'];
+
+  const getLegalTemplate = (sectionName: string) => {
+    const templates = {
+      impressum: {
+        title: "Angaben gemäß § 5 TMG",
+        content: `[Firmenname]
+[Name des Inhabers/Geschäftsführers]
+[Straße und Hausnummer]
+[PLZ und Ort]
+
+Kontakt:
+Telefon: [Telefonnummer]
+E-Mail: [E-Mail-Adresse]
+
+Umsatzsteuer-ID: [USt-IdNr.]
+Steuer-Nr.: [Steuernummer]
+
+Registereintrag: [falls vorhanden]
+Registergericht: [falls vorhanden]
+Registernummer: [falls vorhanden]`
+      },
+      business_info: {
+        title: "Geschäftsinformationen",
+        content: `Inhaber: [Name]
+Geschäftszeiten: [Öffnungszeiten]
+Adresse: [Vollständige Adresse]
+Telefon: [Telefonnummer]
+E-Mail: [E-Mail]`
+      },
+      privacy_policy: {
+        title: "Datenschutzerklärung",
+        content: `1. Datenschutz auf einen Blick
+
+Diese Datenschutzerklärung klärt Sie über die Art, den Umfang und Zweck der Verarbeitung von personenbezogenen Daten auf.
+
+2. Allgemeine Hinweise und Pflichtinformationen
+
+Die Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst...
+
+3. Datenerfassung auf unserer Website
+
+Diese Website erhebt keine personenbezogenen Daten außer den technisch notwendigen Server-Logs...
+
+4. Ihre Rechte
+
+Sie haben das Recht auf Auskunft, Berichtigung, Löschung und Einschränkung der Verarbeitung Ihrer personenbezogenen Daten...`
+      },
+      cookie_policy: {
+        title: "Cookie-Richtlinie",
+        content: `Diese Website verwendet nur technisch notwendige Cookies für:
+- Session-Management
+- Grundfunktionalität der Website
+
+Wir verwenden keine Tracking- oder Marketing-Cookies.
+Ihre Zustimmung ist nicht erforderlich für diese technisch notwendigen Cookies.`
+      },
+      contact_details: {
+        title: "Kontaktinformationen",
+        content: `Restaurant: [Name]
+Adresse: [Straße, PLZ Ort]
+Telefon: [Nummer]
+E-Mail: [E-Mail]
+Öffnungszeiten: [Zeiten]`
+      }
+    };
+    return templates[sectionName] || { title: '', content: '' };
+  };
+
+  const handleCreateWithTemplate = (sectionName: string) => {
+    const template = getLegalTemplate(sectionName);
+    setFormData({
+      section_name: sectionName,
+      title: template.title,
+      content: template.content,
+      image_url: '',
+      is_active: true
+    });
+    setIsCreating(true);
+  };
 
   if (isLoading) {
     return (
@@ -164,14 +247,89 @@ export const ContentManagement = () => {
       </div>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList>
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all">All Content</TabsTrigger>
+          <TabsTrigger value="legal" className="gap-2">
+            <Scale className="h-4 w-4" />
+            Legal
+          </TabsTrigger>
           <TabsTrigger value="active">Active</TabsTrigger>
           <TabsTrigger value="inactive">Inactive</TabsTrigger>
         </TabsList>
         
         <TabsContent value="all" className="space-y-4">
           {contentBlocks?.map((block) => (
+            <ContentBlockCard
+              key={block.id}
+              block={block}
+              isEditing={editingBlock?.id === block.id}
+              editingBlock={editingBlock}
+              onEdit={handleEdit}
+              onSave={handleSave}
+              onCancel={() => setEditingBlock(null)}
+              onUpdate={setEditingBlock}
+            />
+          ))}
+        </TabsContent>
+
+        <TabsContent value="legal" className="space-y-4">
+          <Card className="border-amber-200 bg-amber-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-amber-800">
+                <FileText className="h-5 w-5" />
+                German Legal Compliance
+              </CardTitle>
+              <CardDescription>
+                Create and manage your Impressum, Privacy Policy, and other legally required content for German websites.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {legalSections.map((section) => {
+                  const existing = contentBlocks?.find(block => block.section_name === section);
+                  const sectionNames = {
+                    impressum: 'Impressum',
+                    business_info: 'Business Information',
+                    privacy_policy: 'Privacy Policy',
+                    cookie_policy: 'Cookie Policy',
+                    contact_details: 'Contact Details'
+                  };
+                  
+                  return (
+                    <div key={section} className="p-4 border rounded-lg">
+                      <h4 className="font-semibold mb-2">{sectionNames[section]}</h4>
+                      {existing ? (
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            Status: {existing.is_active ? '✅ Active' : '❌ Inactive'}
+                          </p>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => handleEdit(existing)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <p className="text-sm text-muted-foreground">Not created yet</p>
+                          <Button 
+                            size="sm" 
+                            onClick={() => handleCreateWithTemplate(section)}
+                          >
+                            Create with Template
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
+          {contentBlocks?.filter(block => legalSections.includes(block.section_name)).map((block) => (
             <ContentBlockCard
               key={block.id}
               block={block}
@@ -236,7 +394,7 @@ export const ContentManagement = () => {
                   <option value="">Select or enter custom</option>
                   {predefinedSections.map((section) => (
                     <option key={section} value={section}>
-                      {section.charAt(0).toUpperCase() + section.slice(1)}
+                      {section.charAt(0).toUpperCase() + section.slice(1).replace('_', ' ')}
                     </option>
                   ))}
                 </select>
@@ -263,7 +421,8 @@ export const ContentManagement = () => {
                 id="content"
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                rows={4}
+                rows={8}
+                placeholder="Enter your content here. For legal sections, use the templates provided."
               />
             </div>
             

@@ -11,7 +11,8 @@ import {
   FileText,
   Settings,
   LogOut,
-  ChefHat
+  ChefHat,
+  Newspaper
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +21,7 @@ const sidebarItems = [
   { icon: ChefHat, label: 'Menu', path: '/admin/menu' },
   { icon: Image, label: 'Gallery', path: '/admin/gallery' },
   { icon: Video, label: 'Videos', path: '/admin/videos' },
+  { icon: Newspaper, label: 'Press', path: '/admin/press' },
   { icon: Calendar, label: 'Events', path: '/admin/events' },
   { icon: FileText, label: 'Content', path: '/admin/content' },
   { icon: Settings, label: 'Settings', path: '/admin/settings' },

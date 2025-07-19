@@ -9,6 +9,7 @@ import { AdminLogin } from "@/components/admin/AdminLogin";
 import { Dashboard } from "@/pages/admin/Dashboard";
 import { MenuManagement } from "@/pages/admin/MenuManagement";
 import { VideoManagement } from "@/pages/admin/VideoManagement";
+import { PressManagement } from "@/pages/admin/PressManagement";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +31,7 @@ const App = () => (
               <Route index element={<Dashboard />} />
               <Route path="menu" element={<MenuManagement />} />
               <Route path="videos" element={<VideoManagement />} />
+              <Route path="press" element={<PressManagement />} />
               <Route path="gallery" element={<div>Gallery Management - Coming Soon</div>} />
               <Route path="events" element={<div>Events Management - Coming Soon</div>} />
               <Route path="content" element={<div>Content Management - Coming Soon</div>} />

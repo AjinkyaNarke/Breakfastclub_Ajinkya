@@ -220,6 +220,48 @@ export type Database = {
           },
         ]
       }
+      press_articles: {
+        Row: {
+          article_url: string
+          created_at: string | null
+          display_order: number | null
+          excerpt: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean | null
+          publication_date: string
+          publication_name: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          article_url: string
+          created_at?: string | null
+          display_order?: number | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          publication_date: string
+          publication_name: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          article_url?: string
+          created_at?: string | null
+          display_order?: number | null
+          excerpt?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean | null
+          publication_date?: string
+          publication_name?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       restaurant_videos: {
         Row: {
           autoplay: boolean | null

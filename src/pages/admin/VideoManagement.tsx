@@ -145,9 +145,9 @@ export const VideoManagement = () => {
       const publicUrl = await uploadFile(file, bucket, fileName);
       
       if (type === 'video') {
-        setFormData({ ...formData, video_url: publicUrl });
+        setFormData(prev => ({ ...prev, video_url: publicUrl }));
       } else {
-        setFormData({ ...formData, thumbnail_url: publicUrl });
+        setFormData(prev => ({ ...prev, thumbnail_url: publicUrl }));
       }
       
       toast({

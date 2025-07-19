@@ -136,5 +136,39 @@
       "heroRemoved": "Aus Hero-Bereich entfernt",
       "heroUpdateError": "Fehler beim Aktualisieren des Hero-Videos"
     }
+  },
+  "menu": {
+    "title": "Speisekarten-Verwaltung",
+    "description": "Verwalten Sie Ihre Restaurant-Menüpunkte und Kategorien",
+    "addMenuItem": "Menüpunkt hinzufügen",
+    "aiImageCredits": "KI-Bild-Guthaben",
+    "filtersAndSearch": "Filter & Suche",
+    "searchPlaceholder": "Menüpunkte durchsuchen...",
+    "allCategories": "Alle Kategorien",
+    "featuredOnly": "Nur Empfohlene",
+    "availableOnly": "Nur Verfügbare",
+    "showingItems": "Zeige {{count}} von {{total}} Artikeln",
+    "noImage": "Kein Bild",
+    "featured": "Empfohlen",
+    "available": "Verfügbar",
+    "unavailable": "Nicht verfügbar",
+    "regular": "Normal",
+    "student": "Student",
+    "noItemsFound": "Keine Menüpunkte gefunden.",
+    "noItemsMatch": "Keine Artikel entsprechen Ihren aktuellen Filtern.",
+    "addFirstItem": "Ihren ersten Menüpunkt hinzufügen",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diesen Menüpunkt löschen möchten?",
+    "loading": "Lade Menüpunkte...",
+    "aiUsageTitle": "KI-Bildgenerierung Guthaben",
+    "aiUsageDescription": "Überwachen Sie Ihre KI-Nutzung und verwalten Sie Generierungskosten",
+    "messages": {
+      "fetchError": "Fehler beim Laden der Menüpunkte",
+      "availabilityUpdated": "Artikel {{status}} erfolgreich",
+      "availabilityError": "Fehler beim Aktualisieren der Artikelverfügbarkeit",
+      "deleteSuccess": "Menüpunkt erfolgreich gelöscht",
+      "deleteError": "Fehler beim Löschen des Menüpunkts",
+      "enabled": "aktiviert",
+      "disabled": "deaktiviert"
+    }
   }
 }

@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { MenuItemDialog } from '@/components/admin/MenuItemDialog';
 import { AIUsageDashboard } from '@/components/admin/AIUsageDashboard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useTranslation } from 'react-i18next';
 
 interface MenuItem {
   id: string;
@@ -47,6 +48,7 @@ export const MenuManagement = () => {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const { toast } = useToast();
+  const { t } = useTranslation('admin');
 
   useEffect(() => {
     fetchMenuItems();
@@ -83,7 +85,7 @@ export const MenuManagement = () => {
       console.error('Error fetching menu items:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch menu items",
+        description: t('menu.messages.fetchError'),
         variant: "destructive",
       });
     } finally {
@@ -113,20 +115,22 @@ export const MenuManagement = () => {
       await fetchMenuItems();
       toast({
         title: "Success",
-        description: `Item ${!currentStatus ? 'enabled' : 'disabled'} successfully`,
+        description: t('menu.messages.availabilityUpdated', { 
+          status: !currentStatus ? t('menu.messages.enabled') : t('menu.messages.disabled') 
+        }),
       });
     } catch (error) {
       console.error('Error updating availability:', error);
       toast({
         title: "Error",
-        description: "Failed to update item availability",
+        description: t('menu.messages.availabilityError'),
         variant: "destructive",
       });
     }
   };
 
   const deleteItem = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this menu item?')) return;
+    if (!confirm(t('menu.deleteConfirm'))) return;
 
     try {
       const { error } = await supabase
@@ -139,13 +143,13 @@ export const MenuManagement = () => {
       await fetchMenuItems();
       toast({
         title: "Success",
-        description: "Menu item deleted successfully",
+        description: t('menu.messages.deleteSuccess'),
       });
     } catch (error) {
       console.error('Error deleting item:', error);
       toast({
         title: "Error",
-        description: "Failed to delete menu item",
+        description: t('menu.messages.deleteError'),
         variant: "destructive",
       });
     }
@@ -166,7 +170,7 @@ export const MenuManagement = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading menu items...</div>;
+    return <div className="flex justify-center items-center h-64">{t('menu.loading')}</div>;
   }
 
   return (
@@ -174,9 +178,9 @@ export const MenuManagement = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Menu Management</h1>
+          <h1 className="text-3xl font-bold">{t('menu.title')}</h1>
           <p className="text-muted-foreground">
-            Manage your restaurant menu items and categories
+            {t('menu.description')}
           </p>
         </div>
         <div className="flex gap-2">
@@ -184,11 +188,11 @@ export const MenuManagement = () => {
             variant="secondary" 
             onClick={() => setCreditsDialogOpen(true)}
           >
-            AI Image Credits
+            {t('menu.aiImageCredits')}
           </Button>
           <Button onClick={handleAdd}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Menu Item
+            {t('menu.addMenuItem')}
           </Button>
         </div>
       </div>
@@ -196,14 +200,14 @@ export const MenuManagement = () => {
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Filters & Search</CardTitle>
+          <CardTitle className="text-lg">{t('menu.filtersAndSearch')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search menu items..."
+                placeholder={t('menu.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -212,10 +216,10 @@ export const MenuManagement = () => {
 
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger>
-                <SelectValue placeholder="All Categories" />
+                <SelectValue placeholder={t('menu.allCategories')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">{t('menu.allCategories')}</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
@@ -230,7 +234,7 @@ export const MenuManagement = () => {
                 size="sm"
                 onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
               >
-                Featured Only
+                {t('menu.featuredOnly')}
               </Button>
               
               <Button
@@ -238,13 +242,13 @@ export const MenuManagement = () => {
                 size="sm"
                 onClick={() => setShowAvailableOnly(!showAvailableOnly)}
               >
-                Available Only
+                {t('menu.availableOnly')}
               </Button>
             </div>
           </div>
           
           <div className="mt-4 text-sm text-muted-foreground">
-            Showing {filteredItems.length} of {menuItems.length} items
+            {t('menu.showingItems', { count: filteredItems.length, total: menuItems.length })}
           </div>
         </CardContent>
       </Card>
@@ -262,7 +266,7 @@ export const MenuManagement = () => {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                  No image
+                  {t('menu.noImage')}
                 </div>
               )}
             </div>
@@ -272,10 +276,10 @@ export const MenuManagement = () => {
                 <CardTitle className="text-lg">{item.name}</CardTitle>
                 <div className="flex gap-1">
                   {item.is_featured && (
-                    <Badge variant="secondary">Featured</Badge>
+                    <Badge variant="secondary">{t('menu.featured')}</Badge>
                   )}
                   <Badge variant={item.is_available ? "default" : "destructive"}>
-                    {item.is_available ? "Available" : "Unavailable"}
+                    {item.is_available ? t('menu.available') : t('menu.unavailable')}
                   </Badge>
                 </div>
               </div>
@@ -287,8 +291,8 @@ export const MenuManagement = () => {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span>Regular: €{item.regular_price}</span>
-                  <span>Student: €{item.student_price}</span>
+                  <span>{t('menu.regular')}: €{item.regular_price}</span>
+                  <span>{t('menu.student')}: €{item.student_price}</span>
                 </div>
                 
                 {item.dietary_tags && item.dietary_tags.length > 0 && (
@@ -342,12 +346,12 @@ export const MenuManagement = () => {
       {filteredItems.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">
-            {menuItems.length === 0 ? "No menu items found." : "No items match your current filters."}
+            {menuItems.length === 0 ? t('menu.noItemsFound') : t('menu.noItemsMatch')}
           </p>
           {menuItems.length === 0 && (
             <Button className="mt-4" onClick={handleAdd}>
               <Plus className="h-4 w-4 mr-2" />
-              Add your first menu item
+              {t('menu.addFirstItem')}
             </Button>
           )}
         </div>
@@ -365,9 +369,9 @@ export const MenuManagement = () => {
       <Dialog open={creditsDialogOpen} onOpenChange={setCreditsDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>AI Image Generation Credits</DialogTitle>
+            <DialogTitle>{t('menu.aiUsageTitle')}</DialogTitle>
             <DialogDescription>
-              Monitor your AI usage and manage generation costs
+              {t('menu.aiUsageDescription')}
             </DialogDescription>
           </DialogHeader>
           <AIUsageDashboard />

@@ -7,10 +7,14 @@ import PressSection from "@/components/PressSection";
 import RestaurantVideo from "@/components/RestaurantVideo";
 import RestaurantGallery from "@/components/RestaurantGallery";
 import { Footer } from "@/components/Footer";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background restaurant-scrollbar">
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher />
+      </div>
       <Navigation />
       <main>
         <HeroSection />

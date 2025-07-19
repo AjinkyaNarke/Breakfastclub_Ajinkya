@@ -61,10 +61,6 @@ export default function Navigation() {
                 </Link>
               );
             })}
-            
-            <Button variant="secondary" size="sm" className="ml-4 text-foreground">
-              Student Login
-            </Button>
           </div>
 
           {/* Mobile menu button */}
@@ -102,12 +98,6 @@ export default function Navigation() {
                 </Link>
               );
             })}
-            
-            <div className="pt-4 border-t border-border">
-              <Button variant="secondary" size="sm" className="w-full text-foreground">
-                Student Login
-              </Button>
-            </div>
           </div>
         </div>
       )}

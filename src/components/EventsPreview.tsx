@@ -118,7 +118,7 @@ export default function EventsPreview() {
                       ))}
                     </div>
                     
-                    <Button variant="restaurant" size="sm" className="group">
+                    <Button variant="default" size="sm" className="group">
                       Join Event
                       <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
                     </Button>
@@ -128,7 +128,7 @@ export default function EventsPreview() {
             ))}
             
             <div className="text-center pt-6">
-              <Button variant="warm" size="lg" className="group">
+              <Button variant="default" size="lg" className="group">
                 View All Events
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>

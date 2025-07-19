@@ -40,6 +40,7 @@ export const VideoManagement = () => {
     show_controls: true,
     display_order: 0
   });
+  const [editingVideo, setEditingVideo] = useState<RestaurantVideo | null>(null);
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
@@ -165,7 +166,23 @@ export const VideoManagement = () => {
     }
   };
 
-  const handleAddVideo = async () => {
+  const editVideo = (video: RestaurantVideo) => {
+    setEditingVideo(video);
+    setFormData({
+      title: video.title,
+      description: video.description,
+      video_url: video.video_url,
+      thumbnail_url: video.thumbnail_url,
+      is_featured: video.is_featured,
+      featured_for_hero: video.featured_for_hero,
+      autoplay: video.autoplay,
+      show_controls: video.show_controls,
+      display_order: video.display_order
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveVideo = async () => {
     if (!formData.title || !formData.video_url) {
       toast({
         title: "Error",
@@ -176,14 +193,34 @@ export const VideoManagement = () => {
     }
 
     try {
-      const { error } = await supabase
-        .from('restaurant_videos')
-        .insert([formData]);
+      if (editingVideo) {
+        const { error } = await supabase
+          .from('restaurant_videos')
+          .update(formData)
+          .eq('id', editingVideo.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "Video updated successfully",
+        });
+      } else {
+        const { error } = await supabase
+          .from('restaurant_videos')
+          .insert([formData]);
+
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "Video added successfully",
+        });
+      }
       
       await fetchVideos();
       setIsDialogOpen(false);
+      setEditingVideo(null);
       setFormData({
         title: '',
         description: '',
@@ -195,15 +232,11 @@ export const VideoManagement = () => {
         show_controls: true,
         display_order: 0
       });
-      toast({
-        title: "Success",
-        description: "Video added successfully",
-      });
     } catch (error) {
-      console.error('Error adding video:', error);
+      console.error('Error saving video:', error);
       toast({
         title: "Error",
-        description: "Failed to add video",
+        description: "Failed to save video",
         variant: "destructive",
       });
     }
@@ -231,7 +264,7 @@ export const VideoManagement = () => {
           </DialogTrigger>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
-              <DialogTitle>Add New Video</DialogTitle>
+              <DialogTitle>{editingVideo ? 'Edit Video' : 'Add New Video'}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
@@ -339,11 +372,25 @@ export const VideoManagement = () => {
                 </div>
               </div>
               <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                <Button variant="outline" onClick={() => {
+                  setIsDialogOpen(false);
+                  setEditingVideo(null);
+                  setFormData({
+                    title: '',
+                    description: '',
+                    video_url: '',
+                    thumbnail_url: '',
+                    is_featured: false,
+                    featured_for_hero: false,
+                    autoplay: false,
+                    show_controls: true,
+                    display_order: 0
+                  });
+                }}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddVideo} disabled={uploading}>
-                  {uploading ? 'Uploading...' : 'Add Video'}
+                <Button onClick={handleSaveVideo} disabled={uploading}>
+                  {uploading ? 'Uploading...' : editingVideo ? 'Update Video' : 'Add Video'}
                 </Button>
               </div>
             </div>
@@ -413,7 +460,7 @@ export const VideoManagement = () => {
                     {video.featured_for_hero ? "Remove from Hero" : "Set as Hero"}
                   </Button>
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" onClick={() => editVideo(video)}>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button

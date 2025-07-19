@@ -31,7 +31,7 @@ export default function HeroSection() {
       {heroVideo && (
         <video
           className="hero-video"
-          autoPlay
+          autoPlay={heroVideo.autoplay}
           loop
           muted
           playsInline

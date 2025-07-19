@@ -272,7 +272,7 @@ export const VideoManagement = () => {
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="Video title"
                 />
               </div>
@@ -281,7 +281,7 @@ export const VideoManagement = () => {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Video description"
                 />
               </div>
@@ -301,7 +301,7 @@ export const VideoManagement = () => {
                   <Input
                     id="video_url"
                     value={formData.video_url}
-                    onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, video_url: e.target.value }))}
                     placeholder="https://example.com/video.mp4"
                   />
                 </div>
@@ -322,7 +322,7 @@ export const VideoManagement = () => {
                   <Input
                     id="thumbnail_url"
                     value={formData.thumbnail_url}
-                    onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, thumbnail_url: e.target.value }))}
                     placeholder="https://example.com/thumbnail.jpg"
                   />
                 </div>
@@ -333,7 +333,7 @@ export const VideoManagement = () => {
                   id="display_order"
                   type="number"
                   value={formData.display_order}
-                  onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
                   placeholder="0"
                 />
               </div>
@@ -342,7 +342,7 @@ export const VideoManagement = () => {
                   <Checkbox
                     id="is_featured"
                     checked={formData.is_featured}
-                    onCheckedChange={(checked) => setFormData({ ...formData, is_featured: !!checked })}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_featured: !!checked }))}
                   />
                   <Label htmlFor="is_featured">Featured Video</Label>
                 </div>
@@ -350,7 +350,7 @@ export const VideoManagement = () => {
                   <Checkbox
                     id="featured_for_hero"
                     checked={formData.featured_for_hero}
-                    onCheckedChange={(checked) => setFormData({ ...formData, featured_for_hero: !!checked })}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, featured_for_hero: !!checked }))}
                   />
                   <Label htmlFor="featured_for_hero">Use for Hero Section</Label>
                 </div>
@@ -358,7 +358,7 @@ export const VideoManagement = () => {
                   <Checkbox
                     id="autoplay"
                     checked={formData.autoplay}
-                    onCheckedChange={(checked) => setFormData({ ...formData, autoplay: !!checked })}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, autoplay: !!checked }))}
                   />
                   <Label htmlFor="autoplay">Autoplay</Label>
                 </div>
@@ -366,7 +366,7 @@ export const VideoManagement = () => {
                   <Checkbox
                     id="show_controls"
                     checked={formData.show_controls}
-                    onCheckedChange={(checked) => setFormData({ ...formData, show_controls: !!checked })}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_controls: !!checked }))}
                   />
                   <Label htmlFor="show_controls">Show Controls</Label>
                 </div>

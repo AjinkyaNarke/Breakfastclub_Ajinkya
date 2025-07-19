@@ -250,6 +250,18 @@ export const VideoManagement = () => {
       return;
     }
 
+    // Validate admin session
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) {
+      console.log('❌ Admin session validation failed');
+      toast({
+        title: "Authentication Error",
+        description: "Admin session expired. Please log in again.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSaving(true);
     console.log('🔄 Setting saving state to true');
 

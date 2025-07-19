@@ -40,6 +40,7 @@ export const VideoManagement = () => {
     show_controls: true,
     display_order: 0
   });
+  const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -117,7 +118,63 @@ export const VideoManagement = () => {
     }
   };
 
+  const uploadFile = async (file: File, bucket: string, path: string) => {
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(path, file, { upsert: true });
+    
+    if (error) throw error;
+    
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(path);
+    
+    return publicUrl;
+  };
+
+  const handleFileUpload = async (file: File, type: 'video' | 'thumbnail') => {
+    if (!file) return;
+    
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      const bucket = type === 'video' ? 'restaurant-videos' : 'restaurant-images';
+      
+      const publicUrl = await uploadFile(file, bucket, fileName);
+      
+      if (type === 'video') {
+        setFormData({ ...formData, video_url: publicUrl });
+      } else {
+        setFormData({ ...formData, thumbnail_url: publicUrl });
+      }
+      
+      toast({
+        title: "Success",
+        description: `${type === 'video' ? 'Video' : 'Thumbnail'} uploaded successfully`,
+      });
+    } catch (error) {
+      console.error(`Error uploading ${type}:`, error);
+      toast({
+        title: "Error",
+        description: `Failed to upload ${type}`,
+        variant: "destructive",
+      });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleAddVideo = async () => {
+    if (!formData.title || !formData.video_url) {
+      toast({
+        title: "Error",
+        description: "Title and video are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('restaurant_videos')
@@ -196,22 +253,46 @@ export const VideoManagement = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="video_url">Video URL</Label>
-                <Input
-                  id="video_url"
-                  value={formData.video_url}
-                  onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                  placeholder="https://example.com/video.mp4"
-                />
+                <Label htmlFor="video_url">Video</Label>
+                <div className="space-y-2">
+                  <Input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, 'video');
+                    }}
+                    disabled={uploading}
+                  />
+                  <div className="text-sm text-muted-foreground">Or paste URL:</div>
+                  <Input
+                    id="video_url"
+                    value={formData.video_url}
+                    onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                    placeholder="https://example.com/video.mp4"
+                  />
+                </div>
               </div>
               <div>
-                <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
-                <Input
-                  id="thumbnail_url"
-                  value={formData.thumbnail_url}
-                  onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                  placeholder="https://example.com/thumbnail.jpg"
-                />
+                <Label htmlFor="thumbnail_url">Thumbnail</Label>
+                <div className="space-y-2">
+                  <Input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, 'thumbnail');
+                    }}
+                    disabled={uploading}
+                  />
+                  <div className="text-sm text-muted-foreground">Or paste URL:</div>
+                  <Input
+                    id="thumbnail_url"
+                    value={formData.thumbnail_url}
+                    onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                    placeholder="https://example.com/thumbnail.jpg"
+                  />
+                </div>
               </div>
               <div>
                 <Label htmlFor="display_order">Display Order</Label>
@@ -261,8 +342,8 @@ export const VideoManagement = () => {
                 <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddVideo}>
-                  Add Video
+                <Button onClick={handleAddVideo} disabled={uploading}>
+                  {uploading ? 'Uploading...' : 'Add Video'}
                 </Button>
               </div>
             </div>

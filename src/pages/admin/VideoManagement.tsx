@@ -609,17 +609,14 @@ export const VideoManagement = () => {
       {videos.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No videos found.</p>
-          <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
-            <DialogTrigger asChild>
-              <Button className="mt-4" onClick={() => {
-                console.log('➕ Opening dialog for first video');
-                resetForm();
-              }}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add your first video
-              </Button>
-            </DialogTrigger>
-          </Dialog>
+          <Button className="mt-4" onClick={() => {
+            console.log('➕ Opening dialog for first video');
+            resetForm();
+            setIsDialogOpen(true);
+          }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add your first video
+          </Button>
         </div>
       )}
     </div>

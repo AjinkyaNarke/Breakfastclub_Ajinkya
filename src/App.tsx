@@ -12,6 +12,7 @@ import { MenuManagement } from "@/pages/admin/MenuManagement";
 import { VideoManagement } from "@/pages/admin/VideoManagement";
 import { PressManagement } from "@/pages/admin/PressManagement";
 import { GalleryManagement } from "@/pages/admin/GalleryManagement";
+import { EventsManagement } from "@/pages/admin/EventsManagement";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -35,7 +36,7 @@ const App = () => (
               <Route path="videos" element={<VideoManagement />} />
               <Route path="press" element={<PressManagement />} />
               <Route path="gallery" element={<GalleryManagement />} />
-              <Route path="events" element={<div>Events Management - Coming Soon</div>} />
+              <Route path="events" element={<EventsManagement />} />
               <Route path="content" element={<div>Content Management - Coming Soon</div>} />
               <Route path="settings" element={<div>Settings - Coming Soon</div>} />
             </Route>

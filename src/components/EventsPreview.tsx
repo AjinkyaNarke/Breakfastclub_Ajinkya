@@ -1,46 +1,98 @@
+import { useEffect, useState } from "react";
 import { Calendar, Users, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
+import { format, isToday, isTomorrow, isThisWeek } from "date-fns";
 import communityImage from "@/assets/community-gathering.jpg";
 
-const upcomingEvents = [
-  {
-    id: 1,
-    title: "Acoustic Brunch & Asian Vibes",
-    date: "This Saturday",
-    time: "10:00 AM - 2:00 PM",
-    description: "Live acoustic music with traditional Asian breakfast and cultural exchange",
-    attendees: 24,
-    maxAttendees: 30,
-    tags: ["Music", "Cultural Exchange", "Weekend Special"],
-    featured: true
-  },
-  {
-    id: 2,
-    title: "Dim Sum Making Workshop",
-    date: "Next Sunday",
-    time: "11:00 AM - 1:00 PM",
-    description: "Learn to make traditional dim sum with our chef from Hong Kong",
-    attendees: 18,
-    maxAttendees: 20,
-    tags: ["Workshop", "Cooking", "Traditional"],
-    featured: false
-  },
-  {
-    id: 3,
-    title: "Community Connect",
-    date: "July 27",
-    time: "9:30 AM - 12:00 PM",
-    description: "Monthly gathering for international students and Berlin locals",
-    attendees: 32,
-    maxAttendees: 40,
-    tags: ["Networking", "Students", "Community"],
-    featured: false
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  event_date: string;
+  max_participants: number;
+  current_participants: number;
+  image_url: string;
+  is_active: boolean;
+}
+
+const formatEventDate = (eventDate: string) => {
+  const date = new Date(eventDate);
+  
+  if (isToday(date)) {
+    return "Today";
+  } else if (isTomorrow(date)) {
+    return "Tomorrow";
+  } else if (isThisWeek(date)) {
+    return format(date, "EEEE"); // e.g., "Saturday"
+  } else {
+    return format(date, "MMM d"); // e.g., "Jan 25"
   }
-];
+};
+
+const formatEventTime = (eventDate: string) => {
+  const date = new Date(eventDate);
+  return format(date, "h:mm a"); // e.g., "10:00 AM"
+};
+
+// Generate simple tags based on event title and description
+const generateEventTags = (title: string, description: string) => {
+  const tags = [];
+  const content = (title + " " + description).toLowerCase();
+  
+  if (content.includes("music") || content.includes("acoustic")) tags.push("Music");
+  if (content.includes("workshop") || content.includes("making")) tags.push("Workshop");
+  if (content.includes("community") || content.includes("connect")) tags.push("Community");
+  if (content.includes("cultural") || content.includes("culture")) tags.push("Cultural Exchange");
+  if (content.includes("cooking") || content.includes("dim sum")) tags.push("Cooking");
+  if (content.includes("student")) tags.push("Students");
+  if (content.includes("traditional")) tags.push("Traditional");
+  if (content.includes("breakfast") || content.includes("brunch")) tags.push("Weekend Special");
+  
+  return tags.length > 0 ? tags : ["Event"];
+};
 
 export default function EventsPreview() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('events')
+        .select('*')
+        .eq('is_active', true)
+        .gte('event_date', new Date().toISOString())
+        .order('event_date', { ascending: true })
+        .limit(3);
+
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-background restaurant-texture">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="text-lg text-muted-foreground">Loading events...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 bg-background restaurant-texture">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -65,67 +117,82 @@ export default function EventsPreview() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Events List */}
           <div className="space-y-6 animate-slide-in">
-            {upcomingEvents.map((event, index) => (
-              <Card 
-                key={event.id} 
-                className={`restaurant-lift transition-all duration-300 warm-lighting ${
-                  event.featured ? 'border-primary bg-primary/5' : ''
-                }`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <CardTitle className="text-lg text-primary">{event.title}</CardTitle>
-                        {event.featured && (
-                          <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
-                            Featured Event
-                          </Badge>
-                        )}
-                      </div>
-                      
-                      <div className="flex items-center text-sm text-muted-foreground space-x-4">
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-1" />
-                          {event.date}
-                        </div>
-                        <div className="flex items-center">
-                          <Clock className="w-4 h-4 mr-1" />
-                          {event.time}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="text-right">
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Users className="w-4 h-4 mr-1" />
-                        {event.attendees}/{event.maxAttendees}
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-                
-                <CardContent className="pt-0">
-                  <p className="text-muted-foreground mb-4">{event.description}</p>
-                  
-                  <div className="flex items-center justify-between">
-                    <div className="flex flex-wrap gap-2">
-                      {event.tags.map((tag) => (
-                        <Badge key={tag} variant="outline" className="text-xs border-secondary/30">
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                    
-                    <Button variant="default" size="sm" className="group">
-                      Join Event
-                      <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                    </Button>
-                  </div>
+            {events.length === 0 ? (
+              <Card className="text-center py-12">
+                <CardContent>
+                  <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">No upcoming events</h3>
+                  <p className="text-muted-foreground">Check back soon for exciting community events!</p>
                 </CardContent>
               </Card>
-            ))}
+            ) : (
+              events.map((event, index) => {
+                const eventTags = generateEventTags(event.title, event.description);
+                const isFeatured = index === 0; // Make first event featured
+                
+                return (
+                  <Card 
+                    key={event.id} 
+                    className={`restaurant-lift transition-all duration-300 warm-lighting ${
+                      isFeatured ? 'border-primary bg-primary/5' : ''
+                    }`}
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <CardTitle className="text-lg text-primary">{event.title}</CardTitle>
+                            {isFeatured && (
+                              <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                                Featured Event
+                              </Badge>
+                            )}
+                          </div>
+                          
+                          <div className="flex items-center text-sm text-muted-foreground space-x-4">
+                            <div className="flex items-center">
+                              <Calendar className="w-4 h-4 mr-1" />
+                              {formatEventDate(event.event_date)}
+                            </div>
+                            <div className="flex items-center">
+                              <Clock className="w-4 h-4 mr-1" />
+                              {formatEventTime(event.event_date)}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          <div className="flex items-center text-sm text-muted-foreground">
+                            <Users className="w-4 h-4 mr-1" />
+                            {event.current_participants}/{event.max_participants}
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent className="pt-0">
+                      <p className="text-muted-foreground mb-4">{event.description}</p>
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-wrap gap-2">
+                          {eventTags.map((tag) => (
+                            <Badge key={tag} variant="outline" className="text-xs border-secondary/30">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                        
+                        <Button variant="default" size="sm" className="group">
+                          Join Event
+                          <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            )}
             
             <div className="text-center pt-6">
               <Button variant="default" size="lg" className="group">

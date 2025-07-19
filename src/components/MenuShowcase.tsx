@@ -226,9 +226,9 @@ export default function MenuShowcase() {
                             </div>
                             
                             <div className="text-right">
-                              <div className="text-xl font-bold text-primary">₹{dish.regular_price}</div>
+                              <div className="text-xl font-bold text-primary">€{dish.regular_price}</div>
                               <div className="text-sm font-medium" style={{ color: 'hsl(42 90% 50%)' }}>
-                                ₹{dish.student_price} student price
+                                €{dish.student_price} student price
                               </div>
                             </div>
                           </div>

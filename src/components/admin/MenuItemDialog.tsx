@@ -421,7 +421,7 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
           {/* Pricing */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="regular_price">Regular Price (₹)</Label>
+              <Label htmlFor="regular_price">Regular Price (€)</Label>
               <Input
                 id="regular_price"
                 type="number"
@@ -433,7 +433,7 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="student_price">Student Price (₹)</Label>
+              <Label htmlFor="student_price">Student Price (€)</Label>
               <Input
                 id="student_price"
                 type="number"

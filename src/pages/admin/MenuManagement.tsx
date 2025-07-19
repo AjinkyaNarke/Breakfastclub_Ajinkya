@@ -10,7 +10,7 @@ import { Plus, Edit, Trash2, Eye, EyeOff, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { MenuItemDialog } from '@/components/admin/MenuItemDialog';
 import { AIUsageDashboard } from '@/components/admin/AIUsageDashboard';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface MenuItem {
   id: string;
@@ -287,8 +287,8 @@ export const MenuManagement = () => {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
-                  <span>Regular: ₹{item.regular_price}</span>
-                  <span>Student: ₹{item.student_price}</span>
+                  <span>Regular: €{item.regular_price}</span>
+                  <span>Student: €{item.student_price}</span>
                 </div>
                 
                 {item.dietary_tags && item.dietary_tags.length > 0 && (
@@ -366,6 +366,9 @@ export const MenuManagement = () => {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>AI Image Generation Credits</DialogTitle>
+            <DialogDescription>
+              Monitor your AI usage and manage generation costs
+            </DialogDescription>
           </DialogHeader>
           <AIUsageDashboard />
         </DialogContent>

@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { VideoUploadDialog } from '@/components/admin/VideoUploadDialog';
 
 interface RestaurantVideo {
   id: string;
@@ -23,6 +24,7 @@ interface RestaurantVideo {
 export const VideoManagement = () => {
   const [videos, setVideos] = useState<RestaurantVideo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -54,12 +56,31 @@ export const VideoManagement = () => {
     if (!confirm('Are you sure you want to delete this video?')) return;
 
     try {
+      // Get video data to delete the file from storage
+      const { data: video } = await supabase
+        .from('restaurant_videos')
+        .select('video_url')
+        .eq('id', id)
+        .single();
+
+      // Delete from database
       const { error } = await supabase
         .from('restaurant_videos')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
+
+      // Delete file from storage if it exists
+      if (video?.video_url) {
+        const urlParts = video.video_url.split('/');
+        const fileName = urlParts[urlParts.length - 1];
+        const filePath = `videos/${fileName}`;
+        
+        await supabase.storage
+          .from('restaurant-videos')
+          .remove([filePath]);
+      }
       
       await fetchVideos();
       toast({
@@ -113,7 +134,7 @@ export const VideoManagement = () => {
             Manage restaurant videos and promotional content
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setShowUploadDialog(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Video
         </Button>
@@ -202,12 +223,18 @@ export const VideoManagement = () => {
       {videos.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No videos found.</p>
-          <Button className="mt-4">
+          <Button className="mt-4" onClick={() => setShowUploadDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add your first video
           </Button>
         </div>
       )}
+
+      <VideoUploadDialog
+        open={showUploadDialog}
+        onOpenChange={setShowUploadDialog}
+        onVideoAdded={fetchVideos}
+      />
     </div>
   );
 };

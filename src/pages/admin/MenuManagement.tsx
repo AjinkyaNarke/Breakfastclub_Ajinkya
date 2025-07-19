@@ -21,6 +21,7 @@ interface MenuItem {
   is_available: boolean;
   dietary_tags: string[];
   display_order: number;
+  category_id: string;
   category: {
     name: string;
     id: string;

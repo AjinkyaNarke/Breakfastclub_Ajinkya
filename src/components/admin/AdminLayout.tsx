@@ -40,7 +40,7 @@ export const AdminLayout = () => {
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
       <div className={cn(
-        "bg-card border-r border-border transition-all duration-300",
+        "bg-card border-r border-border transition-all duration-300 relative flex flex-col",
         sidebarOpen ? "w-64" : "w-16"
       )}>
         <div className="p-4 border-b border-border">
@@ -52,7 +52,7 @@ export const AdminLayout = () => {
           </div>
         </div>
         
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-2 flex-1">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -73,7 +73,7 @@ export const AdminLayout = () => {
           })}
         </nav>
         
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="p-4 border-t border-border">
           <Button
             variant="outline"
             onClick={logout}

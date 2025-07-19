@@ -18,7 +18,6 @@ export default function HeroSection() {
         .maybeSingle();
       
       if (data) {
-        console.log('Hero video data:', data);
         setHeroVideo(data);
       }
     };
@@ -32,7 +31,7 @@ export default function HeroSection() {
       {heroVideo && (
         <video
           className="hero-video"
-          autoPlay={heroVideo.autoplay}
+          autoPlay
           loop
           muted
           playsInline

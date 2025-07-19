@@ -3,11 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Edit, Trash2, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -28,21 +23,6 @@ interface RestaurantVideo {
 export const VideoManagement = () => {
   const [videos, setVideos] = useState<RestaurantVideo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    video_url: '',
-    thumbnail_url: '',
-    is_featured: false,
-    featured_for_hero: false,
-    autoplay: false,
-    show_controls: true,
-    display_order: 0
-  });
-  const [editingVideo, setEditingVideo] = useState<RestaurantVideo | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -50,22 +30,16 @@ export const VideoManagement = () => {
   }, []);
 
   const fetchVideos = async () => {
-    console.log('🔄 Fetching videos from database...');
     try {
       const { data, error } = await supabase
         .from('restaurant_videos')
         .select('*')
         .order('display_order');
 
-      if (error) {
-        console.error('❌ Error fetching videos:', error);
-        throw error;
-      }
-      
-      console.log('✅ Videos fetched successfully:', data);
+      if (error) throw error;
       setVideos(data || []);
     } catch (error) {
-      console.error('❌ Error fetching videos:', error);
+      console.error('Error fetching videos:', error);
       toast({
         title: "Error",
         description: "Failed to fetch videos",
@@ -79,26 +53,21 @@ export const VideoManagement = () => {
   const deleteVideo = async (id: string) => {
     if (!confirm('Are you sure you want to delete this video?')) return;
 
-    console.log('🗑️ Deleting video with ID:', id);
     try {
       const { error } = await supabase
         .from('restaurant_videos')
         .delete()
         .eq('id', id);
 
-      if (error) {
-        console.error('❌ Error deleting video:', error);
-        throw error;
-      }
+      if (error) throw error;
       
-      console.log('✅ Video deleted successfully');
       await fetchVideos();
       toast({
         title: "Success",
         description: "Video deleted successfully",
       });
     } catch (error) {
-      console.error('❌ Error deleting video:', error);
+      console.error('Error deleting video:', error);
       toast({
         title: "Error",
         description: "Failed to delete video",
@@ -108,238 +77,26 @@ export const VideoManagement = () => {
   };
 
   const toggleHeroVideo = async (id: string, currentStatus: boolean) => {
-    console.log('🎬 Toggling hero video status:', { id, currentStatus });
     try {
       const { error } = await supabase
         .from('restaurant_videos')
         .update({ featured_for_hero: !currentStatus })
         .eq('id', id);
 
-      if (error) {
-        console.error('❌ Error updating hero video:', error);
-        throw error;
-      }
+      if (error) throw error;
       
-      console.log('✅ Hero video status updated successfully');
       await fetchVideos();
       toast({
         title: "Success",
         description: currentStatus ? "Removed from hero section" : "Set as hero video",
       });
     } catch (error) {
-      console.error('❌ Error updating hero video:', error);
+      console.error('Error updating hero video:', error);
       toast({
         title: "Error",
         description: "Failed to update hero video",
         variant: "destructive",
       });
-    }
-  };
-
-  const uploadFile = async (file: File, bucket: string, path: string) => {
-    console.log('📤 Uploading file:', { fileName: file.name, bucket, path });
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(path, file, { upsert: true });
-    
-    if (error) {
-      console.error('❌ File upload error:', error);
-      throw error;
-    }
-    
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(path);
-    
-    console.log('✅ File uploaded successfully:', publicUrl);
-    return publicUrl;
-  };
-
-  const handleFileUpload = async (file: File, type: 'video' | 'thumbnail') => {
-    if (!file) return;
-    
-    console.log('📁 Starting file upload:', { type, fileName: file.name });
-    setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      const bucket = type === 'video' ? 'restaurant-videos' : 'restaurant-images';
-      
-      const publicUrl = await uploadFile(file, bucket, fileName);
-      
-      console.log('📁 File upload completed, updating form data...');
-      if (type === 'video') {
-        setFormData(prev => {
-          const updated = { ...prev, video_url: publicUrl };
-          console.log('📹 Updated form data with video URL:', updated);
-          return updated;
-        });
-      } else {
-        setFormData(prev => {
-          const updated = { ...prev, thumbnail_url: publicUrl };
-          console.log('🖼️ Updated form data with thumbnail URL:', updated);
-          return updated;
-        });
-      }
-      
-      toast({
-        title: "Success",
-        description: `${type === 'video' ? 'Video' : 'Thumbnail'} uploaded successfully`,
-      });
-    } catch (error) {
-      console.error(`❌ Error uploading ${type}:`, error);
-      toast({
-        title: "Error",
-        description: `Failed to upload ${type}`,
-        variant: "destructive",
-      });
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const editVideo = (video: RestaurantVideo) => {
-    console.log('✏️ Starting to edit video:', video);
-    setEditingVideo(video);
-    const initialFormData = {
-      title: video.title,
-      description: video.description,
-      video_url: video.video_url,
-      thumbnail_url: video.thumbnail_url,
-      is_featured: video.is_featured,
-      featured_for_hero: video.featured_for_hero,
-      autoplay: video.autoplay,
-      show_controls: video.show_controls,
-      display_order: video.display_order
-    };
-    console.log('📝 Setting initial form data:', initialFormData);
-    setFormData(initialFormData);
-    setIsDialogOpen(true);
-  };
-
-  const resetForm = () => {
-    console.log('🔄 Resetting form to initial state');
-    const initialFormData = {
-      title: '',
-      description: '',
-      video_url: '',
-      thumbnail_url: '',
-      is_featured: false,
-      featured_for_hero: false,
-      autoplay: false,
-      show_controls: true,
-      display_order: 0
-    };
-    setFormData(initialFormData);
-    setEditingVideo(null);
-    console.log('✅ Form reset completed');
-  };
-
-  const handleSaveVideo = async () => {
-    console.log('💾 Starting video save process...');
-    console.log('📋 Current form data:', formData);
-    
-    // Validation
-    if (!formData.title || !formData.video_url) {
-      console.log('❌ Validation failed: missing title or video URL');
-      toast({
-        title: "Error",
-        description: "Title and video are required",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate admin session
-    const adminToken = localStorage.getItem('adminToken');
-    if (!adminToken) {
-      console.log('❌ Admin session validation failed');
-      toast({
-        title: "Authentication Error",
-        description: "Admin session expired. Please log in again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setSaving(true);
-    console.log('🔄 Setting saving state to true');
-
-    try {
-      let result;
-      if (editingVideo) {
-        console.log('📝 Updating existing video with ID:', editingVideo.id);
-        console.log('📝 Update data:', formData);
-        
-        result = await supabase
-          .from('restaurant_videos')
-          .update(formData)
-          .eq('id', editingVideo.id)
-          .select()
-          .single();
-
-        if (result.error) {
-          console.error('❌ Update error:', result.error);
-          throw result.error;
-        }
-        
-        console.log('✅ Video updated successfully:', result.data);
-        toast({
-          title: "Success",
-          description: "Video updated successfully",
-        });
-      } else {
-        console.log('➕ Creating new video');
-        console.log('➕ Insert data:', formData);
-        
-        result = await supabase
-          .from('restaurant_videos')
-          .insert([formData])
-          .select()
-          .single();
-
-        if (result.error) {
-          console.error('❌ Insert error:', result.error);
-          throw result.error;
-        }
-        
-        console.log('✅ Video created successfully:', result.data);
-        toast({
-          title: "Success",
-          description: "Video added successfully",
-        });
-      }
-      
-      // Refresh the video list to ensure UI is in sync
-      console.log('🔄 Refreshing video list...');
-      await fetchVideos();
-      
-      // Only close dialog and reset form after successful save and refresh
-      console.log('🚪 Closing dialog and resetting form...');
-      setIsDialogOpen(false);
-      resetForm();
-      
-    } catch (error) {
-      console.error('❌ Error saving video:', error);
-      toast({
-        title: "Error",
-        description: "Failed to save video. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-      console.log('✅ Save process completed, setting saving state to false');
-    }
-  };
-
-  const handleDialogClose = () => {
-    console.log('🚪 Dialog close requested');
-    if (!saving) {
-      console.log('✅ Closing dialog and resetting form');
-      setIsDialogOpen(false);
-      resetForm();
-    } else {
-      console.log('⏳ Cannot close dialog while saving');
     }
   };
 
@@ -356,186 +113,10 @@ export const VideoManagement = () => {
             Manage restaurant videos and promotional content
           </p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
-          <DialogTrigger asChild>
-            <Button onClick={() => {
-              console.log('➕ Opening dialog for new video');
-              resetForm();
-            }}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Video
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>{editingVideo ? 'Edit Video' : 'Add New Video'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={formData.title}
-                  onChange={(e) => {
-                    console.log('📝 Title changed:', e.target.value);
-                    setFormData(prev => ({ ...prev, title: e.target.value }));
-                  }}
-                  placeholder="Video title"
-                  disabled={saving}
-                />
-              </div>
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => {
-                    console.log('📝 Description changed:', e.target.value);
-                    setFormData(prev => ({ ...prev, description: e.target.value }));
-                  }}
-                  placeholder="Video description"
-                  disabled={saving}
-                />
-              </div>
-              <div>
-                <Label htmlFor="video_url">Video</Label>
-                <div className="space-y-2">
-                  <Input
-                    type="file"
-                    accept="video/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        console.log('📹 Video file selected:', file.name);
-                        handleFileUpload(file, 'video');
-                      }
-                    }}
-                    disabled={uploading || saving}
-                  />
-                  <div className="text-sm text-muted-foreground">Or paste URL:</div>
-                  <Input
-                    id="video_url"
-                    value={formData.video_url}
-                    onChange={(e) => {
-                      console.log('📝 Video URL changed:', e.target.value);
-                      setFormData(prev => ({ ...prev, video_url: e.target.value }));
-                    }}
-                    placeholder="https://example.com/video.mp4"
-                    disabled={saving}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="thumbnail_url">Thumbnail</Label>
-                <div className="space-y-2">
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        console.log('🖼️ Thumbnail file selected:', file.name);
-                        handleFileUpload(file, 'thumbnail');
-                      }
-                    }}
-                    disabled={uploading || saving}
-                  />
-                  <div className="text-sm text-muted-foreground">Or paste URL:</div>
-                  <Input
-                    id="thumbnail_url"
-                    value={formData.thumbnail_url}
-                    onChange={(e) => {
-                      console.log('📝 Thumbnail URL changed:', e.target.value);
-                      setFormData(prev => ({ ...prev, thumbnail_url: e.target.value }));
-                    }}
-                    placeholder="https://example.com/thumbnail.jpg"
-                    disabled={saving}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="display_order">Display Order</Label>
-                <Input
-                  id="display_order"
-                  type="number"
-                  value={formData.display_order}
-                  onChange={(e) => {
-                    const value = parseInt(e.target.value) || 0;
-                    console.log('📝 Display order changed:', value);
-                    setFormData(prev => ({ ...prev, display_order: value }));
-                  }}
-                  placeholder="0"
-                  disabled={saving}
-                />
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="is_featured"
-                    checked={formData.is_featured}
-                    onCheckedChange={(checked) => {
-                      console.log('📝 Is featured changed:', !!checked);
-                      setFormData(prev => ({ ...prev, is_featured: !!checked }));
-                    }}
-                    disabled={saving}
-                  />
-                  <Label htmlFor="is_featured">Featured Video</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="featured_for_hero"
-                    checked={formData.featured_for_hero}
-                    onCheckedChange={(checked) => {
-                      console.log('📝 Featured for hero changed:', !!checked);
-                      setFormData(prev => ({ ...prev, featured_for_hero: !!checked }));
-                    }}
-                    disabled={saving}
-                  />
-                  <Label htmlFor="featured_for_hero">Use for Hero Section</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="autoplay"
-                    checked={formData.autoplay}
-                    onCheckedChange={(checked) => {
-                      console.log('📝 Autoplay changed:', !!checked);
-                      setFormData(prev => ({ ...prev, autoplay: !!checked }));
-                    }}
-                    disabled={saving}
-                  />
-                  <Label htmlFor="autoplay">Autoplay</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="show_controls"
-                    checked={formData.show_controls}
-                    onCheckedChange={(checked) => {
-                      console.log('📝 Show controls changed:', !!checked);
-                      setFormData(prev => ({ ...prev, show_controls: !!checked }));
-                    }}
-                    disabled={saving}
-                  />
-                  <Label htmlFor="show_controls">Show Controls</Label>
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={handleDialogClose}
-                  disabled={saving}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  onClick={handleSaveVideo} 
-                  disabled={uploading || saving}
-                >
-                  {saving ? 'Saving...' : uploading ? 'Uploading...' : editingVideo ? 'Update Video' : 'Add Video'}
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Video
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -600,7 +181,7 @@ export const VideoManagement = () => {
                     {video.featured_for_hero ? "Remove from Hero" : "Set as Hero"}
                   </Button>
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline" onClick={() => editVideo(video)}>
+                    <Button size="sm" variant="outline">
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
@@ -621,11 +202,7 @@ export const VideoManagement = () => {
       {videos.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">No videos found.</p>
-          <Button className="mt-4" onClick={() => {
-            console.log('➕ Opening dialog for first video');
-            resetForm();
-            setIsDialogOpen(true);
-          }}>
+          <Button className="mt-4">
             <Plus className="h-4 w-4 mr-2" />
             Add your first video
           </Button>

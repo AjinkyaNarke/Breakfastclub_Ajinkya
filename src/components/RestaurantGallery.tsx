@@ -1,60 +1,78 @@
 
+import { useState, useEffect } from "react";
 import { Camera, Heart, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 
-const galleryImages = [
-  {
-    id: 1,
-    src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&h=600&fit=crop",
-    title: "Warm Red Ambiance",
-    description: "Our signature red neon lighting creates an intimate dining atmosphere",
-    category: "Interior",
-    featured: true
-  },
-  {
-    id: 2,
-    src: "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800&h=600&fit=crop",
-    title: "Cozy Dining Corners",
-    description: "Intimate seating arrangements perfect for community gatherings",
-    category: "Seating",
-    featured: false
-  },
-  {
-    id: 3,
-    src: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&h=600&fit=crop",
-    title: "Asian Fusion Kitchen",
-    description: "Open kitchen where traditional meets modern culinary techniques",
-    category: "Kitchen",
-    featured: true
-  },
-  {
-    id: 4,
-    src: "https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=800&h=600&fit=crop",
-    title: "Community Tables",
-    description: "Large shared tables fostering connections over breakfast",
-    category: "Community",
-    featured: false
-  },
-  {
-    id: 5,
-    src: "https://images.unsplash.com/photo-1551218808-94e220e084d2?w=800&h=600&fit=crop",
-    title: "Traditional Elements",
-    description: "Chinese lacquer details and warm wood textures throughout",
-    category: "Details",
-    featured: false
-  },
-  {
-    id: 6,
-    src: "https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&h=600&fit=crop",
-    title: "Weekend Atmosphere",
-    description: "Bustling weekend energy with authentic Asian breakfast culture",
-    category: "Atmosphere",
-    featured: true
-  }
-];
+interface GalleryImage {
+  id: string;
+  title: string;
+  description: string;
+  image_url: string;
+  category: string;
+  is_featured: boolean;
+  alt_text: string;
+  display_order: number;
+}
 
 export default function RestaurantGallery() {
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGalleryImages = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('gallery_images')
+          .select('*')
+          .order('display_order', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching gallery images:', error);
+          return;
+        }
+
+        setGalleryImages(data || []);
+      } catch (error) {
+        console.error('Exception fetching gallery images:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGalleryImages();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-background to-muted/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">Loading gallery...</div>
+        </div>
+      </section>
+    );
+  }
+
+  // Fallback to show a message if no images are available
+  if (galleryImages.length === 0) {
+    return (
+      <section className="py-20 bg-gradient-to-b from-background to-muted/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Experience Our{" "}
+              <span className="text-brand">Warm Atmosphere</span>
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Gallery images coming soon...
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-20 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -83,15 +101,15 @@ export default function RestaurantGallery() {
             <Card 
               key={image.id}
               className={`group overflow-hidden hover-lift transition-all duration-500 ${
-                image.featured ? 'md:col-span-2 lg:col-span-1' : ''
+                image.is_featured ? 'md:col-span-2 lg:col-span-1' : ''
               }`}
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="relative">
                 <div className="aspect-[4/3] overflow-hidden">
                   <img 
-                    src={image.src}
-                    alt={image.title}
+                    src={image.image_url}
+                    alt={image.alt_text || image.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                   
@@ -100,7 +118,7 @@ export default function RestaurantGallery() {
                 </div>
 
                 {/* Featured Badge */}
-                {image.featured && (
+                {image.is_featured && (
                   <div className="absolute top-4 left-4">
                     <Badge className="bg-primary/90 text-primary-foreground border-0">
                       <Star className="w-3 h-3 mr-1" />
@@ -112,7 +130,7 @@ export default function RestaurantGallery() {
                 {/* Category Badge */}
                 <div className="absolute top-4 right-4">
                   <Badge variant="outline" className="bg-background/90 backdrop-blur-sm">
-                    {image.category}
+                    {image.category.charAt(0).toUpperCase() + image.category.slice(1)}
                   </Badge>
                 </div>
 

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import { Dashboard } from "@/pages/admin/Dashboard";
 import { MenuManagement } from "@/pages/admin/MenuManagement";
 import { VideoManagement } from "@/pages/admin/VideoManagement";
 import { PressManagement } from "@/pages/admin/PressManagement";
+import { GalleryManagement } from "@/pages/admin/GalleryManagement";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -32,7 +34,7 @@ const App = () => (
               <Route path="menu" element={<MenuManagement />} />
               <Route path="videos" element={<VideoManagement />} />
               <Route path="press" element={<PressManagement />} />
-              <Route path="gallery" element={<div>Gallery Management - Coming Soon</div>} />
+              <Route path="gallery" element={<GalleryManagement />} />
               <Route path="events" element={<div>Events Management - Coming Soon</div>} />
               <Route path="content" element={<div>Content Management - Coming Soon</div>} />
               <Route path="settings" element={<div>Settings - Coming Soon</div>} />

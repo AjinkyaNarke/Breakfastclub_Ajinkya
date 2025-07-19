@@ -59,56 +59,38 @@ export default function HeroSection() {
       {/* Main Content */}
       <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         <div className="space-y-8 animate-fade-in">
-          {/* Restaurant Badge */}
-          <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/20 restaurant-glow">
-            <Utensils className="w-4 h-4 mr-2" />
-            Asian Fusion Restaurant • Berlin Kreuzberg
-          </div>
-
           {/* Neon Title */}
-          <h1 className="neon-title text-6xl md:text-8xl lg:text-9xl leading-none mb-6">
+          <h1 className="neon-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-none mb-6 tracking-tight">
             fckingbreakfastclub
           </h1>
 
           {/* Neon Subtitle */}
-          <p className="neon-subtitle text-lg md:text-xl lg:text-2xl mb-12">
+          <p className="neon-subtitle text-xl md:text-2xl lg:text-3xl mb-12 font-light tracking-wide">
             Authentic Asian Breakfast in the Heart of Berlin
           </p>
 
           {/* Restaurant Info Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-4xl mx-auto mt-16">
-            <Card className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-primary/20 rounded-lg">
-                  <Clock className="h-5 w-5 text-white" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl mx-auto mt-16">
+            <Card className="p-6 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-primary/20 rounded-lg">
+                  <Clock className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-white">Weekend Hours</p>
-                  <p className="text-xs text-white/70">Fri-Sun 9AM-3PM</p>
+                  <p className="font-semibold text-base text-white">Weekend Hours</p>
+                  <p className="text-sm text-white/70">Fri-Sun 9AM-3PM</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-secondary/20 rounded-lg">
-                  <Users className="h-5 w-5 text-white" />
+            <Card className="p-6 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-accent-vibrant/20 rounded-lg">
+                  <MapPin className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-sm text-white">Student Welcome</p>
-                  <p className="text-xs text-white/70">25% off with ID</p>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4 bg-white/10 backdrop-blur-sm border border-white/20 restaurant-lift">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-accent-vibrant/20 rounded-lg">
-                  <MapPin className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-white">Location</p>
-                  <p className="text-xs text-white/70">Kreuzberg, Berlin</p>
+                  <p className="font-semibold text-base text-white">Location</p>
+                  <p className="text-sm text-white/70">Wedding, Berlin</p>
                 </div>
               </div>
             </Card>

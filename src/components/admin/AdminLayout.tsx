@@ -28,6 +28,7 @@ export const AdminLayout = () => {
   const sidebarItems = [
     { icon: LayoutDashboard, label: t('navigation.dashboard'), path: '/admin' },
     { icon: ChefHat, label: t('navigation.menu'), path: '/admin/menu' },
+    { icon: FileText, label: 'About Us', path: '/admin/about' },
     { icon: Image, label: t('navigation.gallery'), path: '/admin/gallery' },
     { icon: Video, label: t('navigation.videos'), path: '/admin/videos' },
     { icon: Newspaper, label: t('navigation.press'), path: '/admin/press' },

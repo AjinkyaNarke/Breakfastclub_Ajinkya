@@ -14,6 +14,7 @@ import { PressManagement } from "@/pages/admin/PressManagement";
 import { GalleryManagement } from "@/pages/admin/GalleryManagement";
 import { EventsManagement } from "@/pages/admin/EventsManagement";
 import { ContentManagement } from "@/pages/admin/ContentManagement";
+import AboutManagement from "@/pages/admin/AboutManagement";
 import Index from "./pages/Index";
 import Events from "./pages/Events";
 import Menu from "./pages/Menu";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="menu" element={<MenuManagement />} />
+              <Route path="about" element={<AboutManagement />} />
               <Route path="videos" element={<VideoManagement />} />
               <Route path="press" element={<PressManagement />} />
               <Route path="gallery" element={<GalleryManagement />} />

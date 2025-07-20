@@ -7,14 +7,19 @@ import PressSection from "@/components/PressSection";
 import RestaurantVideo from "@/components/RestaurantVideo";
 import RestaurantGallery from "@/components/RestaurantGallery";
 import { Footer } from "@/components/Footer";
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-background restaurant-scrollbar">
       <Navigation />
       <main>
         <HeroSection />
-        <EventsPreview />
-        <MenuShowcase />
+        <div id="events-section">
+          <EventsPreview />
+        </div>
+        <div id="menu-section">
+          <MenuShowcase />
+        </div>
         <PressSection />
         <RestaurantVideo />
         <RestaurantGallery />

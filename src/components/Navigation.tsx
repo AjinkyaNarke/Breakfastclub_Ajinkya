@@ -1,26 +1,39 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Coffee, Users, Calendar, BookOpen, Info } from "lucide-react";
+import { Menu, X, Coffee, Calendar, BookOpen, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 const navItems = [
-  { name: "Home", href: "/", icon: Coffee },
-  { name: "Events", href: "/events", icon: Calendar },
-  { name: "Community", href: "/community", icon: Users },
-  { name: "Menu", href: "/menu", icon: BookOpen },
-  { name: "About", href: "/about", icon: Info },
+  { name: "home", href: "/", icon: Coffee },
+  { name: "events", href: "/events", icon: Calendar, sectionId: "events-section" },
+  { name: "menu", href: "/menu", icon: BookOpen, sectionId: "menu-section" },
+  { name: "about", href: "/about", icon: Info },
 ];
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { t } = useTranslation('common');
 
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
     return location.pathname.startsWith(href);
+  };
+
+  const handleNavClick = (item: typeof navItems[0], e: React.MouseEvent) => {
+    // If we're on homepage and the item has a section ID, scroll to section
+    if (location.pathname === "/" && item.sectionId) {
+      e.preventDefault();
+      const section = document.getElementById(item.sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    // Otherwise, let the Link handle navigation normally
+    setIsOpen(false);
   };
 
   return (
@@ -50,6 +63,7 @@ export default function Navigation() {
                 <Link
                   key={item.name}
                   to={item.href}
+                  onClick={(e) => handleNavClick(item, e)}
                   className={cn(
                     "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-accent/50",
                     isActive(item.href)
@@ -58,7 +72,7 @@ export default function Navigation() {
                   )}
                 >
                   <Icon className="h-4 w-4" />
-                  <span>{item.name}</span>
+                  <span>{t(`navigation.${item.name}`)}</span>
                 </Link>
               );
             })}
@@ -88,7 +102,7 @@ export default function Navigation() {
                 <Link
                   key={item.name}
                   to={item.href}
-                  onClick={() => setIsOpen(false)}
+                  onClick={(e) => handleNavClick(item, e)}
                   className={cn(
                     "flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-all duration-300",
                     isActive(item.href)
@@ -97,7 +111,7 @@ export default function Navigation() {
                   )}
                 >
                   <Icon className="h-5 w-5" />
-                  <span>{item.name}</span>
+                  <span>{t(`navigation.${item.name}`)}</span>
                 </Link>
               );
             })}

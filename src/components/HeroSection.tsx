@@ -90,7 +90,7 @@ export default function HeroSection() {
         <div className="space-y-8 animate-fade-in">
           {/* Neon Title */}
           <h1 className="neon-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-none mb-6 tracking-widest">
-            FCKING BREAKFAST CLUB
+            MY FCKING BREAKFAST CLUB
           </h1>
 
           {/* Neon Subtitle */}

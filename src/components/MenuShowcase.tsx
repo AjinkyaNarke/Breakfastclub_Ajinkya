@@ -4,6 +4,7 @@ import { Star, Clock, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 import dimSumImage from "@/assets/dim-sum-spread.jpg";
 
 interface MenuItem {
@@ -29,6 +30,7 @@ interface MenuCategory {
 }
 
 export default function MenuShowcase() {
+  const { t } = useTranslation('homepage');
   const [featuredItems, setFeaturedItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -97,7 +99,7 @@ export default function MenuShowcase() {
     return (
       <section className="py-20 bg-muted/30 restaurant-texture">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-pulse">Loading menu...</div>
+          <div className="animate-pulse">{t('sections.menu.loading')}</div>
         </div>
       </section>
     );
@@ -109,18 +111,17 @@ export default function MenuShowcase() {
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center px-6 py-3 bg-primary/10 rounded-full text-sm font-medium text-primary border border-primary/20 mb-6 restaurant-glow">
             <Award className="w-4 h-4 mr-2" />
-            Our Signature Menu
+            {t('sections.menu.signatureMenu')}
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Authentic Asian{" "}
-            <span className="text-brand">Breakfast</span>{" "}
+            {t('sections.menu.authentic')}{" "}
+            <span className="text-brand">{t('sections.menu.breakfast')}</span>{" "}
             Experience
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Every dish is crafted with love using traditional techniques and the finest ingredients. 
-            From family recipes passed down generations to innovative fusion creations that honor both cultures.
+            {t('sections.menu.menuDescription')}
           </p>
         </div>
 
@@ -128,7 +129,7 @@ export default function MenuShowcase() {
           {/* Menu Categories Sidebar */}
           <div className="lg:col-span-1 space-y-6 animate-slide-in">
             <div>
-              <h3 className="text-2xl font-bold mb-6 text-primary">Menu Categories</h3>
+              <h3 className="text-2xl font-bold mb-6 text-primary">{t('sections.menu.categories')}</h3>
               <div className="space-y-4">
                 {categories.map((category, index) => (
                   <Card 
@@ -159,9 +160,9 @@ export default function MenuShowcase() {
                 <div className="w-12 h-12 bg-secondary/30 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Award className="h-6 w-6 text-secondary-foreground" />
                 </div>
-                <h4 className="font-bold text-lg mb-2 text-primary">Student Special</h4>
+                <h4 className="font-bold text-lg mb-2 text-primary">{t('sections.menu.studentSpecial')}</h4>
                 <p className="text-sm text-muted-foreground">
-                  Show your student ID and enjoy special pricing on our entire menu
+                  {t('sections.menu.studentDescription')}
                 </p>
               </CardContent>
             </Card>

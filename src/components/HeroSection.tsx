@@ -3,9 +3,11 @@ import { Clock, MapPin, Users, Utensils } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 import heroImage from "@/assets/hero-breakfast.jpg";
 
 export default function HeroSection() {
+  const { t } = useTranslation('homepage');
   const [heroVideo, setHeroVideo] = useState<any>(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [videoError, setVideoError] = useState(false);
@@ -93,7 +95,7 @@ export default function HeroSection() {
 
           {/* Neon Subtitle */}
           <p className="neon-subtitle text-xl md:text-2xl lg:text-3xl mb-12 font-light tracking-wide">
-            Authentic Asian Breakfast in the Heart of Berlin
+            {t('hero.subtitle')}
           </p>
 
           {/* Restaurant Info Cards */}
@@ -104,8 +106,8 @@ export default function HeroSection() {
                   <Clock className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-base text-white">Weekend Hours</p>
-                  <p className="text-sm text-white/70">Fri-Sun 9AM-3PM</p>
+                  <p className="font-semibold text-base text-white">{t('hero.weekendHours')}</p>
+                  <p className="text-sm text-white/70">{t('hero.hours')}</p>
                 </div>
               </div>
             </Card>
@@ -116,8 +118,8 @@ export default function HeroSection() {
                   <MapPin className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-base text-white">Location</p>
-                  <p className="text-sm text-white/70">Wedding, Berlin</p>
+                  <p className="font-semibold text-base text-white">{t('hero.location')}</p>
+                  <p className="text-sm text-white/70">{t('hero.locationName')}</p>
                 </div>
               </div>
             </Card>

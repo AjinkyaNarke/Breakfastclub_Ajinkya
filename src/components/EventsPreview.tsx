@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { format, isToday, isTomorrow, isThisWeek } from "date-fns";
+import { useTranslation } from "react-i18next";
 import communityImage from "@/assets/community-gathering.jpg";
 
 interface Event {
@@ -55,6 +56,7 @@ const generateEventTags = (title: string, description: string) => {
 };
 
 export default function EventsPreview() {
+  const { t } = useTranslation('homepage');
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -99,18 +101,16 @@ export default function EventsPreview() {
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center px-6 py-3 bg-secondary/20 rounded-full text-sm font-medium text-secondary-foreground border border-secondary/30 mb-6 restaurant-glow">
             <Calendar className="w-4 h-4 mr-2" />
-            Community Events
+            {t('sections.events.title')}
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Cultural Gatherings &{" "}
-            <span className="text-brand">Community</span>
+            {t('sections.events.culturalGatherings')}{" "}
+            <span className="text-brand">{t('sections.events.community')}</span>
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Join our weekend events that blend traditional Asian breakfast culture 
-            with Berlin's vibrant community spirit. Every gathering is a chance to 
-            connect, learn, and taste something amazing together.
+            {t('sections.events.description')}
           </p>
         </div>
 

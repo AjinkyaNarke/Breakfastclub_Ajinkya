@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Coffee, Calendar, BookOpen, Info } from "lucide-react";
@@ -50,14 +49,9 @@ export default function Navigation() {
               <Coffee className="h-8 w-8 text-primary group-hover:text-primary-glow transition-colors duration-300" />
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-vibrant rounded-full animate-cherry-float"></div>
             </div>
-            <div className="nav-brand-logo">
-              <div className="flex items-baseline space-x-1">
-                <span className="nav-brand-my">My</span>
-                <span className="nav-brand-fcking">fcking</span>
-              </div>
-              <span className="nav-brand-breakfast">BREAKFAST</span>
-              <span className="nav-brand-club">Club</span>
-              <span className="text-xs text-muted-foreground mt-1">Asian Fusion • Berlin</span>
+            <div className="flex flex-col">
+              <span className="text-xl font-bold text-brand">fckingbreakfastclub</span>
+              <span className="text-xs text-muted-foreground">Asian Fusion • Berlin</span>
             </div>
           </Link>
 
@@ -127,4 +121,3 @@ export default function Navigation() {
     </nav>
   );
 }
-

@@ -4,6 +4,7 @@ import { Camera, Heart, Star } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "react-i18next";
 
 interface GalleryImage {
   id: string;
@@ -17,6 +18,7 @@ interface GalleryImage {
 }
 
 export default function RestaurantGallery() {
+  const { t } = useTranslation('homepage');
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +50,7 @@ export default function RestaurantGallery() {
     return (
       <section className="py-20 bg-gradient-to-b from-background to-muted/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">Loading gallery...</div>
+          <div className="text-center">{t('sections.gallery.loading')}</div>
         </div>
       </section>
     );
@@ -61,11 +63,11 @@ export default function RestaurantGallery() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Experience Our{" "}
-              <span className="text-brand">Warm Atmosphere</span>
+              {t('sections.gallery.experienceOur')}{" "}
+              <span className="text-brand">{t('sections.gallery.warmAtmosphere')}</span>
             </h2>
             <p className="text-xl text-muted-foreground">
-              Gallery images coming soon...
+              {t('sections.gallery.comingSoon')}
             </p>
           </div>
         </div>
@@ -80,18 +82,16 @@ export default function RestaurantGallery() {
         <div className="text-center mb-16 animate-fade-in">
           <div className="inline-flex items-center px-6 py-3 bg-primary/10 rounded-full text-sm font-medium text-primary border border-primary/20 mb-6">
             <Camera className="w-4 h-4 mr-2" />
-            Restaurant Gallery
+            {t('sections.gallery.restaurantGallery')}
           </div>
           
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Experience Our{" "}
-            <span className="text-brand">Warm Atmosphere</span>
+            {t('sections.gallery.experienceOur')}{" "}
+            <span className="text-brand">{t('sections.gallery.warmAtmosphere')}</span>
           </h2>
           
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Step into our cozy restaurant where traditional Chinese red ambiance 
-            meets Berlin's vibrant breakfast culture. Every corner tells a story 
-            of community, flavor, and warmth.
+            {t('sections.gallery.description')}
           </p>
         </div>
 
@@ -122,7 +122,7 @@ export default function RestaurantGallery() {
                   <div className="absolute top-4 left-4">
                     <Badge className="bg-primary/90 text-primary-foreground border-0">
                       <Star className="w-3 h-3 mr-1" />
-                      Featured
+                      {t('sections.gallery.featured')}
                     </Badge>
                   </div>
                 )}
@@ -145,7 +145,7 @@ export default function RestaurantGallery() {
                   
                   <div className="flex items-center mt-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <Heart className="w-4 h-4 mr-2 text-primary" />
-                    <span className="text-xs">Community Favorite</span>
+                    <span className="text-xs">{t('sections.gallery.communityFavorite')}</span>
                   </div>
                 </div>
               </div>
@@ -157,15 +157,15 @@ export default function RestaurantGallery() {
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="space-y-2">
             <div className="text-4xl font-bold text-primary">250+</div>
-            <div className="text-muted-foreground">Happy Guests Weekly</div>
+            <div className="text-muted-foreground">{t('sections.gallery.stats.happyGuests')}</div>
           </div>
           <div className="space-y-2">
             <div className="text-4xl font-bold text-primary">3</div>
-            <div className="text-muted-foreground">Years Serving Berlin</div>
+            <div className="text-muted-foreground">{t('sections.gallery.stats.yearsServing')}</div>
           </div>
           <div className="space-y-2">
             <div className="text-4xl font-bold text-primary">15+</div>
-            <div className="text-muted-foreground">Signature Fusion Dishes</div>
+            <div className="text-muted-foreground">{t('sections.gallery.stats.signatureDishes')}</div>
           </div>
         </div>
       </div>

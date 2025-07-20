@@ -33,7 +33,19 @@
     },
     "gallery": {
       "title": "Galerie",
-      "description": "Eine visuelle Reise durch unsere Gerichte und Atmosphäre"
+      "description": "Eine visuelle Reise durch unsere Gerichte und Atmosphäre",
+      "loading": "Lade Galerie...",
+      "restaurantGallery": "Restaurant Galerie",
+      "experienceOur": "Erlebe Unsere",
+      "warmAtmosphere": "Warme Atmosphäre",
+      "comingSoon": "Galeriebilder kommen bald...",
+      "featured": "Empfohlen",
+      "communityFavorite": "Publikumsliebling",
+      "stats": {
+        "happyGuests": "Zufriedene Gäste wöchentlich",
+        "yearsServing": "Jahre im Dienst für Berlin",
+        "signatureDishes": "Signature Fusion-Gerichte"
+      }
     },
     "events": {
       "title": "Gemeinschaftsveranstaltungen",

@@ -71,9 +71,12 @@ export default {
 				sm: 'calc(var(--radius) - 4px)'
 			},
 			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
+				sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
 				serif: ['Merriweather', 'serif'],
 				mono: ['JetBrains Mono', 'monospace'],
+				handwritten: ['Kalam', 'cursive'],
+				display: ['Russo One', 'sans-serif'],
+				accent: ['Poppins', 'sans-serif']
 			},
 			keyframes: {
 				'accordion-down': {
@@ -130,6 +133,14 @@ export default {
 					'66%': {
 						transform: 'rotate(-1deg) translateY(-2px)'
 					}
+				},
+				'handwritten-bounce': {
+					'0%, 100%': {
+						transform: 'rotate(-2deg) translateY(0px)'
+					},
+					'50%': {
+						transform: 'rotate(2deg) translateY(-2px)'
+					}
 				}
 			},
 			animation: {
@@ -138,7 +149,8 @@ export default {
 				'fade-in': 'fade-in 0.6s ease-out',
 				'slide-in': 'slide-in 0.5s ease-out',
 				'gentle-bounce': 'gentle-bounce 2s ease-in-out infinite',
-				'cherry-float': 'cherry-float 4s ease-in-out infinite'
+				'cherry-float': 'cherry-float 4s ease-in-out infinite',
+				'handwritten-bounce': 'handwritten-bounce 3s ease-in-out infinite'
 			}
 		}
 	},

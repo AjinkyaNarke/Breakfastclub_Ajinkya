@@ -1,4 +1,5 @@
 
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,6 +33,11 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
     --accent: 5 60% 80%;
     --accent-foreground: 0 10% 10%;
     --accent-vibrant: 0 75% 50%;
+
+    /* New Brand Colors */
+    --neon-pink: 320 100% 60%;
+    --neon-cyan: 180 100% 60%;
+    --brand-accent: 45 20% 95%;
 
     /* Warm Restaurant Neutrals */
     --muted: 40 20% 92%;
@@ -185,32 +191,181 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
     border-radius: 4px;
   }
 
-  /* Neon Typography for fckingbreakfastclub */
-  .neon-title {
-    font-family: 'Impact', 'Arial Black', sans-serif;
-    font-weight: 900;
-    text-transform: uppercase;
+  /* NEW BRAND TYPOGRAPHY */
+  
+  /* Brand Logo Stack */
+  .brand-logo-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 0.8;
+  }
+
+  /* Individual Brand Text Styles */
+  .brand-my {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 0.75em;
+    color: hsl(var(--brand-accent));
+    text-transform: lowercase;
     letter-spacing: 0.1em;
+  }
+
+  .brand-fcking {
+    font-family: 'Kalam', cursive;
+    font-weight: 400;
+    font-size: 0.6em;
+    color: white;
+    text-shadow: 
+      0 0 5px hsl(var(--neon-pink)),
+      0 0 10px hsl(var(--neon-pink)),
+      0 0 20px hsl(var(--neon-pink));
+    transform: rotate(-2deg);
+    animation: handwritten-bounce 4s ease-in-out infinite;
+    margin-left: 0.2em;
+  }
+
+  .brand-breakfast {
+    font-family: 'Russo One', sans-serif;
+    font-weight: 400;
+    font-size: 1em;
+    color: white;
     text-shadow: 
       0 0 5px hsl(var(--primary)),
       0 0 10px hsl(var(--primary)),
       0 0 20px hsl(var(--primary)),
       0 0 40px hsl(var(--primary)),
       0 0 80px hsl(var(--primary));
-    color: white;
     animation: neon-flicker 2s ease-in-out infinite alternate;
+    letter-spacing: 0.05em;
   }
 
-  .neon-subtitle {
-    font-family: 'Inter', sans-serif;
-    font-weight: 300;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
+  .brand-club {
+    font-family: 'Kalam', cursive;
+    font-weight: 400;
+    font-size: 0.5em;
+    color: white;
     text-shadow: 
-      0 0 10px hsl(var(--secondary)),
-      0 0 20px hsl(var(--secondary)),
-      0 0 30px hsl(var(--secondary));
-    color: hsl(var(--secondary));
+      0 0 5px hsl(var(--neon-cyan)),
+      0 0 10px hsl(var(--neon-cyan)),
+      0 0 20px hsl(var(--neon-cyan));
+    transform: rotate(1deg);
+    animation: handwritten-bounce 3.5s ease-in-out infinite;
+    align-self: flex-end;
+    margin-right: 0.5em;
+  }
+
+  /* Navigation Brand (Smaller Version) */
+  .nav-brand-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    line-height: 0.9;
+  }
+
+  .nav-brand-my {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: 0.7rem;
+    color: hsl(var(--muted-foreground));
+    text-transform: lowercase;
+  }
+
+  .nav-brand-fcking {
+    font-family: 'Kalam', cursive;
+    font-weight: 400;
+    font-size: 0.65rem;
+    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--neon-pink)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: rotate(-1deg);
+    margin-left: 0.1rem;
+  }
+
+  .nav-brand-breakfast {
+    font-family: 'Russo One', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.02em;
+  }
+
+  .nav-brand-club {
+    font-family: 'Kalam', cursive;
+    font-weight: 400;
+    font-size: 0.6rem;
+    background: linear-gradient(45deg, hsl(var(--primary)), hsl(var(--neon-cyan)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transform: rotate(1deg);
+    align-self: flex-end;
+  }
+
+  /* Hero Neon Title (Large Version) */
+  .hero-brand-title {
+    text-align: center;
+    line-height: 0.8;
+  }
+
+  .hero-brand-my {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    color: hsl(var(--brand-accent));
+    text-transform: lowercase;
+    letter-spacing: 0.2em;
+    opacity: 0.8;
+  }
+
+  .hero-brand-fcking {
+    font-family: 'Kalam', cursive;
+    font-weight: 700;
+    color: white;
+    text-shadow: 
+      0 0 10px hsl(var(--neon-pink)),
+      0 0 20px hsl(var(--neon-pink)),
+      0 0 40px hsl(var(--neon-pink)),
+      0 0 60px hsl(var(--neon-pink));
+    transform: rotate(-1deg);
+    animation: handwritten-bounce 4s ease-in-out infinite;
+    display: inline-block;
+    margin: 0 0.2em;
+  }
+
+  .hero-brand-breakfast {
+    font-family: 'Russo One', sans-serif;
+    font-weight: 400;
+    color: white;
+    text-shadow: 
+      0 0 5px hsl(var(--primary)),
+      0 0 10px hsl(var(--primary)),
+      0 0 20px hsl(var(--primary)),
+      0 0 40px hsl(var(--primary)),
+      0 0 80px hsl(var(--primary));
+    animation: neon-flicker 2s ease-in-out infinite alternate;
+    letter-spacing: 0.1em;
+    display: block;
+    margin: 0.1em 0;
+  }
+
+  .hero-brand-club {
+    font-family: 'Kalam', cursive;
+    font-weight: 700;
+    color: white;
+    text-shadow: 
+      0 0 10px hsl(var(--neon-cyan)),
+      0 0 20px hsl(var(--neon-cyan)),
+      0 0 40px hsl(var(--neon-cyan)),
+      0 0 60px hsl(var(--neon-cyan));
+    transform: rotate(1deg);
+    animation: handwritten-bounce 3.5s ease-in-out infinite;
+    display: inline-block;
+    margin-left: auto;
+    margin-right: 1em;
   }
 
   /* Video Background Styles */
@@ -259,7 +414,35 @@ All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and 
     }
   }
 
+  @keyframes handwritten-bounce {
+    0%, 100% { 
+      transform: rotate(-2deg) translateY(0px);
+    }
+    33% { 
+      transform: rotate(1deg) translateY(-2px);
+    }
+    66% { 
+      transform: rotate(-1deg) translateY(-1px);
+    }
+  }
+
   .animate-cherry-float {
     animation: cherry-float 3s ease-in-out infinite;
   }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .hero-brand-title {
+      line-height: 0.9;
+    }
+    
+    .brand-logo-stack {
+      align-items: center;
+    }
+    
+    .nav-brand-logo {
+      align-items: center;
+    }
+  }
 }
+

@@ -1,4 +1,5 @@
 
+
 import { Clock, MapPin, Users, Utensils } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
@@ -88,10 +89,19 @@ export default function HeroSection() {
       {/* Main Content */}
       <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         <div className="space-y-8 animate-fade-in">
-          {/* Neon Title */}
-          <h1 className="neon-title text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-none mb-6 tracking-widest">
-            FCKING BREAKFAST CLUB
-          </h1>
+          {/* New Brand Title */}
+          <div className="hero-brand-title">
+            <div className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-4">
+              <div className="flex justify-center items-baseline space-x-2 sm:space-x-4">
+                <span className="hero-brand-my">My</span>
+                <span className="hero-brand-fcking">fcking</span>
+              </div>
+              <span className="hero-brand-breakfast">BREAKFAST</span>
+              <div className="flex justify-end">
+                <span className="hero-brand-club">Club</span>
+              </div>
+            </div>
+          </div>
 
           {/* Neon Subtitle */}
           <p className="neon-subtitle text-xl md:text-2xl lg:text-3xl mb-12 font-light tracking-wide">
@@ -130,3 +140,4 @@ export default function HeroSection() {
     </section>
   );
 }
+

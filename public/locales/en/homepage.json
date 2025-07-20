@@ -33,19 +33,7 @@
     },
     "gallery": {
       "title": "Gallery",
-      "description": "A visual journey through our dishes and atmosphere",
-      "loading": "Loading gallery...",
-      "restaurantGallery": "Restaurant Gallery",
-      "experienceOur": "Experience Our",
-      "warmAtmosphere": "Warm Atmosphere",
-      "comingSoon": "Gallery images coming soon...",
-      "featured": "Featured",
-      "communityFavorite": "Community Favorite",
-      "stats": {
-        "happyGuests": "Happy Guests Weekly",
-        "yearsServing": "Years Serving Berlin",
-        "signatureDishes": "Signature Fusion Dishes"
-      }
+      "description": "A visual journey through our dishes and atmosphere"
     },
     "events": {
       "title": "Community Events",

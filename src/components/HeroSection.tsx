@@ -89,17 +89,12 @@ export default function HeroSection() {
       {/* Main Content */}
       <div className="relative z-20 text-center px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
         <div className="space-y-8 animate-fade-in">
-          {/* New Brand Title */}
+          {/* Simplified Brand Title */}
           <div className="hero-brand-title">
-            <div className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl mb-4">
-              <div className="flex justify-center items-baseline space-x-2 sm:space-x-4">
-                <span className="hero-brand-my">My</span>
-                <span className="hero-brand-fcking">fcking</span>
-              </div>
-              <span className="hero-brand-breakfast">BREAKFAST</span>
-              <div className="flex justify-end">
-                <span className="hero-brand-club">Club</span>
-              </div>
+            <div className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl mb-4 text-center">
+              <div className="font-poppins font-light text-white mb-2">My</div>
+              <div className="font-russo font-bold text-white neon-glow-red mb-2">fcking BREAKFAST</div>
+              <div className="font-kalam text-white neon-glow-cyan">Club</div>
             </div>
           </div>
 

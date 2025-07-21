@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Edit, Trash2, Eye, EyeOff, Search, Filter } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Search, TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { MenuItemDialog } from '@/components/admin/MenuItemDialog';
+import { EnhancedMenuItemDialog } from '@/components/admin/EnhancedMenuItemDialog';
 import { AIUsageDashboard } from '@/components/admin/AIUsageDashboard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
 interface MenuItem {
   id: string;
@@ -186,6 +186,15 @@ export const MenuManagement = () => {
         <div className="flex gap-2">
           <Button 
             variant="secondary" 
+            asChild
+          >
+            <Link to="/admin/cost-analysis">
+              <TrendingUp className="h-4 w-4 mr-2" />
+              {t('menu.costAnalysis')}
+            </Link>
+          </Button>
+          <Button 
+            variant="secondary" 
             onClick={() => setCreditsDialogOpen(true)}
           >
             {t('menu.aiImageCredits')}
@@ -357,8 +366,8 @@ export const MenuManagement = () => {
         </div>
       )}
 
-      {/* Menu Item Dialog */}
-      <MenuItemDialog
+      {/* Enhanced Menu Item Dialog */}
+      <EnhancedMenuItemDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         item={editingItem}

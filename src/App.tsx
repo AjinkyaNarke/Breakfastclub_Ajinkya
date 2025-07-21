@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { I18nProvider } from "@/components/I18nProvider";
+import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Menu from "./pages/Menu";
 import Reservations from "./pages/Reservations";
@@ -16,6 +17,7 @@ import NotFound from "./pages/NotFound";
 
 // Admin routes
 import { AdminLayout } from "./components/admin/AdminLayout";
+import { AdminLogin } from "./components/admin/AdminLogin";
 import { Dashboard } from "./pages/admin/Dashboard";
 import { MenuManagement } from "./pages/admin/MenuManagement";
 import { IngredientManagement } from "./pages/admin/IngredientManagement";
@@ -39,7 +41,8 @@ function App() {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
+            <AuthProvider>
+              <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
               <Route path="/menu" element={<Menu />} />
@@ -47,7 +50,10 @@ function App() {
               <Route path="/events" element={<Events />} />
               <Route path="/about" element={<About />} />
               <Route path="/privacy" element={<Privacy />} />
-              <Route path="/impressum" element={<Impressum />} />
+                <Route path="/impressum" element={<Impressum />} />
+                
+                {/* Admin login route */}
+                <Route path="/admin/login" element={<AdminLogin />} />
               
               {/* Admin routes */}
               <Route path="/admin" element={<AdminLayout />}>
@@ -65,9 +71,10 @@ function App() {
                 <Route path="content" element={<ContentManagement />} />
               </Route>
               
-              {/* 404 route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+                {/* 404 route */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
           </BrowserRouter>
         </TooltipProvider>
       </I18nProvider>

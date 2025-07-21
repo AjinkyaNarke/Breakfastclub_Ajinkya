@@ -50,23 +50,19 @@ function App() {
               <Route path="/impressum" element={<Impressum />} />
               
               {/* Admin routes */}
-              <Route path="/admin/*" element={
-                <AdminLayout />
-              }>
-                <Routes>
-                    <Route index element={<Dashboard />} />
-                    <Route path="menu" element={<MenuManagement />} />
-                    <Route path="ingredients" element={<IngredientManagement />} />
-                    <Route path="ingredient-categories" element={<IngredientCategoryManagement />} />
-                    <Route path="cost-analysis" element={<CostAnalysis />} />
-                    <Route path="gallery" element={<GalleryManagement />} />
-                    <Route path="videos" element={<VideoManagement />} />
-                    <Route path="events" element={<EventsManagement />} />
-                    <Route path="press" element={<PressManagement />} />
-                    <Route path="reservations" element={<ReservationManagement />} />
-                    <Route path="about" element={<AboutManagement />} />
-                    <Route path="content" element={<ContentManagement />} />
-                </Routes>
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="menu" element={<MenuManagement />} />
+                <Route path="ingredients" element={<IngredientManagement />} />
+                <Route path="ingredient-categories" element={<IngredientCategoryManagement />} />
+                <Route path="cost-analysis" element={<CostAnalysis />} />
+                <Route path="gallery" element={<GalleryManagement />} />
+                <Route path="videos" element={<VideoManagement />} />
+                <Route path="events" element={<EventsManagement />} />
+                <Route path="press" element={<PressManagement />} />
+                <Route path="reservations" element={<ReservationManagement />} />
+                <Route path="about" element={<AboutManagement />} />
+                <Route path="content" element={<ContentManagement />} />
               </Route>
               
               {/* 404 route */}

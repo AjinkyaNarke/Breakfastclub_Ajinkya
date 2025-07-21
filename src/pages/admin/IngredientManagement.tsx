@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { useTranslation } from 'react-i18next';
 
 interface Ingredient {
   id: string;
@@ -48,6 +50,7 @@ const SEASON_OPTIONS = ['spring', 'summer', 'fall', 'winter'];
 const UNIT_OPTIONS = ['g', 'kg', 'ml', 'l', 'piece', 'cup', 'tbsp', 'tsp', 'oz', 'lb'];
 
 export const IngredientManagement = () => {
+  const { t } = useTranslation('admin');
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [categories, setCategories] = useState<IngredientCategory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -104,8 +107,8 @@ export const IngredientManagement = () => {
     } catch (error) {
       console.error('Error fetching ingredients:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch ingredients",
+        title: t('ingredients.messages.fetchError'),
+        description: t('ingredients.messages.fetchError'),
         variant: "destructive",
       });
     } finally {
@@ -145,8 +148,8 @@ export const IngredientManagement = () => {
   const handleSave = async () => {
     if (!formData.name || !formData.category_id) {
       toast({
-        title: "Error",
-        description: "Please fill in all required fields",
+        title: t('ingredients.messages.fillRequired'),
+        description: t('ingredients.messages.fillRequired'),
         variant: "destructive",
       });
       return;
@@ -180,8 +183,8 @@ export const IngredientManagement = () => {
       }
 
       toast({
-        title: "Success",
-        description: `Ingredient ${editingItem?.id ? 'updated' : 'created'} successfully`,
+        title: editingItem?.id ? t('ingredients.messages.updateSuccess') : t('ingredients.messages.createSuccess'),
+        description: editingItem?.id ? t('ingredients.messages.updateSuccess') : t('ingredients.messages.createSuccess'),
       });
 
       setDialogOpen(false);
@@ -189,15 +192,15 @@ export const IngredientManagement = () => {
     } catch (error) {
       console.error('Error saving ingredient:', error);
       toast({
-        title: "Error",
-        description: "Failed to save ingredient",
+        title: editingItem?.id ? t('ingredients.messages.updateError') : t('ingredients.messages.createError'),
+        description: editingItem?.id ? t('ingredients.messages.updateError') : t('ingredients.messages.createError'),
         variant: "destructive",
       });
     }
   };
 
   const deleteIngredient = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this ingredient?')) return;
+    if (!confirm(t('ingredients.deleteConfirm'))) return;
 
     try {
       const { error } = await supabase
@@ -208,16 +211,16 @@ export const IngredientManagement = () => {
       if (error) throw error;
       
       toast({
-        title: "Success",
-        description: "Ingredient deleted successfully",
+        title: t('ingredients.messages.deleteSuccess'),
+        description: t('ingredients.messages.deleteSuccess'),
       });
       
       fetchIngredients();
     } catch (error) {
       console.error('Error deleting ingredient:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete ingredient",
+        title: t('ingredients.messages.deleteError'),
+        description: t('ingredients.messages.deleteError'),
         variant: "destructive",
       });
     }
@@ -236,7 +239,7 @@ export const IngredientManagement = () => {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading ingredients...</div>;
+    return <div className="flex justify-center items-center h-64">{t('ingredients.loading')}</div>;
   }
 
   return (
@@ -244,28 +247,28 @@ export const IngredientManagement = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Ingredient Management</h1>
+          <h1 className="text-3xl font-bold">{t('ingredients.title')}</h1>
           <p className="text-muted-foreground">
-            Manage your restaurant's ingredient database for smart menu creation
+            {t('ingredients.description')}
           </p>
         </div>
         <Button onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Ingredient
+          {t('ingredients.addIngredient')}
         </Button>
       </div>
 
       {/* Filters */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Search & Filter</CardTitle>
+          <CardTitle className="text-lg">{t('menu.filtersAndSearch')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search ingredients..."
+                placeholder={t('ingredients.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -273,10 +276,10 @@ export const IngredientManagement = () => {
             </div>
             <Select value={selectedCategory} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-48">
-                <SelectValue placeholder="All categories" />
+                <SelectValue placeholder={t('ingredients.allCategories')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">{t('ingredients.allCategories')}</SelectItem>
                 {categories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.name}
@@ -286,7 +289,7 @@ export const IngredientManagement = () => {
             </Select>
           </div>
           <div className="mt-4 text-sm text-muted-foreground">
-            Showing {filteredIngredients.length} of {ingredients.length} ingredients
+            {t('ingredients.showingItems', { count: filteredIngredients.length, total: ingredients.length })}
           </div>
         </CardContent>
       </Card>
@@ -307,7 +310,7 @@ export const IngredientManagement = () => {
                   </CardDescription>
                 </div>
                 <Badge variant={ingredient.is_active ? "default" : "secondary"}>
-                  {ingredient.is_active ? "Active" : "Inactive"}
+                  {ingredient.is_active ? t('ingredients.active') : t('ingredients.inactive')}
                 </Badge>
               </div>
             </CardHeader>
@@ -316,11 +319,11 @@ export const IngredientManagement = () => {
               <div className="space-y-3">
                 {ingredient.dietary_properties && ingredient.dietary_properties.length > 0 && (
                   <div>
-                    <Label className="text-xs text-muted-foreground">Dietary Properties</Label>
+                    <Label className="text-xs text-muted-foreground">{t('ingredients.form.dietaryProperties')}</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {ingredient.dietary_properties.map((prop) => (
                         <Badge key={prop} variant="outline" className="text-xs">
-                          {prop}
+                          {t(`ingredients.dietary.${prop}`, prop)}
                         </Badge>
                       ))}
                     </div>
@@ -329,11 +332,11 @@ export const IngredientManagement = () => {
 
                 {ingredient.allergens && ingredient.allergens.length > 0 && (
                   <div>
-                    <Label className="text-xs text-muted-foreground">Allergens</Label>
+                    <Label className="text-xs text-muted-foreground">{t('ingredients.form.allergens')}</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {ingredient.allergens.map((allergen) => (
                         <Badge key={allergen} variant="destructive" className="text-xs">
-                          {allergen}
+                          {t(`ingredients.allergens.${allergen}`, allergen)}
                         </Badge>
                       ))}
                     </div>
@@ -342,11 +345,11 @@ export const IngredientManagement = () => {
 
                 {ingredient.seasonal_availability && ingredient.seasonal_availability.length > 0 && (
                   <div>
-                    <Label className="text-xs text-muted-foreground">Seasonal</Label>
+                    <Label className="text-xs text-muted-foreground">{t('ingredients.form.seasonalAvailability')}</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {ingredient.seasonal_availability.map((season) => (
                         <Badge key={season} variant="secondary" className="text-xs">
-                          {season}
+                          {t(`ingredients.seasons.${season}`, season)}
                         </Badge>
                       ))}
                     </div>
@@ -379,12 +382,12 @@ export const IngredientManagement = () => {
         <div className="text-center py-12">
           <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
-            {ingredients.length === 0 ? 'No ingredients found. Add your first ingredient.' : 'No ingredients match your search criteria.'}
+            {ingredients.length === 0 ? t('ingredients.noIngredients') : t('ingredients.noIngredientsMatch')}
           </p>
           {ingredients.length === 0 && (
             <Button className="mt-4" onClick={handleAdd}>
               <Plus className="h-4 w-4 mr-2" />
-              Add First Ingredient
+              {t('ingredients.addFirstIngredient')}
             </Button>
           )}
         </div>
@@ -395,30 +398,30 @@ export const IngredientManagement = () => {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editingItem?.id ? 'Edit Ingredient' : 'Add New Ingredient'}
+              {editingItem?.id ? t('ingredients.form.editTitle') : t('ingredients.form.createNew')}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
+                <Label htmlFor="name">{t('ingredients.form.name')} *</Label>
                 <Input
                   id="name"
                   value={formData.name || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="Enter ingredient name"
+                  placeholder={t('ingredients.form.namePlaceholder')}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Category *</Label>
+                <Label htmlFor="category">{t('ingredients.form.category')} *</Label>
                 <Select
                   value={formData.category_id || ''}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, category_id: value }))}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
+                    <SelectValue placeholder={t('ingredients.form.selectCategory')} />
                   </SelectTrigger>
                   <SelectContent>
                     {categories.map((category) => (
@@ -433,7 +436,7 @@ export const IngredientManagement = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="unit">Unit</Label>
+                <Label htmlFor="unit">{t('ingredients.form.unit')}</Label>
                 <Select
                   value={formData.unit || 'g'}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, unit: value }))}
@@ -452,20 +455,20 @@ export const IngredientManagement = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="cost">Cost per Unit (€)</Label>
+                <Label htmlFor="cost">{t('ingredients.form.costPerUnit')}</Label>
                 <Input
                   id="cost"
                   type="number"
                   step="0.01"
                   value={formData.cost_per_unit || ''}
                   onChange={(e) => setFormData(prev => ({ ...prev, cost_per_unit: parseFloat(e.target.value) || 0 }))}
-                  placeholder="0.00"
+                  placeholder={t('ingredients.form.costPlaceholder')}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Dietary Properties</Label>
+              <Label>{t('ingredients.form.dietaryProperties')}</Label>
               <div className="flex flex-wrap gap-2">
                 {DIETARY_PROPERTY_OPTIONS.map((prop) => (
                   <Badge
@@ -474,14 +477,14 @@ export const IngredientManagement = () => {
                     className="cursor-pointer"
                     onClick={() => toggleMultiSelect('dietary_properties', prop)}
                   >
-                    {prop}
+                    {t(`ingredients.dietary.${prop}`, prop)}
                   </Badge>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Allergens</Label>
+              <Label>{t('ingredients.form.allergens')}</Label>
               <div className="flex flex-wrap gap-2">
                 {ALLERGEN_OPTIONS.map((allergen) => (
                   <Badge
@@ -490,14 +493,14 @@ export const IngredientManagement = () => {
                     className="cursor-pointer"
                     onClick={() => toggleMultiSelect('allergens', allergen)}
                   >
-                    {allergen}
+                    {t(`ingredients.allergens.${allergen}`, allergen)}
                   </Badge>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Seasonal Availability</Label>
+              <Label>{t('ingredients.form.seasonalAvailability')}</Label>
               <div className="flex flex-wrap gap-2">
                 {SEASON_OPTIONS.map((season) => (
                   <Badge
@@ -506,29 +509,29 @@ export const IngredientManagement = () => {
                     className="cursor-pointer"
                     onClick={() => toggleMultiSelect('seasonal_availability', season)}
                   >
-                    {season}
+                    {t(`ingredients.seasons.${season}`, season)}
                   </Badge>
                 ))}
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="supplier">Supplier Info</Label>
+              <Label htmlFor="supplier">{t('ingredients.form.supplierInfo')}</Label>
               <Input
                 id="supplier"
                 value={formData.supplier_info || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, supplier_info: e.target.value }))}
-                placeholder="Supplier name, contact, etc."
+                placeholder={t('ingredients.form.supplierPlaceholder')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
+              <Label htmlFor="notes">{t('ingredients.form.notes')}</Label>
               <Textarea
                 id="notes"
                 value={formData.notes || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                placeholder="Additional notes about this ingredient"
+                placeholder={t('ingredients.form.notesPlaceholder')}
                 rows={3}
               />
             </div>
@@ -539,15 +542,15 @@ export const IngredientManagement = () => {
                 checked={formData.is_active || false}
                 onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
               />
-              <Label htmlFor="active">Active</Label>
+              <Label htmlFor="active">{t('ingredients.form.active')}</Label>
             </div>
 
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                Cancel
+                {t('ingredients.form.cancel')}
               </Button>
               <Button onClick={handleSave}>
-                Save Ingredient
+                {t('ingredients.form.save')}
               </Button>
             </div>
           </div>

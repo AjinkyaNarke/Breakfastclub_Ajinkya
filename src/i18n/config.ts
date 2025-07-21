@@ -10,13 +10,15 @@ i18n
   .use(initReactI18next)
   .init({
     debug: false,
+    lng: 'de', // Force German as the initial language
     fallbackLng: 'de', // Default to German
     defaultNS: 'common',
     ns: ['common', 'homepage', 'admin'],
     
     detection: {
-      order: ['localStorage', 'navigator', 'htmlTag'],
+      order: ['localStorage', 'htmlTag', 'navigator'], // Check localStorage first for saved preference
       caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng',
     },
 
     interpolation: {

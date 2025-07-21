@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useTranslation } from 'react-i18next';
 
 interface IngredientCategory {
   id: string;
@@ -17,6 +19,7 @@ interface IngredientCategory {
 }
 
 export const IngredientCategoryManagement = () => {
+  const { t } = useTranslation('admin');
   const [categories, setCategories] = useState<IngredientCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -45,8 +48,8 @@ export const IngredientCategoryManagement = () => {
     } catch (error) {
       console.error('Error fetching categories:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch ingredient categories",
+        title: t('ingredientCategories.messages.fetchError'),
+        description: t('ingredientCategories.messages.fetchError'),
         variant: "destructive",
       });
     } finally {
@@ -73,8 +76,8 @@ export const IngredientCategoryManagement = () => {
   const handleSave = async () => {
     if (!formData.name) {
       toast({
-        title: "Error",
-        description: "Please fill in the category name",
+        title: t('ingredientCategories.messages.fillRequired'),
+        description: t('ingredientCategories.messages.fillRequired'),
         variant: "destructive",
       });
       return;
@@ -101,8 +104,8 @@ export const IngredientCategoryManagement = () => {
       }
 
       toast({
-        title: "Success",
-        description: `Category ${editingItem?.id ? 'updated' : 'created'} successfully`,
+        title: editingItem?.id ? t('ingredientCategories.messages.updateSuccess') : t('ingredientCategories.messages.createSuccess'),
+        description: editingItem?.id ? t('ingredientCategories.messages.updateSuccess') : t('ingredientCategories.messages.createSuccess'),
       });
 
       setDialogOpen(false);
@@ -110,15 +113,15 @@ export const IngredientCategoryManagement = () => {
     } catch (error) {
       console.error('Error saving category:', error);
       toast({
-        title: "Error",
-        description: "Failed to save category",
+        title: editingItem?.id ? t('ingredientCategories.messages.updateError') : t('ingredientCategories.messages.createError'),
+        description: editingItem?.id ? t('ingredientCategories.messages.updateError') : t('ingredientCategories.messages.createError'),
         variant: "destructive",
       });
     }
   };
 
   const deleteCategory = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this category? This will affect all ingredients in this category.')) return;
+    if (!confirm(t('ingredientCategories.deleteConfirm'))) return;
 
     try {
       const { error } = await supabase
@@ -129,23 +132,23 @@ export const IngredientCategoryManagement = () => {
       if (error) throw error;
       
       toast({
-        title: "Success",
-        description: "Category deleted successfully",
+        title: t('ingredientCategories.messages.deleteSuccess'),
+        description: t('ingredientCategories.messages.deleteSuccess'),
       });
       
       fetchCategories();
     } catch (error) {
       console.error('Error deleting category:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete category",
+        title: t('ingredientCategories.messages.deleteError'),
+        description: t('ingredientCategories.messages.deleteError'),
         variant: "destructive",
       });
     }
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center h-64">Loading categories...</div>;
+    return <div className="flex justify-center items-center h-64">{t('ingredientCategories.loading')}</div>;
   }
 
   return (
@@ -153,14 +156,14 @@ export const IngredientCategoryManagement = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Ingredient Categories</h1>
+          <h1 className="text-3xl font-bold">{t('ingredientCategories.title')}</h1>
           <p className="text-muted-foreground">
-            Organize your ingredients into categories for better management
+            {t('ingredientCategories.description')}
           </p>
         </div>
         <Button onClick={handleAdd}>
           <Plus className="h-4 w-4 mr-2" />
-          Add Category
+          {t('ingredientCategories.addCategory')}
         </Button>
       </div>
 
@@ -174,7 +177,7 @@ export const IngredientCategoryManagement = () => {
                   <FolderOpen className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <CardTitle className="text-lg">{category.name}</CardTitle>
-                    <CardDescription>Order: {category.display_order}</CardDescription>
+                    <CardDescription>{t('ingredientCategories.order')} {category.display_order}</CardDescription>
                   </div>
                 </div>
               </div>
@@ -214,11 +217,11 @@ export const IngredientCategoryManagement = () => {
         <div className="text-center py-12">
           <FolderOpen className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
           <p className="text-muted-foreground">
-            No categories found. Add your first ingredient category.
+            {t('ingredientCategories.noCategories')}
           </p>
           <Button className="mt-4" onClick={handleAdd}>
             <Plus className="h-4 w-4 mr-2" />
-            Add First Category
+            {t('ingredientCategories.addFirstCategory')}
           </Button>
         </div>
       )}
@@ -228,49 +231,49 @@ export const IngredientCategoryManagement = () => {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {editingItem?.id ? 'Edit Category' : 'Add New Category'}
+              {editingItem?.id ? t('ingredientCategories.form.editTitle') : t('ingredientCategories.form.createNew')}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name *</Label>
+              <Label htmlFor="name">{t('ingredientCategories.form.name')} *</Label>
               <Input
                 id="name"
                 value={formData.name || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Enter category name"
+                placeholder={t('ingredientCategories.form.namePlaceholder')}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('ingredientCategories.form.description')}</Label>
               <Textarea
                 id="description"
                 value={formData.description || ''}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder="Optional description"
+                placeholder={t('ingredientCategories.form.descriptionPlaceholder')}
                 rows={3}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="order">Display Order</Label>
+              <Label htmlFor="order">{t('ingredientCategories.form.displayOrder')}</Label>
               <Input
                 id="order"
                 type="number"
                 value={formData.display_order || 0}
                 onChange={(e) => setFormData(prev => ({ ...prev, display_order: parseInt(e.target.value) || 0 }))}
-                placeholder="0"
+                placeholder={t('ingredientCategories.form.orderPlaceholder')}
               />
             </div>
 
             <div className="flex justify-end gap-2 pt-4">
               <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                Cancel
+                {t('ingredientCategories.form.cancel')}
               </Button>
               <Button onClick={handleSave}>
-                Save Category
+                {t('ingredientCategories.form.save')}
               </Button>
             </div>
           </div>

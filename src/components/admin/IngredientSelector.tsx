@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus, X, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface Ingredient {
   id: string;
@@ -42,6 +44,7 @@ interface IngredientSelectorProps {
 }
 
 export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, menuItemId }: IngredientSelectorProps) => {
+  const { t } = useTranslation('admin');
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [categories, setCategories] = useState<IngredientCategory[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,8 +87,8 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
     } catch (error) {
       console.error('Error fetching ingredients:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch ingredients",
+        title: t('ingredients.messages.fetchError'),
+        description: t('ingredients.messages.fetchError'),
         variant: "destructive",
       });
     } finally {
@@ -152,7 +155,7 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
   const smartSuggestions = getSmartSuggestions();
 
   if (loading) {
-    return <div className="text-center py-4">Loading ingredients...</div>;
+    return <div className="text-center py-4">{t('ingredientSelector.loadingIngredients')}</div>;
   }
 
   return (
@@ -161,16 +164,16 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle className="text-lg">Recipe Ingredients</CardTitle>
+            <CardTitle className="text-lg">{t('ingredientSelector.title')}</CardTitle>
             <div className="text-sm text-muted-foreground">
-              Total Cost: €{calculateTotalCost().toFixed(2)}
+              {t('ingredientSelector.totalCost', { cost: calculateTotalCost().toFixed(2) })}
             </div>
           </div>
         </CardHeader>
         <CardContent>
           {selectedIngredients.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
-              No ingredients selected. Add ingredients below to build your recipe.
+              {t('ingredientSelector.noIngredients')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -185,7 +188,7 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
                       <div className="flex flex-wrap gap-1 mt-1">
                         {si.ingredient.dietary_properties.map((prop) => (
                           <Badge key={prop} variant="outline" className="text-xs">
-                            {prop}
+                            {t(`ingredients.dietary.${prop}`, prop)}
                           </Badge>
                         ))}
                       </div>
@@ -232,8 +235,8 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
         <Card>
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              🤖 Smart Suggestions
-              <Badge variant="secondary" className="text-xs">AI-Powered</Badge>
+              {t('ingredientSelector.smartSuggestions')}
+              <Badge variant="secondary" className="text-xs">{t('ingredientSelector.aiPowered')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -262,7 +265,7 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
       {/* Ingredient Search and Selection */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Add Ingredients</CardTitle>
+          <CardTitle className="text-lg">{t('ingredientSelector.addIngredients')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -271,7 +274,7 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search ingredients..."
+                  placeholder={t('ingredientSelector.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -279,10 +282,10 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
               </div>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger className="w-48">
-                  <SelectValue placeholder="All categories" />
+                  <SelectValue placeholder={t('ingredientSelector.allCategories')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="all">{t('ingredientSelector.allCategories')}</SelectItem>
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
@@ -312,7 +315,7 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
                           <div className="flex flex-wrap gap-1 mt-1">
                             {ingredient.dietary_properties.slice(0, 2).map((prop) => (
                               <Badge key={prop} variant="outline" className="text-xs">
-                                {prop}
+                                {t(`ingredients.dietary.${prop}`, prop)}
                               </Badge>
                             ))}
                           </div>
@@ -333,7 +336,7 @@ export const IngredientSelector = ({ selectedIngredients, onIngredientsChange, m
 
             {filteredIngredients.length === 0 && (
               <div className="text-center py-8 text-muted-foreground">
-                {searchTerm ? 'No ingredients found matching your search.' : 'All ingredients have been added.'}
+                {searchTerm ? t('ingredientSelector.noMatchingIngredients') : t('ingredientSelector.noIngredientsAvailable')}
               </div>
             )}
           </div>

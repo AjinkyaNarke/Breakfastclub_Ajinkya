@@ -30,14 +30,14 @@ export const AdminLayout = () => {
   const sidebarItems = [
     { icon: LayoutDashboard, label: t('navigation.dashboard'), path: '/admin' },
     { icon: ChefHat, label: t('navigation.menu'), path: '/admin/menu' },
-    { icon: Package, label: 'Ingredients', path: '/admin/ingredients' },
-    { icon: FolderOpen, label: 'Categories', path: '/admin/ingredient-categories' },
-    { icon: FileText, label: 'About Us', path: '/admin/about' },
+    { icon: Package, label: t('navigation.ingredients'), path: '/admin/ingredients' },
+    { icon: FolderOpen, label: t('navigation.categories'), path: '/admin/ingredient-categories' },
+    { icon: FileText, label: t('navigation.about'), path: '/admin/about' },
     { icon: Image, label: t('navigation.gallery'), path: '/admin/gallery' },
     { icon: Video, label: t('navigation.videos'), path: '/admin/videos' },
     { icon: Newspaper, label: t('navigation.press'), path: '/admin/press' },
     { icon: Calendar, label: t('navigation.events'), path: '/admin/events' },
-    { icon: Calendar, label: 'Reservations', path: '/admin/reservations' },
+    { icon: Calendar, label: t('navigation.reservations'), path: '/admin/reservations' },
     { icon: FileText, label: t('navigation.content'), path: '/admin/content' },
     { icon: Settings, label: t('navigation.settings'), path: '/admin/settings' },
   ];

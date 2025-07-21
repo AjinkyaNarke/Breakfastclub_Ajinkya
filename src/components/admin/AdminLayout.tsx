@@ -33,6 +33,7 @@ export const AdminLayout = () => {
     { icon: Video, label: t('navigation.videos'), path: '/admin/videos' },
     { icon: Newspaper, label: t('navigation.press'), path: '/admin/press' },
     { icon: Calendar, label: t('navigation.events'), path: '/admin/events' },
+    { icon: Calendar, label: 'Reservations', path: '/admin/reservations' },
     { icon: FileText, label: t('navigation.content'), path: '/admin/content' },
     { icon: Settings, label: t('navigation.settings'), path: '/admin/settings' },
   ];

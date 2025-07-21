@@ -434,6 +434,81 @@ export type Database = {
         }
         Relationships: []
       }
+      reservation_settings: {
+        Row: {
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reservations: {
+        Row: {
+          admin_notes: string | null
+          cancelled_at: string | null
+          confirmed_at: string | null
+          created_at: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          language_preference: string | null
+          party_size: number
+          reservation_date: string
+          reservation_time: string
+          special_requests: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          cancelled_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          customer_email: string
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          language_preference?: string | null
+          party_size: number
+          reservation_date: string
+          reservation_time: string
+          special_requests?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          cancelled_at?: string | null
+          confirmed_at?: string | null
+          created_at?: string | null
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          language_preference?: string | null
+          party_size?: number
+          reservation_date?: string
+          reservation_time?: string
+          special_requests?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       restaurant_videos: {
         Row: {
           autoplay: boolean | null

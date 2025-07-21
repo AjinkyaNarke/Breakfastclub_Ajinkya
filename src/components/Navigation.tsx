@@ -11,6 +11,7 @@ const navItems = [
   { name: "events", href: "/events", icon: Calendar, sectionId: "events-section" },
   { name: "menu", href: "/menu", icon: BookOpen, sectionId: "menu-section" },
   { name: "about", href: "/about", icon: Info },
+  { name: "reservations", href: "/reservations", icon: Calendar },
 ];
 
 export default function Navigation() {

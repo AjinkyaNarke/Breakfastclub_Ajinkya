@@ -19,9 +19,11 @@ import Index from "./pages/Index";
 import Events from "./pages/Events";
 import Menu from "./pages/Menu";
 import About from "./pages/About";
+import Reservations from "./pages/Reservations";
 import Impressum from "./pages/Impressum";
 import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
+import ReservationManagement from "./pages/admin/ReservationManagement";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,7 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/about" element={<About />} />
+            <Route path="/reservations" element={<Reservations />} />
             <Route path="/impressum" element={<Impressum />} />
             <Route path="/privacy" element={<Privacy />} />
             
@@ -51,6 +54,7 @@ const App = () => (
               <Route path="gallery" element={<GalleryManagement />} />
               <Route path="events" element={<EventsManagement />} />
               <Route path="content" element={<ContentManagement />} />
+              <Route path="reservations" element={<ReservationManagement />} />
               <Route path="settings" element={<div>Settings - Coming Soon</div>} />
             </Route>
             

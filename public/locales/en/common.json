@@ -7,7 +7,8 @@
     "gallery": "Gallery",
     "events": "Events",
     "press": "Press",
-    "contact": "Contact"
+    "contact": "Contact",
+    "reservations": "Reservations"
   },
   "buttons": {
     "learnMore": "Learn More",
@@ -33,5 +34,68 @@
     "switchTo": "Switch to",
     "english": "English",
     "german": "Deutsch"
+  },
+  "reservations": {
+    "title": "Make a Reservation",
+    "subtitle": "Book your table at My Fcking Breakfast Club",
+    "form": {
+      "name": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "date": "Reservation Date",
+      "time": "Preferred Time",
+      "partySize": "Number of Guests",
+      "specialRequests": "Special Requests",
+      "submit": "Book Table",
+      "submitting": "Booking...",
+      "cancel": "Cancel",
+      "confirmReservation": "Confirm Reservation"
+    },
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email",
+      "phoneInvalid": "Please enter a valid phone number",
+      "dateRequired": "Please select a date",
+      "timeRequired": "Please select a time",
+      "partySizeRequired": "Please select number of guests",
+      "partySizeMin": "Minimum 1 guest",
+      "partySizeMax": "Maximum 20 guests",
+      "dateInPast": "Please select a future date",
+      "timeTooSoon": "Please book at least 2 hours in advance"
+    },
+    "success": {
+      "title": "Reservation Confirmed!",
+      "message": "Thank you! Your reservation has been submitted. We'll send you a confirmation email shortly.",
+      "details": "Reservation Details",
+      "makeAnother": "Make Another Reservation"
+    },
+    "error": {
+      "title": "Booking Failed",
+      "message": "Sorry, we couldn't process your reservation. Please try again.",
+      "tryAgain": "Try Again"
+    },
+    "partySize": {
+      "1": "1 Guest",
+      "2": "2 Guests", 
+      "3": "3 Guests",
+      "4": "4 Guests",
+      "5": "5 Guests",
+      "6": "6 Guests",
+      "7": "7 Guests",
+      "8": "8 Guests",
+      "9": "9 Guests",
+      "10": "10 Guests",
+      "11": "11 Guests",
+      "12": "12 Guests",
+      "13": "13 Guests",
+      "14": "14 Guests",
+      "15": "15 Guests",
+      "16": "16 Guests",
+      "17": "17 Guests",
+      "18": "18 Guests",
+      "19": "19 Guests",
+      "20": "20 Guests"
+    }
   }
 }

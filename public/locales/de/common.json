@@ -7,7 +7,8 @@
     "gallery": "Galerie",
     "events": "Veranstaltungen",
     "press": "Presse",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "reservations": "Reservierungen"
   },
   "buttons": {
     "learnMore": "Mehr erfahren",
@@ -33,5 +34,68 @@
     "switchTo": "Wechseln zu",
     "english": "English",
     "german": "Deutsch"
+  },
+  "reservations": {
+    "title": "Tisch reservieren",
+    "subtitle": "Buchen Sie Ihren Tisch im My Fcking Breakfast Club",
+    "form": {
+      "name": "Vollständiger Name",
+      "email": "E-Mail-Adresse",
+      "phone": "Telefonnummer",
+      "date": "Reservierungsdatum",
+      "time": "Gewünschte Uhrzeit",
+      "partySize": "Anzahl der Gäste",
+      "specialRequests": "Besondere Wünsche",
+      "submit": "Tisch buchen",
+      "submitting": "Wird gebucht...",
+      "cancel": "Abbrechen",
+      "confirmReservation": "Reservierung bestätigen"
+    },
+    "validation": {
+      "nameRequired": "Name ist erforderlich",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Bitte geben Sie eine gültige E-Mail ein",
+      "phoneInvalid": "Bitte geben Sie eine gültige Telefonnummer ein",
+      "dateRequired": "Bitte wählen Sie ein Datum",
+      "timeRequired": "Bitte wählen Sie eine Uhrzeit",
+      "partySizeRequired": "Bitte wählen Sie die Anzahl der Gäste",
+      "partySizeMin": "Mindestens 1 Gast",
+      "partySizeMax": "Maximal 20 Gäste",
+      "dateInPast": "Bitte wählen Sie ein zukünftiges Datum",
+      "timeTooSoon": "Bitte buchen Sie mindestens 2 Stunden im Voraus"
+    },
+    "success": {
+      "title": "Reservierung bestätigt!",
+      "message": "Vielen Dank! Ihre Reservierung wurde eingereicht. Wir senden Ihnen in Kürze eine Bestätigungs-E-Mail.",
+      "details": "Reservierungsdetails",
+      "makeAnother": "Weitere Reservierung vornehmen"
+    },
+    "error": {
+      "title": "Buchung fehlgeschlagen",
+      "message": "Entschuldigung, wir konnten Ihre Reservierung nicht bearbeiten. Bitte versuchen Sie es erneut.",
+      "tryAgain": "Erneut versuchen"
+    },
+    "partySize": {
+      "1": "1 Gast",
+      "2": "2 Gäste",
+      "3": "3 Gäste",
+      "4": "4 Gäste",
+      "5": "5 Gäste",
+      "6": "6 Gäste",
+      "7": "7 Gäste",
+      "8": "8 Gäste",
+      "9": "9 Gäste",
+      "10": "10 Gäste",
+      "11": "11 Gäste",
+      "12": "12 Gäste",
+      "13": "13 Gäste",
+      "14": "14 Gäste",
+      "15": "15 Gäste",
+      "16": "16 Gäste",
+      "17": "17 Gäste",
+      "18": "18 Gäste",
+      "19": "19 Gäste",
+      "20": "20 Gäste"
+    }
   }
 }

@@ -25,8 +25,8 @@ import { GalleryManagement } from "./pages/admin/GalleryManagement";
 import { VideoManagement } from "./pages/admin/VideoManagement";
 import { EventsManagement } from "./pages/admin/EventsManagement";
 import { PressManagement } from "./pages/admin/PressManagement";
-import { ReservationManagement } from "./pages/admin/ReservationManagement";
-import { AboutManagement } from "./pages/admin/AboutManagement";
+import ReservationManagement from "./pages/admin/ReservationManagement";
+import AboutManagement from "./pages/admin/AboutManagement";
 import { ContentManagement } from "./pages/admin/ContentManagement";
 
 const queryClient = new QueryClient();
@@ -51,8 +51,9 @@ function App() {
               
               {/* Admin routes */}
               <Route path="/admin/*" element={
-                <AdminLayout>
-                  <Routes>
+                <AdminLayout />
+              }>
+                <Routes>
                     <Route index element={<Dashboard />} />
                     <Route path="menu" element={<MenuManagement />} />
                     <Route path="ingredients" element={<IngredientManagement />} />
@@ -65,9 +66,8 @@ function App() {
                     <Route path="reservations" element={<ReservationManagement />} />
                     <Route path="about" element={<AboutManagement />} />
                     <Route path="content" element={<ContentManagement />} />
-                  </Routes>
-                </AdminLayout>
-              } />
+                </Routes>
+              </Route>
               
               {/* 404 route */}
               <Route path="*" element={<NotFound />} />

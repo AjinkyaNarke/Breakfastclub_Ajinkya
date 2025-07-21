@@ -12,6 +12,8 @@ interface MenuItem {
   name: string;
   regular_price: number;
   dietary_tags: string[];
+  totalCost?: number;
+  margin?: number;
   ingredients: {
     ingredient: {
       name: string;

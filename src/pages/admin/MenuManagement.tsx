@@ -25,6 +25,7 @@ interface MenuItem {
   dietary_tags: string[];
   display_order: number;
   category_id: string;
+  cuisine_type: string;
   category: {
     name: string;
     id: string;

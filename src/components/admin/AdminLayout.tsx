@@ -13,7 +13,9 @@ import {
   Settings,
   LogOut,
   ChefHat,
-  Newspaper
+  Newspaper,
+  Package,
+  FolderOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -28,6 +30,8 @@ export const AdminLayout = () => {
   const sidebarItems = [
     { icon: LayoutDashboard, label: t('navigation.dashboard'), path: '/admin' },
     { icon: ChefHat, label: t('navigation.menu'), path: '/admin/menu' },
+    { icon: Package, label: 'Ingredients', path: '/admin/ingredients' },
+    { icon: FolderOpen, label: 'Categories', path: '/admin/ingredient-categories' },
     { icon: FileText, label: 'About Us', path: '/admin/about' },
     { icon: Image, label: t('navigation.gallery'), path: '/admin/gallery' },
     { icon: Video, label: t('navigation.videos'), path: '/admin/videos' },

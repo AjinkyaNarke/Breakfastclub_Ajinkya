@@ -9,6 +9,8 @@ import { AdminLayout } from "@/components/admin/AdminLayout";
 import { AdminLogin } from "@/components/admin/AdminLogin";
 import { Dashboard } from "@/pages/admin/Dashboard";
 import { MenuManagement } from "@/pages/admin/MenuManagement";
+import { IngredientManagement } from "@/pages/admin/IngredientManagement";
+import { IngredientCategoryManagement } from "@/pages/admin/IngredientCategoryManagement";
 import { VideoManagement } from "@/pages/admin/VideoManagement";
 import { PressManagement } from "@/pages/admin/PressManagement";
 import { GalleryManagement } from "@/pages/admin/GalleryManagement";
@@ -49,6 +51,8 @@ const App = () => (
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
               <Route path="menu" element={<MenuManagement />} />
+              <Route path="ingredients" element={<IngredientManagement />} />
+              <Route path="ingredient-categories" element={<IngredientCategoryManagement />} />
               <Route path="about" element={<AboutManagement />} />
               <Route path="videos" element={<VideoManagement />} />
               <Route path="press" element={<PressManagement />} />

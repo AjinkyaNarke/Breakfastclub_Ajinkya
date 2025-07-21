@@ -11,10 +11,32 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, X, Plus } from 'lucide-react';
+import { IngredientSelector } from './IngredientSelector';
 
 interface MenuCategory {
   id: string;
   name: string;
+}
+
+interface Ingredient {
+  id: string;
+  name: string;
+  unit: string;
+  category_id: string;
+  allergens: string[];
+  dietary_properties: string[];
+  cost_per_unit?: number;
+  category?: {
+    name: string;
+  };
+}
+
+interface SelectedIngredient {
+  ingredient_id: string;
+  quantity: number;
+  unit: string;
+  notes?: string;
+  ingredient: Ingredient;
 }
 
 interface MenuItem {
@@ -50,6 +72,7 @@ const DIETARY_TAG_OPTIONS = [
 
 export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDialogProps) => {
   const [categories, setCategories] = useState<MenuCategory[]>([]);
+  const [selectedIngredients, setSelectedIngredients] = useState<SelectedIngredient[]>([]);
   const [formData, setFormData] = useState<MenuItem>({
     name: '',
     description: '',
@@ -81,6 +104,7 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
       if (item) {
         setFormData({ ...item });
         setUseAIGeneration(item.ai_generated_image || false);
+        fetchMenuItemIngredients(item.id!);
       } else {
         setFormData({
           name: '',
@@ -99,6 +123,7 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
           ai_prompt_used: '',
           image_generation_cost: 0,
         });
+        setSelectedIngredients([]);
         setUseAIGeneration(false);
         setGeneratedPrompt('');
       }
@@ -121,6 +146,26 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
         description: "Failed to fetch menu categories",
         variant: "destructive",
       });
+    }
+  };
+
+  const fetchMenuItemIngredients = async (menuItemId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('menu_item_ingredients')
+        .select(`
+          *,
+          ingredient:ingredients(
+            id, name, unit, category_id, allergens, dietary_properties, cost_per_unit,
+            category:ingredient_categories(name)
+          )
+        `)
+        .eq('menu_item_id', menuItemId);
+
+      if (error) throw error;
+      setSelectedIngredients(data || []);
+    } catch (error) {
+      console.error('Error fetching menu item ingredients:', error);
     }
   };
 
@@ -200,9 +245,10 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
   };
 
   const generatePrompt = () => {
-    if (!formData.name || !formData.ingredients) return "";
+    if (!formData.name || selectedIngredients.length === 0) return "";
     
     const category = categories.find(c => c.id === formData.category_id)?.name || "general";
+    const ingredientList = selectedIngredients.map(si => si.ingredient.name).join(', ');
     const cuisineStyle = {
       korean: "Korean style plating, traditional tableware",
       japanese: "Japanese minimalist presentation, wooden serving board",
@@ -211,14 +257,14 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
       fusion: "modern fusion plating, contemporary restaurant style"
     }[formData.cuisine_type || "fusion"];
     
-    return `${formData.name}, featuring ${formData.ingredients}, ${cuisineStyle}, professional food photography, 4K resolution, restaurant quality lighting, appetizing presentation`;
+    return `${formData.name}, featuring ${ingredientList}, ${cuisineStyle}, professional food photography, 4K resolution, restaurant quality lighting, appetizing presentation`;
   };
 
   const handleGenerateImage = async () => {
-    if (!formData.name || !formData.ingredients) {
+    if (!formData.name || selectedIngredients.length === 0) {
       toast({
         title: "Error",
-        description: "Please fill in dish name and ingredients first",
+        description: "Please add ingredients and fill in dish name first",
         variant: "destructive",
       });
       return;
@@ -226,10 +272,11 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
 
     setGenerating(true);
     try {
+      const ingredientList = selectedIngredients.map(si => si.ingredient.name).join(', ');
       const { data, error } = await supabase.functions.invoke('generate-menu-image', {
         body: {
           dishName: formData.name,
-          ingredients: formData.ingredients,
+          ingredients: ingredientList,
           cuisineType: formData.cuisine_type,
           category: categories.find(c => c.id === formData.category_id)?.name,
           menuItemId: formData.id
@@ -267,10 +314,10 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
 
   // Update generated prompt when form data changes
   useEffect(() => {
-    if (formData.name && formData.ingredients && useAIGeneration) {
+    if (formData.name && selectedIngredients.length > 0 && useAIGeneration) {
       setGeneratedPrompt(generatePrompt());
     }
-  }, [formData.name, formData.ingredients, formData.cuisine_type, formData.category_id, useAIGeneration]);
+  }, [formData.name, selectedIngredients, formData.cuisine_type, formData.category_id, useAIGeneration]);
 
   const handleSave = async () => {
     if (!formData.name || !formData.category_id) {
@@ -284,6 +331,11 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
 
     setSaving(true);
     try {
+      // Generate ingredients text for legacy compatibility
+      const ingredientsText = selectedIngredients.map(si => 
+        `${si.ingredient.name} (${si.quantity}${si.unit})`
+      ).join(', ');
+
       const saveData = {
         name: formData.name,
         description: formData.description,
@@ -295,12 +347,14 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
         is_available: formData.is_available,
         dietary_tags: formData.dietary_tags,
         display_order: formData.display_order,
-        ingredients: formData.ingredients || null,
+        ingredients: ingredientsText || null,
         cuisine_type: formData.cuisine_type || 'fusion',
         ai_generated_image: formData.ai_generated_image || false,
         ai_prompt_used: formData.ai_prompt_used || null,
         image_generation_cost: formData.image_generation_cost || 0
       };
+
+      let menuItemId = item?.id;
 
       if (item?.id) {
         const { error } = await supabase
@@ -309,10 +363,39 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
           .eq('id', item.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase
+        const { data, error } = await supabase
           .from('menu_items')
-          .insert([saveData]);
+          .insert([saveData])
+          .select('id')
+          .single();
         if (error) throw error;
+        menuItemId = data.id;
+      }
+
+      // Save ingredient relationships
+      if (menuItemId) {
+        // Delete existing ingredients
+        await supabase
+          .from('menu_item_ingredients')
+          .delete()
+          .eq('menu_item_id', menuItemId);
+
+        // Insert new ingredients
+        if (selectedIngredients.length > 0) {
+          const ingredientData = selectedIngredients.map(si => ({
+            menu_item_id: menuItemId,
+            ingredient_id: si.ingredient_id,
+            quantity: si.quantity,
+            unit: si.unit,
+            notes: si.notes || null
+          }));
+
+          const { error: ingredientError } = await supabase
+            .from('menu_item_ingredients')
+            .insert(ingredientData);
+          
+          if (ingredientError) throw ingredientError;
+        }
       }
 
       toast({
@@ -387,15 +470,13 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
             />
           </div>
 
+          {/* Smart Ingredient Selector */}
           <div className="space-y-2">
-            <Label htmlFor="ingredients">Ingredients *</Label>
-            <Textarea
-              id="ingredients"
-              value={formData.ingredients || ""}
-              onChange={(e) => setFormData(prev => ({ ...prev, ingredients: e.target.value }))}
-              placeholder="List the main ingredients (e.g., bulgogi beef, steamed rice, kimchi, fried egg, sesame seeds)"
-              required
-              rows={2}
+            <Label>Smart Ingredient Management</Label>
+            <IngredientSelector
+              selectedIngredients={selectedIngredients}
+              onIngredientsChange={setSelectedIngredients}
+              menuItemId={formData.id}
             />
           </div>
 
@@ -493,7 +574,7 @@ export const MenuItemDialog = ({ open, onOpenChange, item, onSave }: MenuItemDia
                 <Button
                   type="button"
                   onClick={handleGenerateImage}
-                  disabled={generating || !formData.name || !formData.ingredients}
+                  disabled={generating || !formData.name || selectedIngredients.length === 0}
                   className="w-full"
                 >
                   {generating ? (

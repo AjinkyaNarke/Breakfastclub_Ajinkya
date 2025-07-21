@@ -476,6 +476,89 @@ export type Database = {
         }
         Relationships: []
       }
+      ingredient_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ingredients: {
+        Row: {
+          allergens: string[] | null
+          category_id: string | null
+          cost_per_unit: number | null
+          created_at: string
+          dietary_properties: string[] | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          seasonal_availability: string[] | null
+          supplier_info: string | null
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          allergens?: string[] | null
+          category_id?: string | null
+          cost_per_unit?: number | null
+          created_at?: string
+          dietary_properties?: string[] | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          seasonal_availability?: string[] | null
+          supplier_info?: string | null
+          unit?: string
+          updated_at?: string
+        }
+        Update: {
+          allergens?: string[] | null
+          category_id?: string | null
+          cost_per_unit?: number | null
+          created_at?: string
+          dietary_properties?: string[] | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          seasonal_availability?: string[] | null
+          supplier_info?: string | null
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ingredients_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "ingredient_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       menu_categories: {
         Row: {
           created_at: string | null
@@ -499,6 +582,51 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      menu_item_ingredients: {
+        Row: {
+          created_at: string
+          id: string
+          ingredient_id: string
+          menu_item_id: string
+          notes: string | null
+          quantity: number
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredient_id: string
+          menu_item_id: string
+          notes?: string | null
+          quantity: number
+          unit: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredient_id?: string
+          menu_item_id?: string
+          notes?: string | null
+          quantity?: number
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_item_ingredients_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_item_ingredients_menu_item_id_fkey"
+            columns: ["menu_item_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       menu_items: {
         Row: {

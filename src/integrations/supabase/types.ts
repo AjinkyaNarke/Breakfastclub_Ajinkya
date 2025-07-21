@@ -195,6 +195,57 @@ export type Database = {
         }
         Relationships: []
       }
+      consent_records: {
+        Row: {
+          analytics_cookies: boolean
+          consent_timestamp: string
+          consent_version: string
+          created_at: string
+          essential_cookies: boolean
+          expires_at: string
+          functional_cookies: boolean
+          id: string
+          ip_address: unknown | null
+          language_preference: string
+          marketing_cookies: boolean
+          updated_at: string
+          user_agent: string | null
+          user_session_id: string
+        }
+        Insert: {
+          analytics_cookies?: boolean
+          consent_timestamp?: string
+          consent_version?: string
+          created_at?: string
+          essential_cookies?: boolean
+          expires_at?: string
+          functional_cookies?: boolean
+          id?: string
+          ip_address?: unknown | null
+          language_preference?: string
+          marketing_cookies?: boolean
+          updated_at?: string
+          user_agent?: string | null
+          user_session_id: string
+        }
+        Update: {
+          analytics_cookies?: boolean
+          consent_timestamp?: string
+          consent_version?: string
+          created_at?: string
+          essential_cookies?: boolean
+          expires_at?: string
+          functional_cookies?: boolean
+          id?: string
+          ip_address?: unknown | null
+          language_preference?: string
+          marketing_cookies?: boolean
+          updated_at?: string
+          user_agent?: string | null
+          user_session_id?: string
+        }
+        Relationships: []
+      }
       content_blocks: {
         Row: {
           content: string | null
@@ -222,6 +273,134 @@ export type Database = {
           section_name?: string
           title?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      cookie_categories: {
+        Row: {
+          category_key: string
+          created_at: string
+          description_de: string
+          description_en: string
+          display_order: number
+          id: string
+          is_active: boolean
+          is_essential: boolean
+          name_de: string
+          name_en: string
+          updated_at: string
+        }
+        Insert: {
+          category_key: string
+          created_at?: string
+          description_de: string
+          description_en: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          is_essential?: boolean
+          name_de: string
+          name_en: string
+          updated_at?: string
+        }
+        Update: {
+          category_key?: string
+          created_at?: string
+          description_de?: string
+          description_en?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          is_essential?: boolean
+          name_de?: string
+          name_en?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      cookie_definitions: {
+        Row: {
+          category_id: string
+          cookie_name: string
+          created_at: string
+          duration: string
+          id: string
+          is_active: boolean
+          purpose_de: string
+          purpose_en: string
+          third_party_provider: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_id: string
+          cookie_name: string
+          created_at?: string
+          duration: string
+          id?: string
+          is_active?: boolean
+          purpose_de: string
+          purpose_en: string
+          third_party_provider?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string
+          cookie_name?: string
+          created_at?: string
+          duration?: string
+          id?: string
+          is_active?: boolean
+          purpose_de?: string
+          purpose_en?: string
+          third_party_provider?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cookie_definitions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "cookie_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      data_subject_requests: {
+        Row: {
+          admin_notes: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          request_details: string | null
+          request_type: string
+          requester_email: string
+          requester_name: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          request_details?: string | null
+          request_type: string
+          requester_email: string
+          requester_name?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          request_details?: string | null
+          request_type?: string
+          requester_email?: string
+          requester_name?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -431,6 +610,39 @@ export type Database = {
           publication_name?: string
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      privacy_policy_versions: {
+        Row: {
+          content_de: string
+          content_en: string
+          created_at: string
+          id: string
+          is_active: boolean
+          published_at: string | null
+          updated_at: string
+          version_number: string
+        }
+        Insert: {
+          content_de: string
+          content_en: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          published_at?: string | null
+          updated_at?: string
+          version_number: string
+        }
+        Update: {
+          content_de?: string
+          content_en?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          published_at?: string | null
+          updated_at?: string
+          version_number?: string
         }
         Relationships: []
       }

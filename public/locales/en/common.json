@@ -97,5 +97,86 @@
       "19": "19 Guests",
       "20": "20 Guests"
     }
+  },
+  "language": {
+    "german": "Deutsch",
+    "english": "English"
+  },
+  "cookies": {
+    "banner": {
+      "title": "Cookie Settings",
+      "description": "We use cookies to provide you with the best experience on our website. You can adjust your settings at any time.",
+      "acceptAll": "Accept All",
+      "acceptEssential": "Essential Only",
+      "customize": "Customize"
+    },
+    "settings": {
+      "title": "Manage Cookie Settings",
+      "description": "Choose which categories of cookies you want to allow:",
+      "save": "Save Settings"
+    },
+    "categories": {
+      "essential": {
+        "title": "Essential Cookies",
+        "description": "These cookies are necessary for the website to function properly and cannot be disabled."
+      },
+      "functional": {
+        "title": "Functional Cookies",
+        "description": "These cookies enable enhanced functionality such as language settings and personalized content."
+      },
+      "analytics": {
+        "title": "Analytics Cookies",
+        "description": "These cookies help us understand how visitors use our website to improve it."
+      },
+      "marketing": {
+        "title": "Marketing Cookies",
+        "description": "These cookies are used to show you relevant advertisements and offers."
+      }
+    },
+    "required": "Required"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "Your privacy is important to us",
+    "lastUpdated": "Last updated",
+    "sections": {
+      "general": {
+        "title": "General Information"
+      },
+      "responsible": {
+        "title": "Data Controller",
+        "email": "Email"
+      },
+      "dataCollection": {
+        "title": "Data Collection and Use",
+        "description": "We collect and process personal data only where legally permitted or with your consent. The following data is collected:",
+        "items": {
+          "reservations": "Reservation data (name, email, phone, date, time)",
+          "contact": "Contact data for inquiries",
+          "website": "Website usage data (IP address, browser information)",
+          "cookies": "Cookie settings and preferences"
+        }
+      },
+      "rights": {
+        "title": "Your Rights",
+        "description": "You have the following rights regarding your personal data:",
+        "contact": "To exercise your rights, contact us at:",
+        "items": {
+          "access": "Right to access stored data",
+          "rectification": "Right to rectify incorrect data",
+          "erasure": "Right to erasure of your data",
+          "portability": "Right to data portability",
+          "restriction": "Right to restrict processing",
+          "objection": "Right to object to processing"
+        }
+      },
+      "contact": {
+        "title": "Contact",
+        "description": "If you have questions about data protection, you can contact us at any time:"
+      }
+    }
+  },
+  "common": {
+    "cancel": "Cancel"
   }
 }

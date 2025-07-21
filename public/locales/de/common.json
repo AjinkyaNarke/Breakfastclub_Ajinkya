@@ -97,5 +97,86 @@
       "19": "19 Gäste",
       "20": "20 Gäste"
     }
+  },
+  "language": {
+    "german": "Deutsch",
+    "english": "English"
+  },
+  "cookies": {
+    "banner": {
+      "title": "Cookie-Einstellungen",
+      "description": "Wir verwenden Cookies, um Ihnen das beste Erlebnis auf unserer Website zu bieten. Sie können Ihre Einstellungen jederzeit anpassen.",
+      "acceptAll": "Alle akzeptieren",
+      "acceptEssential": "Nur notwendige",
+      "customize": "Anpassen"
+    },
+    "settings": {
+      "title": "Cookie-Einstellungen verwalten",
+      "description": "Wählen Sie aus, welche Kategorien von Cookies Sie zulassen möchten:",
+      "save": "Einstellungen speichern"
+    },
+    "categories": {
+      "essential": {
+        "title": "Notwendige Cookies",
+        "description": "Diese Cookies sind für das ordnungsgemäße Funktionieren der Website erforderlich und können nicht deaktiviert werden."
+      },
+      "functional": {
+        "title": "Funktionale Cookies",
+        "description": "Diese Cookies ermöglichen erweiterte Funktionalitäten wie Spracheinstellungen und personalisierte Inhalte."
+      },
+      "analytics": {
+        "title": "Analyse-Cookies",
+        "description": "Diese Cookies helfen uns zu verstehen, wie Besucher unsere Website nutzen, um sie zu verbessern."
+      },
+      "marketing": {
+        "title": "Marketing-Cookies",
+        "description": "Diese Cookies werden verwendet, um Ihnen relevante Werbung und Angebote anzuzeigen."
+      }
+    },
+    "required": "Erforderlich"
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "subtitle": "Ihre Privatsphäre ist uns wichtig",
+    "lastUpdated": "Stand dieser Datenschutzerklärung",
+    "sections": {
+      "general": {
+        "title": "Allgemeine Informationen"
+      },
+      "responsible": {
+        "title": "Verantwortlicher",
+        "email": "E-Mail"
+      },
+      "dataCollection": {
+        "title": "Datenerhebung und -verwendung",
+        "description": "Wir erheben und verarbeiten personenbezogene Daten nur, soweit dies gesetzlich erlaubt ist oder Sie in die Datenerhebung einwilligen. Folgende Daten werden erhoben:",
+        "items": {
+          "reservations": "Reservierungsdaten (Name, E-Mail, Telefon, Datum, Uhrzeit)",
+          "contact": "Kontaktdaten bei Anfragen",
+          "website": "Website-Nutzungsdaten (IP-Adresse, Browser-Informationen)",
+          "cookies": "Cookie-Einstellungen und Präferenzen"
+        }
+      },
+      "rights": {
+        "title": "Ihre Rechte",
+        "description": "Sie haben folgende Rechte bezüglich Ihrer personenbezogenen Daten:",
+        "contact": "Für die Ausübung Ihrer Rechte kontaktieren Sie uns unter:",
+        "items": {
+          "access": "Recht auf Auskunft über gespeicherte Daten",
+          "rectification": "Recht auf Berichtigung unrichtiger Daten",
+          "erasure": "Recht auf Löschung Ihrer Daten",
+          "portability": "Recht auf Datenübertragbarkeit",
+          "restriction": "Recht auf Einschränkung der Verarbeitung",
+          "objection": "Recht auf Widerspruch gegen die Verarbeitung"
+        }
+      },
+      "contact": {
+        "title": "Kontakt",
+        "description": "Bei Fragen zum Datenschutz können Sie sich jederzeit an uns wenden:"
+      }
+    }
+  },
+  "common": {
+    "cancel": "Abbrechen"
   }
 }

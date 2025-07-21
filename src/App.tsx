@@ -15,6 +15,7 @@ import { GalleryManagement } from "@/pages/admin/GalleryManagement";
 import { EventsManagement } from "@/pages/admin/EventsManagement";
 import { ContentManagement } from "@/pages/admin/ContentManagement";
 import AboutManagement from "@/pages/admin/AboutManagement";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import Index from "./pages/Index";
 import Events from "./pages/Events";
 import Menu from "./pages/Menu";
@@ -61,6 +62,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <CookieConsentBanner />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

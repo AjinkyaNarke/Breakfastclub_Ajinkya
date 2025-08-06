@@ -12,7 +12,11 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "i18n:analyze": "node i18n-manager.cjs analyze",
+    "i18n:generate": "node i18n-manager.cjs generate",
+    "i18n:validate": "node i18n-manager.cjs validate",
+    "i18n:help": "node i18n-manager.cjs help"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -76,6 +80,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
+    "@inlang/cli": "^3.0.0",
     "@tailwindcss/typography": "^0.5.15",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",

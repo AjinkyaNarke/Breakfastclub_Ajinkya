@@ -30,6 +30,7 @@ export const EventsManagement = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const { toast } = useToast();
+  const [actionLoading, setActionLoading] = useState<{ [id: string]: string | null }>({}); // { [eventId]: 'toggleActive' | 'delete' | null }
 
   useEffect(() => {
     fetchEvents();
@@ -59,15 +60,13 @@ export const EventsManagement = () => {
 
   const handleDeleteEvent = async (id: string) => {
     if (!confirm('Are you sure you want to delete this event?')) return;
-
+    setActionLoading(prev => ({ ...prev, [id]: 'delete' }));
     try {
       const { error } = await supabase
         .from('events')
         .delete()
         .eq('id', id);
-
       if (error) throw error;
-
       setEvents(events.filter(event => event.id !== id));
       toast({
         title: "Success",
@@ -80,22 +79,22 @@ export const EventsManagement = () => {
         description: "Failed to delete event. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: null }));
     }
   };
 
   const handleToggleActive = async (event: Event) => {
+    setActionLoading(prev => ({ ...prev, [event.id]: 'toggleActive' }));
     try {
       const { error } = await supabase
         .from('events')
         .update({ is_active: !event.is_active })
         .eq('id', event.id);
-
       if (error) throw error;
-
       setEvents(events.map(e => 
         e.id === event.id ? { ...e, is_active: !e.is_active } : e
       ));
-
       toast({
         title: "Success",
         description: `Event ${!event.is_active ? 'activated' : 'deactivated'} successfully.`,
@@ -107,6 +106,8 @@ export const EventsManagement = () => {
         description: "Failed to update event status. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [event.id]: null }));
     }
   };
 
@@ -199,7 +200,7 @@ export const EventsManagement = () => {
                       {searchTerm ? "No active events match your search criteria." : "Get started by creating your first event."}
                     </p>
                     {!searchTerm && (
-                      <Button onClick={() => setDialogOpen(true)}>
+                      <Button onClick={() => setDialogOpen(true)} aria-label="Add Event">
                         <Plus className="h-4 w-4 mr-2" />
                         Add Event
                       </Button>
@@ -227,8 +228,14 @@ export const EventsManagement = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => handleToggleActive(event)}
+                          aria-label={event.is_active ? 'Deactivate Event' : 'Activate Event'}
+                          disabled={actionLoading[event.id] === 'toggleActive'}
                         >
-                          <EyeOff className="h-4 w-4" />
+                          {actionLoading[event.id] === 'toggleActive' ? (
+                            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-1" />
+                          ) : (
+                            <EyeOff className="h-4 w-4" />
+                          )}
                         </Button>
                         <Button
                           variant="outline"
@@ -237,6 +244,7 @@ export const EventsManagement = () => {
                             setEditingEvent(event);
                             setDialogOpen(true);
                           }}
+                          aria-label="Edit Event"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -244,8 +252,14 @@ export const EventsManagement = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteEvent(event.id)}
+                          aria-label="Delete Event"
+                          disabled={actionLoading[event.id] === 'delete'}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          {actionLoading[event.id] === 'delete' ? (
+                            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -327,6 +341,7 @@ export const EventsManagement = () => {
                             setEditingEvent(event);
                             setDialogOpen(true);
                           }}
+                          aria-label="Edit Event"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
@@ -334,8 +349,14 @@ export const EventsManagement = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => handleDeleteEvent(event.id)}
+                          aria-label="Delete Event"
+                          disabled={actionLoading[event.id] === 'delete'}
                         >
-                          <Trash2 className="h-4 w-4" />
+                          {actionLoading[event.id] === 'delete' ? (
+                            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
                         </Button>
                       </div>
                     </div>

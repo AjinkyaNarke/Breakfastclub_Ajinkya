@@ -1,10 +1,11 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  user: any;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
 }
@@ -13,54 +14,67 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
 
 interface AuthProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
-    const adminToken = localStorage.getItem('adminToken');
-    if (adminToken) {
-      setIsAuthenticated(true);
-    }
-    setLoading(false);
+    // Check initial auth state
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setIsAuthenticated(true);
+        setUser(user);
+      }
+      setLoading(false);
+    };
+
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          setIsAuthenticated(true);
+          setUser(session.user);
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+        setLoading(false);
+      }
+    );
+
+    return () => subscription.unsubscribe();
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const { data: user, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('username', username)
-        .single();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-      if (error || !user) {
+      if (error) {
+        console.error('Login error:', error);
         return false;
       }
 
-      // For simplicity, we'll check the password directly
-      // In production, you'd want to hash the password properly
-      if (password === 'Lami@007') {
-        localStorage.setItem('adminToken', 'admin-logged-in');
+      if (data.user) {
         setIsAuthenticated(true);
-        
-        // Update last login
-        await supabase
-          .from('admin_users')
-          .update({ last_login: new Date().toISOString() })
-          .eq('id', user.id);
-        
+        setUser(data.user);
         return true;
       }
       
@@ -71,14 +85,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('adminToken');
+  const logout = async () => {
+    await supabase.auth.signOut();
     setIsAuthenticated(false);
+    setUser(null);
     navigate('/admin/login', { replace: true });
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, loading }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

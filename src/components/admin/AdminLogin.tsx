@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,10 +9,12 @@ import { ChefHat } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 export const AdminLogin = () => {
-  const { isAuthenticated, login } = useAuth();
-  const [username, setUsername] = useState('');
+  const { isAuthenticated } = useAuth();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -28,18 +29,24 @@ export const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const success = await login(username, password);
-      if (success) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      if (error) {
+        toast({
+          title: t('login.failed'),
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
         toast({
           title: t('login.success'),
           description: t('login.successDescription'),
         });
-      } else {
-        toast({
-          title: t('login.failed'),
-          description: t('login.failedDescription'),
-          variant: "destructive",
-        });
+        // Refresh the page to update auth state
+        window.location.reload();
       }
     } catch (error) {
       toast({
@@ -71,14 +78,14 @@ export const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username">{t('login.username')}</Label>
+              <Label htmlFor="email">{t('login.email') || 'Email'}</Label>
               <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
-                placeholder={t('login.username')}
+                placeholder="Enter your email"
               />
             </div>
             
@@ -90,7 +97,7 @@ export const AdminLogin = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder={t('login.password')}
+                placeholder="Enter your password"
               />
             </div>
             
@@ -102,12 +109,6 @@ export const AdminLogin = () => {
               {loading ? t('login.loggingIn') : t('login.loginButton')}
             </Button>
           </form>
-          
-          <div className="mt-4 text-sm text-muted-foreground text-center">
-            <p>{t('login.defaultCredentials')}</p>
-            <p>{t('login.usernameLabel')}</p>
-            <p>{t('login.passwordLabel')}</p>
-          </div>
         </CardContent>
       </Card>
     </div>

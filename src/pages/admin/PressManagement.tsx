@@ -13,6 +13,7 @@ import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -71,6 +72,7 @@ export const PressManagement = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState<string | null>(null); // article id
   const { toast } = useToast();
 
   useEffect(() => {
@@ -178,12 +180,12 @@ export const PressManagement = () => {
   };
 
   const handleDelete = async (id: string) => {
+    setDeleteLoading(id);
     try {
       const { error } = await supabase
         .from('press_articles')
         .delete()
         .eq('id', id);
-
       if (error) throw error;
       toast({
         title: "Success",
@@ -197,6 +199,8 @@ export const PressManagement = () => {
         description: "Failed to delete press article",
         variant: "destructive",
       });
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
@@ -233,7 +237,7 @@ export const PressManagement = () => {
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>
+            <Button onClick={resetForm} aria-label="Add Press Article">
               <Plus className="w-4 h-4 mr-2" />
               Add Press Article
             </Button>
@@ -243,6 +247,9 @@ export const PressManagement = () => {
               <DialogTitle>
                 {editingId ? 'Edit Press Article' : 'Add New Press Article'}
               </DialogTitle>
+              <DialogDescription>
+                {editingId ? 'Update the press article details below.' : 'Create a new press article for your restaurant.'}
+              </DialogDescription>
             </DialogHeader>
             
             <form onSubmit={handleSubmit} className="space-y-4 max-h-[70vh] overflow-y-auto">
@@ -342,11 +349,14 @@ export const PressManagement = () => {
                   type="button" 
                   variant="outline" 
                   onClick={() => setIsDialogOpen(false)}
+                  aria-label="Cancel"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={saving}>
-                  {saving ? 'Saving...' : editingId ? 'Update Article' : 'Create Article'}
+                <Button type="submit" disabled={saving} aria-label={editingId ? 'Update Article' : 'Create Article'}>
+                  {saving ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                  ) : editingId ? 'Update Article' : 'Create Article'}
                 </Button>
               </div>
             </form>
@@ -390,6 +400,7 @@ export const PressManagement = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => window.open(article.article_url, '_blank')}
+                  aria-label="View Article"
                 >
                   <ExternalLink className="w-3 h-3 mr-1" />
                   View
@@ -400,14 +411,19 @@ export const PressManagement = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleEdit(article)}
+                    aria-label="Edit Article"
                   >
                     <Edit2 className="w-3 h-3" />
                   </Button>
                   
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="sm">
-                        <Trash2 className="w-3 h-3" />
+                      <Button variant="ghost" size="sm" aria-label="Delete Article" disabled={deleteLoading === article.id}>
+                        {deleteLoading === article.id ? (
+                          <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                        ) : (
+                          <Trash2 className="w-3 h-3" />
+                        )}
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
@@ -419,8 +435,10 @@ export const PressManagement = () => {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(article.id)}>
-                          Delete
+                        <AlertDialogAction onClick={() => handleDelete(article.id)} aria-label="Confirm Delete" disabled={deleteLoading === article.id}>
+                          {deleteLoading === article.id ? (
+                            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                          ) : 'Delete'}
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

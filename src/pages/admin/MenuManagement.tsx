@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2, Eye, EyeOff, Search, TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { EnhancedMenuItemDialog } from '@/components/admin/EnhancedMenuItemDialog';
+import { StreamlinedMenuItemDialog } from '@/components/admin/StreamlinedMenuItemDialog';
 import { AIUsageDashboard } from '@/components/admin/AIUsageDashboard';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useTranslation } from 'react-i18next';
@@ -17,6 +17,10 @@ interface MenuItem {
   id: string;
   name: string;
   description: string;
+  name_de?: string;
+  name_en?: string;
+  description_de?: string;
+  description_en?: string;
   image_url: string;
   regular_price: number;
   student_price: number;
@@ -35,6 +39,11 @@ interface MenuItem {
 interface MenuCategory {
   id: string;
   name: string;
+  name_de?: string;
+  name_en?: string;
+  description?: string;
+  description_de?: string;
+  description_en?: string;
 }
 
 export const MenuManagement = () => {
@@ -50,6 +59,7 @@ export const MenuManagement = () => {
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslation('admin');
+  const [actionLoading, setActionLoading] = useState<{ [id: string]: string | null }>({}); // { [itemId]: 'toggle' | 'delete' | null }
 
   useEffect(() => {
     fetchMenuItems();
@@ -60,7 +70,7 @@ export const MenuManagement = () => {
     try {
       const { data, error } = await supabase
         .from('menu_categories')
-        .select('id, name')
+        .select('id, name, name_de, name_en, description, description_de, description_en')
         .order('display_order');
 
       if (error) throw error;
@@ -96,7 +106,11 @@ export const MenuManagement = () => {
 
   const filteredItems = menuItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description?.toLowerCase().includes(searchTerm.toLowerCase());
+                         item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.name_de?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.name_en?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description_de?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description_en?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || item.category?.id === selectedCategory;
     const matchesFeatured = !showFeaturedOnly || item.is_featured;
     const matchesAvailable = !showAvailableOnly || item.is_available;
@@ -105,54 +119,55 @@ export const MenuManagement = () => {
   });
 
   const toggleAvailability = async (id: string, currentStatus: boolean) => {
+    setActionLoading(prev => ({ ...prev, [id]: 'toggle' }));
     try {
       const { error } = await supabase
         .from('menu_items')
         .update({ is_available: !currentStatus })
         .eq('id', id);
-
       if (error) throw error;
-      
       await fetchMenuItems();
       toast({
-        title: "Success",
-        description: t('menu.messages.availabilityUpdated', { 
-          status: !currentStatus ? t('menu.messages.enabled') : t('menu.messages.disabled') 
+        title: 'Success',
+        description: t('menu.messages.availabilityUpdated', {
+          status: !currentStatus ? t('menu.messages.enabled') : t('menu.messages.disabled'),
         }),
       });
     } catch (error) {
       console.error('Error updating availability:', error);
       toast({
-        title: "Error",
+        title: 'Error',
         description: t('menu.messages.availabilityError'),
-        variant: "destructive",
+        variant: 'destructive',
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: null }));
     }
   };
 
   const deleteItem = async (id: string) => {
     if (!confirm(t('menu.deleteConfirm'))) return;
-
+    setActionLoading(prev => ({ ...prev, [id]: 'delete' }));
     try {
       const { error } = await supabase
         .from('menu_items')
         .delete()
         .eq('id', id);
-
       if (error) throw error;
-      
       await fetchMenuItems();
       toast({
-        title: "Success",
+        title: 'Success',
         description: t('menu.messages.deleteSuccess'),
       });
     } catch (error) {
       console.error('Error deleting item:', error);
       toast({
-        title: "Error",
+        title: 'Error',
         description: t('menu.messages.deleteError'),
-        variant: "destructive",
+        variant: 'destructive',
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: null }));
     }
   };
 
@@ -323,9 +338,13 @@ export const MenuManagement = () => {
                     <Button
                       size="sm"
                       variant="outline"
+                      aria-label={item.is_available ? t('menu.aria.hideItem') : t('menu.aria.showItem')}
                       onClick={() => toggleAvailability(item.id, item.is_available)}
+                      disabled={actionLoading[item.id] === 'toggle'}
                     >
-                      {item.is_available ? (
+                      {actionLoading[item.id] === 'toggle' ? (
+                        <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-400 mr-1" />
+                      ) : item.is_available ? (
                         <EyeOff className="h-4 w-4" />
                       ) : (
                         <Eye className="h-4 w-4" />
@@ -334,6 +353,7 @@ export const MenuManagement = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
+                      aria-label={t('menu.aria.editItem')}
                       onClick={() => handleEdit(item)}
                     >
                       <Edit className="h-4 w-4" />
@@ -341,9 +361,15 @@ export const MenuManagement = () => {
                     <Button
                       size="sm"
                       variant="destructive"
+                      aria-label={t('menu.aria.deleteItem')}
                       onClick={() => deleteItem(item.id)}
+                      disabled={actionLoading[item.id] === 'delete'}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      {actionLoading[item.id] === 'delete' ? (
+                        <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -367,11 +393,11 @@ export const MenuManagement = () => {
         </div>
       )}
 
-      {/* Enhanced Menu Item Dialog */}
-      <EnhancedMenuItemDialog
+      {/* Streamlined Menu Item Dialog */}
+      <StreamlinedMenuItemDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
-        item={editingItem}
+        menuItem={editingItem}
         onSave={handleDialogSave}
       />
 

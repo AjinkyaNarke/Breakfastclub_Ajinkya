@@ -8,6 +8,7 @@
     "events": "Veranstaltungen",
     "press": "Presse",
     "contact": "Kontakt",
+    "chat": "KI-Chat",
     "reservations": "Reservierungen"
   },
   "buttons": {
@@ -178,5 +179,12 @@
   },
   "common": {
     "cancel": "Abbrechen"
+  },
+  "chat": {
+    "title": "KI-Geschäftsassistent",
+    "subtitle": "Fragen Sie mich alles über Ihr Restaurantgeschäft, Menüoptimierung oder erhalten Sie Einblicke und Empfehlungen.",
+    "assistant": "Geschäftsintelligenz-Assistent",
+    "description": "Angetrieben von fortschrittlicher KI, um Ihnen bei datengestützten Entscheidungen zu helfen",
+    "disclaimer": "Dieser KI-Assistent ist darauf ausgelegt, bei Geschäftseinblicken und Empfehlungen zu helfen. Für spezifische betriebliche Fragen kontaktieren Sie bitte das Restaurant direkt."
   }
 }

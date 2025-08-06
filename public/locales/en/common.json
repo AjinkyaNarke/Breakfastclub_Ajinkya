@@ -8,6 +8,7 @@
     "events": "Events",
     "press": "Press",
     "contact": "Contact",
+    "chat": "AI Chat",
     "reservations": "Reservations"
   },
   "buttons": {
@@ -178,5 +179,12 @@
   },
   "common": {
     "cancel": "Cancel"
+  },
+  "chat": {
+    "title": "AI Business Assistant",
+    "subtitle": "Ask me anything about your restaurant business, menu optimization, or get insights and recommendations.",
+    "assistant": "Business Intelligence Assistant",
+    "description": "Powered by advanced AI to help you make data-driven decisions",
+    "disclaimer": "This AI assistant is designed to help with business insights and recommendations. For specific operational questions, please contact the restaurant directly."
   }
 }

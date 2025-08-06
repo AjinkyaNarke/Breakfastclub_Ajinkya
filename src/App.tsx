@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { I18nProvider } from "@/components/I18nProvider";
 import { AuthProvider } from "@/hooks/useAuth";
+import DynamicFavicon from "@/components/DynamicFavicon";
 import Index from "./pages/Index";
 import Menu from "./pages/Menu";
 import Reservations from "./pages/Reservations";
@@ -30,6 +31,11 @@ import { PressManagement } from "./pages/admin/PressManagement";
 import ReservationManagement from "./pages/admin/ReservationManagement";
 import AboutManagement from "./pages/admin/AboutManagement";
 import { ContentManagement } from "./pages/admin/ContentManagement";
+import { PrepManagement } from "./pages/admin/PrepManagement";
+import { PrepUsageAnalyticsPage } from "./pages/admin/PrepUsageAnalytics";
+// import SalesAnalytics from "./pages/admin/SalesAnalytics";
+import AdminChat from "./pages/admin/AdminChat";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 const queryClient = new QueryClient();
 
@@ -40,8 +46,14 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true,
+            }}
+          >
             <AuthProvider>
+              <DynamicFavicon />
               <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
@@ -69,6 +81,11 @@ function App() {
                 <Route path="reservations" element={<ReservationManagement />} />
                 <Route path="about" element={<AboutManagement />} />
                 <Route path="content" element={<ContentManagement />} />
+                <Route path="preps" element={<PrepManagement />} />
+                <Route path="prep-analytics" element={<PrepUsageAnalyticsPage />} />
+                <Route path="chat" element={<AdminChat />} />
+                <Route path="settings" element={<AdminSettings />} />
+                {/* <Route path="sales-analytics" element={<SalesAnalytics />} /> */}
               </Route>
               
                 {/* 404 route */}

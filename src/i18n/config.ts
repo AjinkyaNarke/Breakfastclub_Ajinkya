@@ -10,10 +10,10 @@ i18n
   .use(initReactI18next)
   .init({
     debug: false,
-    lng: 'de', // Force German as the initial language
-    fallbackLng: 'de', // Default to German
+    lng: undefined, // Let language detector/localStorage/browser decide
+    fallbackLng: 'en', // Fallback to English if not found
     defaultNS: 'common',
-    ns: ['common', 'homepage', 'admin'],
+    ns: ['common', 'homepage', 'admin', 'menu', 'ingredients', 'categories', 'dashboard', 'gallery', 'videos', 'events', 'press', 'reservations', 'content', 'settings', 'about', 'navigation'],
     
     detection: {
       order: ['localStorage', 'htmlTag', 'navigator'], // Check localStorage first for saved preference

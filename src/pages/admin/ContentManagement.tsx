@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Edit, Save, X, Scale, FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useTranslationCache } from '@/hooks/useTranslationCache';
+import { EnhancedVoiceInput } from '@/components/EnhancedVoiceInput';
 
 interface ContentBlock {
   id: string;
@@ -20,6 +22,10 @@ interface ContentBlock {
   image_url: string | null;
   is_active: boolean;
   updated_at: string;
+  title_de: string | null;
+  title_en: string | null;
+  content_de: string | null;
+  content_en: string | null;
 }
 
 interface ContentForm {
@@ -28,18 +34,49 @@ interface ContentForm {
   content: string;
   image_url: string;
   is_active: boolean;
+  title_de: string;
+  title_en: string;
+  content_de: string;
+  content_en: string;
+}
+
+// Helper function to parse title and content from text
+function parseTitleAndContent(text: string) {
+  // Example: "This section is About Us and the content is We are a community..."
+  const match = text.match(/this section is ([^.,]+) and the content is ([^.]*)/i);
+  if (match) {
+    const title = match[1].trim();
+    const content = match[2].trim();
+    return { title, content };
+  }
+  // Fallback: try to split by 'and the content is'
+  const [titlePart, contentPart] = text.split(/and the content is/i);
+  if (titlePart && contentPart) {
+    const title = titlePart.replace(/this section is/i, '').trim();
+    const content = contentPart.trim();
+    return { title, content };
+  }
+  return { title: text.trim(), content: '' };
 }
 
 export const ContentManagement = () => {
   const [editingBlock, setEditingBlock] = useState<ContentBlock | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const { getTranslation, updateCache, loading: translationLoading, error: translationError } = useTranslationCache();
   const [formData, setFormData] = useState<ContentForm>({
     section_name: '',
     title: '',
+    title_de: '',
+    title_en: '',
     content: '',
+    content_de: '',
+    content_en: '',
     image_url: '',
     is_active: true
   });
+  const [parsing, setParsing] = useState(false);
+  // Add local loading state for ContentBlockCard save
+  const [blockActionLoading, setBlockActionLoading] = useState<string | null>(null);
   
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -104,7 +141,11 @@ export const ContentManagement = () => {
       setFormData({
         section_name: '',
         title: '',
+        title_de: '',
+        title_en: '',
         content: '',
+        content_de: '',
+        content_en: '',
         image_url: '',
         is_active: true
       });
@@ -127,14 +168,99 @@ export const ContentManagement = () => {
     setEditingBlock({ ...block });
   };
 
-  const handleSave = () => {
+  // On item load, populate multi-language fields
+  useEffect(() => {
     if (editingBlock) {
-      updateMutation.mutate(editingBlock);
+      setFormData({
+        ...formData,
+        section_name: editingBlock.section_name || '',
+        title: editingBlock.title || '',
+        title_de: editingBlock.title_de || '',
+        title_en: editingBlock.title_en || '',
+        content: editingBlock.content || '',
+        content_de: editingBlock.content_de || '',
+        content_en: editingBlock.content_en || '',
+        image_url: editingBlock.image_url || '',
+        is_active: editingBlock.is_active,
+      });
+    } else {
+      setFormData({
+        section_name: '',
+        title: '',
+        title_de: '',
+        title_en: '',
+        content: '',
+        content_de: '',
+        content_en: '',
+        image_url: '',
+        is_active: true
+      });
+    }
+  }, [editingBlock, isCreating]);
+
+  // Auto-translate when one language field is filled and the other is empty
+  useEffect(() => {
+    const autoTranslate = async () => {
+      if (formData.title_de && !formData.title_en) {
+        try {
+          const translated = await getTranslation(formData.title_de, 'de', 'en');
+          setFormData((prev) => ({ ...prev, title_en: translated }));
+        } catch {}
+      } else if (formData.title_en && !formData.title_de) {
+        try {
+          const translated = await getTranslation(formData.title_en, 'en', 'de');
+          setFormData((prev) => ({ ...prev, title_de: translated }));
+        } catch {}
+      }
+      if (formData.content_de && !formData.content_en) {
+        try {
+          const translated = await getTranslation(formData.content_de, 'de', 'en');
+          setFormData((prev) => ({ ...prev, content_en: translated }));
+        } catch {}
+      } else if (formData.content_en && !formData.content_de) {
+        try {
+          const translated = await getTranslation(formData.content_en, 'en', 'de');
+          setFormData((prev) => ({ ...prev, content_de: translated }));
+        } catch {}
+      }
+    };
+    autoTranslate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.title_de, formData.title_en, formData.content_de, formData.content_en]);
+
+  const handleSave = async () => {
+    setBlockActionLoading('save');
+    const saveData = {
+      ...formData,
+      title: formData.title_de || formData.title_en || formData.title,
+      content: formData.content_de || formData.content_en || formData.content,
+      title_de: formData.title_de,
+      title_en: formData.title_en,
+      content_de: formData.content_de,
+      content_en: formData.content_en,
+      image_url: formData.image_url,
+      is_active: formData.is_active,
+    };
+    if (editingBlock) {
+      updateMutation.mutate(editingBlock, {
+        onSettled: () => setBlockActionLoading(null)
+      });
+    } else {
+      createMutation.mutate(saveData, {
+        onSettled: () => setBlockActionLoading(null)
+      });
     }
   };
 
   const handleCreate = () => {
     createMutation.mutate(formData);
+  };
+
+  const handleVoiceResult = (text: string) => {
+    setParsing(true);
+    const { title, content } = parseTitleAndContent(text);
+    setFormData(prev => ({ ...prev, title_de: title, content_de: content })); // Assume German for now, can be dynamic
+    setParsing(false);
   };
 
   const predefinedSections = [
@@ -216,7 +342,11 @@ E-Mail: [E-Mail]
     setFormData({
       section_name: sectionName,
       title: template.title,
+      title_de: '',
+      title_en: '',
       content: template.content,
+      content_de: '',
+      content_en: '',
       image_url: '',
       is_active: true
     });
@@ -384,6 +514,14 @@ E-Mail: [E-Mail]
             <CardDescription>{t('content.form.createDescription')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Voice Input for AI-powered content entry */}
+            <EnhancedVoiceInput
+              language={t('language') === 'de' ? 'de' : 'en'}
+              onResult={handleVoiceResult}
+              label="Dictate section and content (e.g. 'This section is About Us and the content is We are a community...')"
+              model="nova-2"
+            />
+            {parsing && <div className="text-sm text-muted-foreground">Parsing voice input...</div>}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="section_name">{t('content.form.sectionName')}</Label>
@@ -418,6 +556,25 @@ E-Mail: [E-Mail]
             </div>
             
             <div>
+              <Label htmlFor="title_de">{t('content.form.titleDe')}</Label>
+              <Input
+                id="title_de"
+                value={formData.title_de}
+                onChange={(e) => setFormData({ ...formData, title_de: e.target.value })}
+                placeholder={t('content.form.titleDePlaceholder')}
+              />
+            </div>
+            <div>
+              <Label htmlFor="title_en">{t('content.form.titleEn')}</Label>
+              <Input
+                id="title_en"
+                value={formData.title_en}
+                onChange={(e) => setFormData({ ...formData, title_en: e.target.value })}
+                placeholder={t('content.form.titleEnPlaceholder')}
+              />
+            </div>
+
+            <div>
               <Label htmlFor="content">{t('content.form.content')}</Label>
               <Textarea
                 id="content"
@@ -425,6 +582,27 @@ E-Mail: [E-Mail]
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 rows={8}
                 placeholder={t('content.form.contentPlaceholder')}
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="content_de">{t('content.form.contentDe')}</Label>
+              <Textarea
+                id="content_de"
+                value={formData.content_de}
+                onChange={(e) => setFormData({ ...formData, content_de: e.target.value })}
+                rows={8}
+                placeholder={t('content.form.contentDePlaceholder')}
+              />
+            </div>
+            <div>
+              <Label htmlFor="content_en">{t('content.form.contentEn')}</Label>
+              <Textarea
+                id="content_en"
+                value={formData.content_en}
+                onChange={(e) => setFormData({ ...formData, content_en: e.target.value })}
+                rows={8}
+                placeholder={t('content.form.contentEnPlaceholder')}
               />
             </div>
             
@@ -449,11 +627,15 @@ E-Mail: [E-Mail]
             </div>
             
             <div className="flex gap-2">
-              <Button onClick={handleCreate} disabled={createMutation.isPending}>
-                <Save className="h-4 w-4 mr-2" />
+              <Button onClick={handleCreate} disabled={createMutation.isPending} aria-label="Create Content Block">
+                {createMutation.isPending ? (
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
                 {t('buttons.create')}
               </Button>
-              <Button variant="outline" onClick={() => setIsCreating(false)}>
+              <Button variant="outline" onClick={() => setIsCreating(false)} aria-label="Cancel">
                 <X className="h-4 w-4 mr-2" />
                 {t('buttons.cancel')}
               </Button>
@@ -485,6 +667,13 @@ function ContentBlockCard({
   onUpdate 
 }: ContentBlockCardProps) {
   const { t } = useTranslation('admin');
+  const [localLoading, setLocalLoading] = useState(false);
+
+  const handleSaveClick = async () => {
+    setLocalLoading(true);
+    await onSave();
+    setLocalLoading(false);
+  };
 
   return (
     <Card className={isEditing ? "border-2 border-primary" : ""}>
@@ -502,7 +691,7 @@ function ContentBlockCard({
             </CardDescription>
           </div>
           {!isEditing && (
-            <Button variant="outline" size="sm" onClick={() => onEdit(block)}>
+            <Button variant="outline" size="sm" onClick={() => onEdit(block)} aria-label="Edit Content Block">
               <Edit className="h-4 w-4" />
             </Button>
           )}
@@ -549,11 +738,15 @@ function ContentBlockCard({
             </div>
             
             <div className="flex gap-2">
-              <Button onClick={onSave}>
-                <Save className="h-4 w-4 mr-2" />
+              <Button onClick={handleSaveClick} aria-label="Save Content Block" disabled={localLoading}>
+                {localLoading ? (
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                ) : (
+                  <Save className="h-4 w-4 mr-2" />
+                )}
                 {t('buttons.save')}
               </Button>
-              <Button variant="outline" onClick={onCancel}>
+              <Button variant="outline" onClick={onCancel} aria-label="Cancel Edit">
                 <X className="h-4 w-4 mr-2" />
                 {t('buttons.cancel')}
               </Button>

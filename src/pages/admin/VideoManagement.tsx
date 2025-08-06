@@ -29,6 +29,7 @@ export const VideoManagement = () => {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const { toast } = useToast();
   const { t } = useTranslation('admin');
+  const [actionLoading, setActionLoading] = useState<{ [id: string]: string | null }>({}); // { [videoId]: 'toggleHero' | 'delete' | null }
 
   useEffect(() => {
     fetchVideos();
@@ -57,7 +58,7 @@ export const VideoManagement = () => {
 
   const deleteVideo = async (id: string) => {
     if (!confirm(t('videos.messages.deleteConfirm'))) return;
-
+    setActionLoading(prev => ({ ...prev, [id]: 'delete' }));
     try {
       // Get video data to delete the file from storage
       const { data: video } = await supabase
@@ -97,10 +98,13 @@ export const VideoManagement = () => {
         description: t('videos.messages.deleteError'),
         variant: "destructive",
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: null }));
     }
   };
 
   const toggleHeroVideo = async (id: string, currentStatus: boolean) => {
+    setActionLoading(prev => ({ ...prev, [id]: 'toggleHero' }));
     try {
       const { error } = await supabase
         .from('restaurant_videos')
@@ -121,6 +125,8 @@ export const VideoManagement = () => {
         description: t('videos.messages.heroUpdateError'),
         variant: "destructive",
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: null }));
     }
   };
 
@@ -201,19 +207,29 @@ export const VideoManagement = () => {
                     variant={video.featured_for_hero ? "default" : "outline"}
                     onClick={() => toggleHeroVideo(video.id, video.featured_for_hero)}
                     className="w-full"
+                    aria-label={video.featured_for_hero ? t('videos.aria.removeFromHero') : t('videos.aria.setAsHero')}
+                    disabled={actionLoading[video.id] === 'toggleHero'}
                   >
-                    {video.featured_for_hero ? t('videos.actions.removeFromHero') : t('videos.actions.setAsHero')}
+                    {actionLoading[video.id] === 'toggleHero' ? (
+                      <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                    ) : video.featured_for_hero ? t('videos.actions.removeFromHero') : t('videos.actions.setAsHero')}
                   </Button>
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" aria-label={t('videos.aria.editVideo')}>
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
                       onClick={() => deleteVideo(video.id)}
+                      aria-label={t('videos.aria.deleteVideo')}
+                      disabled={actionLoading[video.id] === 'delete'}
                     >
-                      <Trash2 className="h-4 w-4" />
+                      {actionLoading[video.id] === 'delete' ? (
+                        <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </div>

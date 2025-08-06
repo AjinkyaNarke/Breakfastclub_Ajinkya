@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, X, Search, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Plus, X, Search, TrendingUp, AlertTriangle, Package } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
@@ -25,38 +25,54 @@ interface Ingredient {
   };
 }
 
-interface SelectedIngredient {
-  ingredient_id: string;
-  quantity: number;
-  unit: string;
-  notes?: string;
-  ingredient: Ingredient;
+interface Prep {
+  id: string;
+  name: string;
+  name_de: string;
+  name_en: string;
+  batch_yield: string;
+  cost_per_batch: number;
+  notes: string;
 }
 
+export type SmartComponent = 
+  | { type: 'ingredient'; ingredient: Ingredient; quantity: number; unit: string; notes?: string }
+  | { type: 'prep'; prep: Prep; quantity: number; unit: string; notes?: string };
+
 interface SmartIngredientSelectorProps {
-  selectedIngredients: SelectedIngredient[];
-  onIngredientsChange: (ingredients: SelectedIngredient[]) => void;
+  selectedComponents: SmartComponent[];
+  onComponentsChange: (components: SmartComponent[]) => void;
   menuItemId?: string;
 }
 
-export const SmartIngredientSelector = ({ selectedIngredients, onIngredientsChange, menuItemId }: SmartIngredientSelectorProps) => {
+export const SmartIngredientSelector = ({ selectedComponents, onComponentsChange, menuItemId }: SmartIngredientSelectorProps) => {
   const { t } = useTranslation('admin');
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [preps, setPreps] = useState<Prep[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [smartSuggestions, setSmartSuggestions] = useState<Ingredient[]>([]);
+  const [smartSuggestions, setSmartSuggestions] = useState<SmartComponent[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchIngredients();
+    fetchPreps();
     fetchCategories();
   }, []);
 
   useEffect(() => {
     generateSmartSuggestions();
-  }, [selectedIngredients, ingredients]);
+  }, [selectedComponents, ingredients, preps]);
+
+  const fetchPreps = async () => {
+    // TODO: Replace with actual API call
+    setPreps([
+      { id: 'p1', name: 'Green Curry Paste', name_de: 'Grüne Curry-Paste', name_en: 'Green Curry Paste', batch_yield: '500ml', cost_per_batch: 8.5, notes: 'Store in fridge' },
+      { id: 'p2', name: 'Garlic Oil', name_de: 'Knoblauchöl', name_en: 'Garlic Oil', batch_yield: '250ml', cost_per_batch: 3.2, notes: 'Use within 1 week' },
+    ]);
+  };
 
   const fetchCategories = async () => {
     try {
@@ -98,99 +114,121 @@ export const SmartIngredientSelector = ({ selectedIngredients, onIngredientsChan
     }
   };
 
-  const generateSmartSuggestions = () => {
-    if (selectedIngredients.length === 0) {
-      // Show popular ingredients when nothing is selected
-      setSmartSuggestions(ingredients.slice(0, 6));
-      return;
-    }
-
-    // Get categories of selected ingredients
-    const selectedCategories = selectedIngredients.map(si => si.ingredient.category_id);
-    const selectedProperties = new Set(
-      selectedIngredients.flatMap(si => si.ingredient.dietary_properties || [])
-    );
-
-    // Find ingredients from similar categories or with similar properties
-    const suggestions = ingredients
-      .filter(ingredient => {
-        const notAlreadySelected = !selectedIngredients.find(si => si.ingredient_id === ingredient.id);
-        const similarCategory = selectedCategories.includes(ingredient.category_id);
-        const hasCommonProperties = ingredient.dietary_properties?.some(prop => 
-          selectedProperties.has(prop)
-        );
-        
-        return notAlreadySelected && (similarCategory || hasCommonProperties);
-      })
-      .slice(0, 5);
-
-    setSmartSuggestions(suggestions);
+  const getDisplayName = (item: Ingredient | Prep) => {
+    const currentLang = t('language') === 'de' ? 'de' : 'en';
+    return (item as any)[`name_${currentLang}`] || item.name;
   };
 
   const filteredIngredients = ingredients.filter(ingredient => {
-    const matchesSearch = ingredient.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = getDisplayName(ingredient).toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || ingredient.category_id === selectedCategory;
-    const notAlreadySelected = !selectedIngredients.find(si => si.ingredient_id === ingredient.id);
-    
-    return matchesSearch && matchesCategory && notAlreadySelected;
+    return matchesSearch && matchesCategory;
+  });
+
+  const filteredPreps = preps.filter(prep => {
+    const matchesSearch = getDisplayName(prep).toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
   });
 
   const addIngredient = (ingredient: Ingredient) => {
-    const newIngredient: SelectedIngredient = {
-      ingredient_id: ingredient.id,
-      quantity: 1,
-      unit: ingredient.unit,
-      notes: '',
-      ingredient
-    };
-    
-    onIngredientsChange([...selectedIngredients, newIngredient]);
-  };
-
-  const removeIngredient = (ingredientId: string) => {
-    onIngredientsChange(selectedIngredients.filter(si => si.ingredient_id !== ingredientId));
-  };
-
-  const updateIngredient = (ingredientId: string, updates: Partial<SelectedIngredient>) => {
-    onIngredientsChange(
-      selectedIngredients.map(si => 
-        si.ingredient_id === ingredientId ? { ...si, ...updates } : si
-      )
+    const existingIndex = selectedComponents.findIndex(
+      item => item.type === 'ingredient' && item.ingredient.id === ingredient.id
     );
+
+    if (existingIndex >= 0) {
+      const updatedComponents = selectedComponents.map((item, index) =>
+        index === existingIndex && item.type === 'ingredient'
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+      onComponentsChange(updatedComponents);
+    } else {
+      onComponentsChange([
+        ...selectedComponents,
+        { type: 'ingredient', ingredient, quantity: 1, unit: ingredient.unit }
+      ]);
+    }
+  };
+
+  const addPrep = (prep: Prep) => {
+    const existingIndex = selectedComponents.findIndex(
+      item => item.type === 'prep' && item.prep.id === prep.id
+    );
+
+    if (existingIndex >= 0) {
+      const updatedComponents = selectedComponents.map((item, index) =>
+        index === existingIndex && item.type === 'prep'
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+      onComponentsChange(updatedComponents);
+    } else {
+      onComponentsChange([
+        ...selectedComponents,
+        { type: 'prep', prep, quantity: 1, unit: 'g' }
+      ]);
+    }
+  };
+
+  const removeComponent = (index: number) => {
+    onComponentsChange(selectedComponents.filter((_, i) => i !== index));
+  };
+
+  const updateComponent = (index: number, updates: Partial<Omit<SmartComponent, 'type'>>) => {
+    onComponentsChange(selectedComponents.map((item, i) => 
+      i === index ? { ...item, ...updates } : item
+    ));
   };
 
   const calculateTotalCost = () => {
-    return selectedIngredients.reduce((total, si) => {
-      const cost = si.ingredient.cost_per_unit || 0;
-      return total + (cost * si.quantity);
+    return selectedComponents.reduce((total, item) => {
+      if (item.type === 'ingredient') {
+        return total + (item.ingredient.cost_per_unit || 0) * item.quantity;
+      } else if (item.type === 'prep') {
+        // For now, assume cost_per_batch is for the batch_yield, and quantity is in grams/ml
+        return total + (item.prep.cost_per_batch * (item.quantity / 100));
+      }
+      return total;
     }, 0);
   };
 
   const getCostWarnings = () => {
-    const warnings = [];
+    const warnings: string[] = [];
     const totalCost = calculateTotalCost();
-    
+
     if (totalCost > 15) {
       warnings.push(t('ingredientSelector.warnings.highCost'));
     }
-    
-    const expensiveIngredients = selectedIngredients.filter(si => 
-      (si.ingredient.cost_per_unit || 0) * si.quantity > 5
-    );
-    
-    if (expensiveIngredients.length > 0) {
+
+    const expensiveComponents = selectedComponents.filter(item => {
+      if (item.type === 'ingredient') {
+        return (item.ingredient.cost_per_unit || 0) * item.quantity > 5;
+      } else if (item.type === 'prep') {
+        return item.prep.cost_per_batch * (item.quantity / 100) > 5;
+      }
+      return false;
+    });
+
+    if (expensiveComponents.length > 2) {
       warnings.push(t('ingredientSelector.warnings.expensiveIngredients'));
     }
-    
+
     return warnings;
   };
 
   const getSeasonalWarnings = () => {
+    const warnings: string[] = [];
     const currentSeason = getCurrentSeason();
-    return selectedIngredients.filter(si => {
-      const seasonal = si.ingredient.seasonal_availability;
-      return seasonal && seasonal.length > 0 && !seasonal.includes(currentSeason);
+
+    selectedComponents.forEach(item => {
+      if (item.type === 'ingredient' && item.ingredient.seasonal_availability) {
+        if (!item.ingredient.seasonal_availability.includes(currentSeason)) {
+          warnings.push(t('ingredientSelector.warnings.notSeasonal', { ingredient: getDisplayName(item.ingredient) }));
+        }
+      }
     });
+
+    return warnings;
   };
 
   const getCurrentSeason = () => {
@@ -201,109 +239,114 @@ export const SmartIngredientSelector = ({ selectedIngredients, onIngredientsChan
     return 'winter';
   };
 
-  const costWarnings = getCostWarnings();
-  const seasonalWarnings = getSeasonalWarnings();
+  const generateSmartSuggestions = () => {
+    // TODO: Implement AI-powered suggestions based on selected components
+    // For now, return empty array
+    setSmartSuggestions([]);
+  };
 
   if (loading) {
     return <div className="text-center py-4">{t('ingredientSelector.loadingIngredients')}</div>;
   }
 
+  const costWarnings = getCostWarnings();
+  const seasonalWarnings = getSeasonalWarnings();
+  const totalCost = calculateTotalCost();
+
   return (
-    <div className="space-y-6">
-      {/* Cost Overview & Warnings */}
+    <div className="space-y-4">
+      {/* Cost Analysis */}
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              {t('ingredientSelector.costAnalysis')}
-            </CardTitle>
-            <div className="text-lg font-bold">
-              €{calculateTotalCost().toFixed(2)}
-            </div>
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            {t('ingredientSelector.costAnalysis')}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {(costWarnings.length > 0 || seasonalWarnings.length > 0) && (
+          <div className="flex items-center justify-between mb-4">
+            <span className="text-lg font-semibold">{t('ingredientSelector.totalCost')}:</span>
+            <span className="text-2xl font-bold text-green-600">€{totalCost.toFixed(2)}</span>
+          </div>
+
+          {costWarnings.length > 0 && (
             <div className="space-y-2">
               {costWarnings.map((warning, index) => (
-                <div key={index} className="flex items-center gap-2 text-orange-600 text-sm">
-                  <AlertTriangle className="h-4 w-4" />
-                  {warning}
-                </div>
-              ))}
-              {seasonalWarnings.map((si) => (
-                <div key={si.ingredient_id} className="flex items-center gap-2 text-amber-600 text-sm">
-                  <AlertTriangle className="h-4 w-4" />
-                  {t('ingredientSelector.warnings.notSeasonal', { ingredient: si.ingredient.name })}
+                <div key={index} className="flex items-center gap-2 p-2 bg-yellow-50 border border-yellow-200 rounded">
+                  <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                  <span className="text-sm text-yellow-800">{warning}</span>
                 </div>
               ))}
             </div>
           )}
+
+          {seasonalWarnings.length > 0 && (
+            <div className="space-y-2 mt-4">
+              {seasonalWarnings.map((warning, index) => (
+                <div key={index} className="flex items-center gap-2 p-2 bg-orange-50 border border-orange-200 rounded">
+                  <AlertTriangle className="h-4 w-4 text-orange-600" />
+                  <span className="text-sm text-orange-800">{warning}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
           {costWarnings.length === 0 && seasonalWarnings.length === 0 && (
             <p className="text-green-600 text-sm">{t('ingredientSelector.costOptimal')}</p>
           )}
         </CardContent>
       </Card>
 
-      {/* Selected Ingredients */}
+      {/* Selected Components */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">{t('ingredientSelector.selectedIngredients')}</CardTitle>
         </CardHeader>
         <CardContent>
-          {selectedIngredients.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">
-              {t('ingredientSelector.noIngredients')}
-            </p>
+          {selectedComponents.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>{t('ingredientSelector.noIngredients')}</p>
+            </div>
           ) : (
             <div className="space-y-3">
-              {selectedIngredients.map((si) => (
-                <div key={si.ingredient_id} className="flex items-center gap-3 p-3 border rounded-lg">
+              {selectedComponents.map((item, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex-1">
-                    <div className="font-medium">{si.ingredient.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {si.ingredient.category?.name}
+                    <div className="font-medium">
+                      {item.type === 'ingredient' ? getDisplayName(item.ingredient) : `Prep: ${getDisplayName(item.prep)}`}
                     </div>
-                    {si.ingredient.dietary_properties && si.ingredient.dietary_properties.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {si.ingredient.dietary_properties.map((prop) => (
-                          <Badge key={prop} variant="outline" className="text-xs">
-                            {t(`ingredients.dietary.${prop}`, prop)}
-                          </Badge>
-                        ))}
-                      </div>
-                    )}
+                    <div className="text-sm text-muted-foreground">
+                      {item.type === 'ingredient' ? item.ingredient.category?.name : item.prep.batch_yield}
+                    </div>
                   </div>
-                  
                   <div className="flex items-center gap-2">
                     <Input
                       type="number"
-                      step="0.1"
-                      value={si.quantity}
-                      onChange={(e) => updateIngredient(si.ingredient_id, { 
-                        quantity: parseFloat(e.target.value) || 0 
-                      })}
+                      value={item.quantity}
+                      onChange={(e) => updateComponent(index, { quantity: parseFloat(e.target.value) || 0 })}
                       className="w-20"
                       min="0"
+                      step="0.1"
                     />
-                    <span className="text-sm text-muted-foreground min-w-fit">
-                      {si.unit}
+                    <span className="text-sm text-muted-foreground w-12">
+                      {item.unit}
                     </span>
-                    {si.ingredient.cost_per_unit && (
-                      <span className="text-sm font-medium min-w-fit">
-                        €{(si.ingredient.cost_per_unit * si.quantity).toFixed(2)}
-                      </span>
-                    )}
+                    <div className="text-sm font-medium w-16 text-right">
+                      €{item.type === 'ingredient' 
+                        ? ((item.ingredient.cost_per_unit || 0) * item.quantity).toFixed(2)
+                        : (item.prep.cost_per_batch * (item.quantity / 100)).toFixed(2)
+                      }
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeComponent(index)}
+                      className="h-8 w-8 p-0 text-destructive"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
-                  
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => removeIngredient(si.ingredient_id)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
                 </div>
               ))}
             </div>
@@ -315,112 +358,108 @@ export const SmartIngredientSelector = ({ selectedIngredients, onIngredientsChan
       {smartSuggestions.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2">
               {t('ingredientSelector.smartSuggestions')}
               <Badge variant="secondary" className="text-xs">{t('ingredientSelector.aiPowered')}</Badge>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {smartSuggestions.map((ingredient) => (
-                <Button
-                  key={ingredient.id}
-                  variant="outline"
-                  size="sm"
-                  className="justify-start h-auto p-3"
-                  onClick={() => addIngredient(ingredient)}
-                >
-                  <div className="text-left">
-                    <div className="font-medium">{ingredient.name}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {ingredient.category?.name}
-                      {ingredient.cost_per_unit && ` • €${ingredient.cost_per_unit}/${ingredient.unit}`}
-                    </div>
-                  </div>
-                </Button>
+            <div className="space-y-2">
+              {smartSuggestions.map((suggestion, index) => (
+                <div key={index} className="flex items-center justify-between p-2 border rounded hover:bg-muted cursor-pointer">
+                  <span>{suggestion.type === 'ingredient' ? getDisplayName(suggestion.ingredient) : `Prep: ${getDisplayName(suggestion.prep)}`}</span>
+                  <Plus className="h-4 w-4 text-muted-foreground" />
+                </div>
               ))}
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Ingredient Search and Selection */}
+      {/* Add Components */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">{t('ingredientSelector.addIngredients')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* Search and Filter */}
-            <div className="flex gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('ingredientSelector.searchPlaceholder')}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder={t('ingredientSelector.allCategories')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t('ingredientSelector.allCategories')}</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Input
+              placeholder={t('ingredientSelector.searchPlaceholder')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
 
-            {/* Available Ingredients */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 max-h-64 overflow-y-auto">
-              {filteredIngredients.map((ingredient) => (
-                <Card key={ingredient.id} className="cursor-pointer hover:bg-muted/50 transition-colors">
-                  <CardContent className="p-3">
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{ingredient.name}</div>
-                        <div className="text-xs text-muted-foreground">
-                          {ingredient.category?.name} • {ingredient.unit}
-                        </div>
-                        {ingredient.cost_per_unit && (
-                          <div className="text-xs text-muted-foreground">
-                            €{ingredient.cost_per_unit}/{ingredient.unit}
-                          </div>
-                        )}
-                        {ingredient.dietary_properties && ingredient.dietary_properties.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {ingredient.dietary_properties.slice(0, 2).map((prop) => (
-                              <Badge key={prop} variant="outline" className="text-xs">
-                                {t(`ingredients.dietary.${prop}`, prop)}
-                              </Badge>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="ghost"
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder={t('ingredientSelector.allCategories')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t('ingredientSelector.allCategories')}</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Ingredients */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">{t('ingredients', 'Ingredients')}</Label>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {filteredIngredients.length === 0 ? (
+                    <div className="text-center py-4 text-muted-foreground text-sm">
+                      {searchTerm ? t('ingredientSelector.noMatchingIngredients') : t('ingredientSelector.noIngredientsAvailable')}
+                    </div>
+                  ) : (
+                    filteredIngredients.map((ingredient) => (
+                      <div
+                        key={ingredient.id}
+                        className="flex items-center justify-between p-2 border rounded hover:bg-muted cursor-pointer"
                         onClick={() => addIngredient(ingredient)}
                       >
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {filteredIngredients.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchTerm ? t('ingredientSelector.noMatchingIngredients') : t('ingredientSelector.noIngredientsAvailable')}
+                        <div>
+                          <div className="font-medium">{getDisplayName(ingredient)}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {ingredient.category?.name} • €{(ingredient.cost_per_unit || 0).toFixed(2)}/{ingredient.unit}
+                          </div>
+                        </div>
+                        <Plus className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            )}
+
+              {/* Preps */}
+              <div>
+                <Label className="text-sm font-medium mb-2 block">{t('preps.title', 'Preps')}</Label>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {filteredPreps.length === 0 ? (
+                    <div className="text-center py-4 text-muted-foreground text-sm">
+                      {searchTerm ? t('ingredientSelector.noMatchingIngredients') : t('ingredientSelector.noIngredientsAvailable')}
+                    </div>
+                  ) : (
+                    filteredPreps.map((prep) => (
+                      <div
+                        key={prep.id}
+                        className="flex items-center justify-between p-2 border rounded hover:bg-muted cursor-pointer"
+                        onClick={() => addPrep(prep)}
+                      >
+                        <div>
+                          <div className="font-medium">Prep: {getDisplayName(prep)}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {prep.batch_yield} • €{prep.cost_per_batch.toFixed(2)}/batch
+                          </div>
+                        </div>
+                        <Plus className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

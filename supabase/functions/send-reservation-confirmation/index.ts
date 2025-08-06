@@ -245,7 +245,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send confirmation email to customer
     const customerEmailResponse = await resend.emails.send({
-      from: "My Fcking Breakfast Club <reservations@resend.dev>",
+      from: "My Fcking Breakfast Club <info@myfckingbreakfastclub.com>",
       to: [reservation.customer_email],
       subject: content.subject,
       html: createCustomerEmailHtml(reservation, content),
@@ -255,8 +255,8 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
-      from: "Reservations <reservations@resend.dev>",
-      to: ["admin@myfckingbreakfastclub.com"], // Replace with actual admin email
+      from: "Reservations <info@myfckingbreakfastclub.com>",
+      to: ["einfachlami@gmail.com"],
       subject: content.adminSubject,
       html: createAdminEmailHtml(reservation, content),
     });

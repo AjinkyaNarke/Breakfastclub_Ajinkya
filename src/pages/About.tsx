@@ -25,6 +25,21 @@ interface AboutImage {
   display_order: number;
 }
 
+interface AboutVideo {
+  id: string;
+  section_id: string;
+  video_url: string;
+  title: string | null;
+  caption: string | null;
+  alt_text: string | null;
+  display_order: number | null;
+  thumbnail_url: string | null;
+  video_type: string;
+  external_video_id: string | null;
+  duration: number | null;
+  file_size: number | null;
+}
+
 const About = () => {
   const { data: sections, isLoading: sectionsLoading, error: sectionsError } = useQuery({
     queryKey: ["about-sections"],
@@ -53,7 +68,20 @@ const About = () => {
     },
   });
 
-  if (sectionsLoading || imagesLoading) {
+  const { data: videos, isLoading: videosLoading } = useQuery({
+    queryKey: ["about-videos"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("about_videos")
+        .select("*")
+        .order("display_order");
+      
+      if (error) throw error;
+      return data as AboutVideo[];
+    },
+  });
+
+  if (sectionsLoading || imagesLoading || videosLoading) {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-16 space-y-8">
@@ -84,6 +112,10 @@ const About = () => {
     return images?.filter(img => img.section_id === sectionId) || [];
   };
 
+  const getSectionVideos = (sectionId: string) => {
+    return videos?.filter(video => video.section_id === sectionId) || [];
+  };
+
   const renderHeroSection = (section: AboutSection) => (
     <section key={section.id} className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background/50 to-secondary/20" />
@@ -107,6 +139,8 @@ const About = () => {
 
   const renderTextSection = (section: AboutSection) => {
     const sectionImages = getSectionImages(section.id);
+    const sectionVideos = getSectionVideos(section.id);
+    const hasMedia = sectionImages.length > 0 || sectionVideos.length > 0;
     
     return (
       <section key={section.id} className="py-16">
@@ -123,7 +157,7 @@ const About = () => {
               )}
             </div>
             
-            <div className={`grid gap-8 ${sectionImages.length > 0 ? 'lg:grid-cols-2' : 'grid-cols-1'} items-center`}>
+            <div className={`grid gap-8 ${hasMedia ? 'lg:grid-cols-2' : 'grid-cols-1'} items-center`}>
               {section.content && (
                 <div className="space-y-6">
                   <div className="prose prose-lg max-w-none text-foreground">
@@ -136,41 +170,83 @@ const About = () => {
                 </div>
               )}
               
-              {sectionImages.length > 0 && (
-                <div className="space-y-4">
-                  {sectionImages.length === 1 ? (
-                    <Card className="overflow-hidden">
-                      <img
-                        src={sectionImages[0].image_url}
-                        alt={sectionImages[0].alt_text || sectionImages[0].title || section.title}
-                        className="w-full h-80 object-cover"
-                      />
-                      {sectionImages[0].caption && (
-                        <CardContent className="p-4">
-                          <p className="text-sm text-muted-foreground">
-                            {sectionImages[0].caption}
-                          </p>
-                        </CardContent>
-                      )}
-                    </Card>
-                  ) : (
-                    <div className="grid grid-cols-2 gap-4">
-                      {sectionImages.map((image) => (
-                        <Card key={image.id} className="overflow-hidden">
-                          <img
-                            src={image.image_url}
-                            alt={image.alt_text || image.title || section.title}
-                            className="w-full h-40 object-cover"
-                          />
-                          {image.caption && (
-                            <CardContent className="p-3">
-                              <p className="text-xs text-muted-foreground">
-                                {image.caption}
-                              </p>
+              {hasMedia && (
+                <div className="space-y-6">
+                  {/* Videos */}
+                  {sectionVideos.length > 0 && (
+                    <div className="space-y-4">
+                      {sectionVideos.map((video) => (
+                        <Card key={video.id} className="overflow-hidden">
+                          {video.video_type === 'uploaded' ? (
+                            <video
+                              src={video.video_url}
+                              controls
+                              className="w-full h-64 object-cover"
+                              poster={video.thumbnail_url || undefined}
+                            />
+                          ) : (
+                            <iframe
+                              src={video.video_url}
+                              className="w-full h-64"
+                              title={video.title || 'Video'}
+                              allowFullScreen
+                            />
+                          )}
+                          {(video.title || video.caption) && (
+                            <CardContent className="p-4">
+                              {video.title && (
+                                <h3 className="font-semibold mb-2">{video.title}</h3>
+                              )}
+                              {video.caption && (
+                                <p className="text-sm text-muted-foreground">
+                                  {video.caption}
+                                </p>
+                              )}
                             </CardContent>
                           )}
                         </Card>
                       ))}
+                    </div>
+                  )}
+                  
+                  {/* Images */}
+                  {sectionImages.length > 0 && (
+                    <div className="space-y-4">
+                      {sectionImages.length === 1 ? (
+                        <Card className="overflow-hidden">
+                          <img
+                            src={sectionImages[0].image_url}
+                            alt={sectionImages[0].alt_text || sectionImages[0].title || section.title}
+                            className="w-full h-80 object-cover"
+                          />
+                          {sectionImages[0].caption && (
+                            <CardContent className="p-4">
+                              <p className="text-sm text-muted-foreground">
+                                {sectionImages[0].caption}
+                              </p>
+                            </CardContent>
+                          )}
+                        </Card>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-4">
+                          {sectionImages.map((image) => (
+                            <Card key={image.id} className="overflow-hidden">
+                              <img
+                                src={image.image_url}
+                                alt={image.alt_text || image.title || section.title}
+                                className="w-full h-40 object-cover"
+                              />
+                              {image.caption && (
+                                <CardContent className="p-3">
+                                  <p className="text-xs text-muted-foreground">
+                                    {image.caption}
+                                  </p>
+                                </CardContent>
+                              )}
+                            </Card>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -184,6 +260,7 @@ const About = () => {
 
   const renderGallerySection = (section: AboutSection) => {
     const sectionImages = getSectionImages(section.id);
+    const sectionVideos = getSectionVideos(section.id);
     
     return (
       <section key={section.id} className="py-16 bg-muted/30">
@@ -205,6 +282,44 @@ const About = () => {
               )}
             </div>
             
+            {/* Videos in Gallery */}
+            {sectionVideos.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {sectionVideos.map((video) => (
+                  <Card key={video.id} className="overflow-hidden group cursor-pointer transition-transform hover:scale-105">
+                    {video.video_type === 'uploaded' ? (
+                      <video
+                        src={video.video_url}
+                        controls
+                        className="w-full h-64 object-cover"
+                        poster={video.thumbnail_url || undefined}
+                      />
+                    ) : (
+                      <iframe
+                        src={video.video_url}
+                        className="w-full h-64"
+                        title={video.title || 'Video'}
+                        allowFullScreen
+                      />
+                    )}
+                    {(video.title || video.caption) && (
+                      <CardContent className="p-4">
+                        {video.title && (
+                          <h3 className="font-semibold mb-2">{video.title}</h3>
+                        )}
+                        {video.caption && (
+                          <p className="text-sm text-muted-foreground">
+                            {video.caption}
+                          </p>
+                        )}
+                      </CardContent>
+                    )}
+                  </Card>
+                ))}
+              </div>
+            )}
+            
+            {/* Images in Gallery */}
             {sectionImages.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {sectionImages.map((image) => (

@@ -11,6 +11,10 @@ interface MenuItem {
   id: string;
   name: string;
   description: string;
+  name_de?: string;
+  name_en?: string;
+  description_de?: string;
+  description_en?: string;
   image_url: string;
   regular_price: number;
   student_price: number;
@@ -19,6 +23,8 @@ interface MenuItem {
   dietary_tags: string[];
   category: {
     name: string;
+    name_de?: string;
+    name_en?: string;
   };
 }
 
@@ -26,14 +32,26 @@ interface MenuCategory {
   id: string;
   name: string;
   description: string;
+  name_de?: string;
+  name_en?: string;
+  description_de?: string;
+  description_en?: string;
   item_count: number;
 }
 
 export default function MenuShowcase() {
-  const { t } = useTranslation('homepage');
+  const { t, i18n } = useTranslation('homepage');
   const [featuredItems, setFeaturedItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<MenuCategory[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Helper function to get localized text
+  const getLocalizedText = (text: string, textDe?: string, textEn?: string) => {
+    const currentLang = i18n.language;
+    if (currentLang === 'de' && textDe) return textDe;
+    if (currentLang === 'en' && textEn) return textEn;
+    return text || textDe || textEn || '';
+  };
 
   useEffect(() => {
     fetchMenuData();
@@ -46,7 +64,7 @@ export default function MenuShowcase() {
         .from('menu_items')
         .select(`
           *,
-          category:menu_categories(name)
+          category:menu_categories(name, name_de, name_en)
         `)
         .eq('is_featured', true)
         .eq('is_available', true)
@@ -61,7 +79,11 @@ export default function MenuShowcase() {
         .select(`
           id,
           name,
+          name_de,
+          name_en,
           description,
+          description_de,
+          description_en,
           menu_items(count)
         `)
         .order('display_order');
@@ -70,9 +92,7 @@ export default function MenuShowcase() {
 
       // Transform categories data to include item count
       const transformedCategories = categoriesData?.map(cat => ({
-        id: cat.id,
-        name: cat.name,
-        description: cat.description || `Authentic ${cat.name.toLowerCase()} dishes`,
+        ...cat,
         item_count: cat.menu_items?.[0]?.count || 0
       })) || [];
 
@@ -141,13 +161,18 @@ export default function MenuShowcase() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center space-x-3">
                           <div className={`w-4 h-4 rounded-full ${getCategoryColor(index)}`}></div>
-                          <span className="font-bold text-lg">{category.name}</span>
+                          <span className="font-bold text-lg">
+                            {getLocalizedText(category.name, category.name_de, category.name_en)}
+                          </span>
                         </div>
                         <Badge variant="outline" className="text-xs border-primary/20">
                           {category.item_count} dishes
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{category.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {getLocalizedText(category.description, category.description_de, category.description_en) || 
+                         `Authentic ${getLocalizedText(category.name, category.name_de, category.name_en).toLowerCase()} dishes`}
+                      </p>
                     </CardContent>
                   </Card>
                 ))}
@@ -192,14 +217,16 @@ export default function MenuShowcase() {
                         {/* Dish Details */}
                         <div className="flex-1">
                           <div className="flex items-center space-x-3 mb-3">
-                            <h3 className="text-xl font-bold text-primary">{dish.name}</h3>
+                            <h3 className="text-xl font-bold text-primary">
+                              {getLocalizedText(dish.name, dish.name_de, dish.name_en)}
+                            </h3>
                             <Badge className="bg-primary/20 text-primary border-primary/30">
                               Featured
                             </Badge>
                           </div>
                           
                           <p className="text-muted-foreground mb-4 leading-relaxed">
-                            {dish.description}
+                            {getLocalizedText(dish.description, dish.description_de, dish.description_en)}
                           </p>
                           
                           {dish.dietary_tags && dish.dietary_tags.length > 0 && (

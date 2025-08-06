@@ -56,6 +56,7 @@ export default function ReservationManagement() {
   const [adminNotes, setAdminNotes] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterDate, setFilterDate] = useState<string>('');
+  const [actionLoading, setActionLoading] = useState<{ [id: string]: string | null }>({}); // { [reservationId]: 'confirm' | 'cancel' | 'complete' | 'no_show' | 'save_notes' | null }
 
   useEffect(() => {
     fetchReservations();
@@ -84,7 +85,8 @@ export default function ReservationManagement() {
     }
   };
 
-  const updateReservationStatus = async (reservationId: string, status: string, notes?: string) => {
+  const updateReservationStatus = async (reservationId: string, status: string, notes?: string, actionKey?: string) => {
+    setActionLoading(prev => ({ ...prev, [reservationId]: actionKey || status }));
     try {
       const updateData: any = { 
         status,
@@ -123,11 +125,13 @@ export default function ReservationManagement() {
         description: 'Failed to update reservation',
         variant: 'destructive',
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [reservationId]: null }));
     }
   };
 
   const handleQuickAction = (reservation: Reservation, action: string) => {
-    updateReservationStatus(reservation.id, action);
+    updateReservationStatus(reservation.id, action, undefined, action);
   };
 
   const openDetailDialog = (reservation: Reservation) => {
@@ -281,25 +285,37 @@ export default function ReservationManagement() {
                             <Button
                               size="sm"
                               variant="outline"
+                              aria-label="Confirm Reservation"
                               onClick={() => handleQuickAction(reservation, 'confirmed')}
                               className="text-green-600 border-green-200 hover:bg-green-50"
+                              disabled={actionLoading[reservation.id] === 'confirmed'}
                             >
-                              <Check className="h-4 w-4" />
+                              {actionLoading[reservation.id] === 'confirmed' ? (
+                                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-1" />
+                              ) : (
+                                <Check className="h-4 w-4" />
+                              )}
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
+                              aria-label="Cancel Reservation"
                               onClick={() => handleQuickAction(reservation, 'cancelled')}
                               className="text-red-600 border-red-200 hover:bg-red-50"
+                              disabled={actionLoading[reservation.id] === 'cancelled'}
                             >
-                              <X className="h-4 w-4" />
+                              {actionLoading[reservation.id] === 'cancelled' ? (
+                                <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                              ) : (
+                                <X className="h-4 w-4" />
+                              )}
                             </Button>
                           </>
                         )}
                         
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">
+                            <Button variant="ghost" size="sm" aria-label="More Actions">
                               <MoreHorizontal className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
@@ -309,14 +325,22 @@ export default function ReservationManagement() {
                               View Details
                             </DropdownMenuItem>
                             {reservation.status === 'confirmed' && (
-                              <DropdownMenuItem onClick={() => handleQuickAction(reservation, 'completed')}>
-                                <Check className="mr-2 h-4 w-4" />
+                              <DropdownMenuItem onClick={() => handleQuickAction(reservation, 'completed')} aria-label="Mark Completed">
+                                {actionLoading[reservation.id] === 'completed' ? (
+                                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-1" />
+                                ) : (
+                                  <Check className="mr-2 h-4 w-4" />
+                                )}
                                 Mark Completed
                               </DropdownMenuItem>
                             )}
                             {reservation.status === 'confirmed' && (
-                              <DropdownMenuItem onClick={() => handleQuickAction(reservation, 'no_show')}>
-                                <X className="mr-2 h-4 w-4" />
+                              <DropdownMenuItem onClick={() => handleQuickAction(reservation, 'no_show')} aria-label="Mark No Show">
+                                {actionLoading[reservation.id] === 'no_show' ? (
+                                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-1" />
+                                ) : (
+                                  <X className="mr-2 h-4 w-4" />
+                                )}
                                 Mark No Show
                               </DropdownMenuItem>
                             )}
@@ -421,32 +445,44 @@ export default function ReservationManagement() {
               <Label>Update Status</Label>
               <div className="flex gap-2">
                 <Button
-                  onClick={() => updateReservationStatus(selectedReservation.id, 'confirmed', adminNotes)}
-                  disabled={selectedReservation.status === 'confirmed'}
+                  onClick={() => updateReservationStatus(selectedReservation.id, 'confirmed', adminNotes, 'confirmed')}
+                  disabled={selectedReservation.status === 'confirmed' || actionLoading[selectedReservation.id] === 'confirmed'}
                   variant={selectedReservation.status === 'confirmed' ? 'secondary' : 'default'}
+                  aria-label="Confirm Reservation"
                 >
-                  Confirm
+                  {actionLoading[selectedReservation.id] === 'confirmed' ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600 mr-1" />
+                  ) : 'Confirm'}
                 </Button>
                 <Button
-                  onClick={() => updateReservationStatus(selectedReservation.id, 'cancelled', adminNotes)}
-                  disabled={selectedReservation.status === 'cancelled'}
+                  onClick={() => updateReservationStatus(selectedReservation.id, 'cancelled', adminNotes, 'cancelled')}
+                  disabled={selectedReservation.status === 'cancelled' || actionLoading[selectedReservation.id] === 'cancelled'}
                   variant="destructive"
+                  aria-label="Cancel Reservation"
                 >
-                  Cancel
+                  {actionLoading[selectedReservation.id] === 'cancelled' ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                  ) : 'Cancel'}
                 </Button>
                 <Button
-                  onClick={() => updateReservationStatus(selectedReservation.id, 'completed', adminNotes)}
-                  disabled={selectedReservation.status === 'completed'}
+                  onClick={() => updateReservationStatus(selectedReservation.id, 'completed', adminNotes, 'completed')}
+                  disabled={selectedReservation.status === 'completed' || actionLoading[selectedReservation.id] === 'completed'}
                   variant="secondary"
+                  aria-label="Mark Completed"
                 >
-                  Mark Completed
+                  {actionLoading[selectedReservation.id] === 'completed' ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-1" />
+                  ) : 'Mark Completed'}
                 </Button>
                 <Button
-                  onClick={() => updateReservationStatus(selectedReservation.id, 'no_show', adminNotes)}
-                  disabled={selectedReservation.status === 'no_show'}
+                  onClick={() => updateReservationStatus(selectedReservation.id, 'no_show', adminNotes, 'no_show')}
+                  disabled={selectedReservation.status === 'no_show' || actionLoading[selectedReservation.id] === 'no_show'}
                   variant="outline"
+                  aria-label="Mark No Show"
                 >
-                  No Show
+                  {actionLoading[selectedReservation.id] === 'no_show' ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-1" />
+                  ) : 'No Show'}
                 </Button>
               </div>
             </div>
@@ -455,8 +491,14 @@ export default function ReservationManagement() {
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Close
               </Button>
-              <Button onClick={() => updateReservationStatus(selectedReservation.id, selectedReservation.status, adminNotes)}>
-                Save Notes
+              <Button
+                onClick={() => updateReservationStatus(selectedReservation.id, selectedReservation.status, adminNotes, 'save_notes')}
+                disabled={actionLoading[selectedReservation.id] === 'save_notes'}
+                aria-label="Save Notes"
+              >
+                {actionLoading[selectedReservation.id] === 'save_notes' ? (
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-600 mr-1" />
+                ) : 'Save Notes'}
               </Button>
             </DialogFooter>
           </DialogContent>

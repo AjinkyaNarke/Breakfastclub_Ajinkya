@@ -1,9 +1,11 @@
 
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChefHat, Image, Video, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { DeepgramTestComponent } from '@/components/admin/DeepgramTestComponent';
 
 interface Stats {
   menuItems: number;
@@ -113,18 +115,18 @@ export const Dashboard = () => {
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="flex flex-col space-y-2">
-              <a href="/admin/menu" className="text-primary hover:underline">
+              <Link to="/admin/menu" className="text-primary hover:underline">
                 {t('dashboard.quickActions.addMenuItem')}
-              </a>
-              <a href="/admin/gallery" className="text-primary hover:underline">
+              </Link>
+              <Link to="/admin/gallery" className="text-primary hover:underline">
                 {t('dashboard.quickActions.uploadImages')}
-              </a>
-              <a href="/admin/videos" className="text-primary hover:underline">
+              </Link>
+              <Link to="/admin/videos" className="text-primary hover:underline">
                 {t('dashboard.quickActions.addVideo')}
-              </a>
-              <a href="/admin/events" className="text-primary hover:underline">
+              </Link>
+              <Link to="/admin/events" className="text-primary hover:underline">
                 {t('dashboard.quickActions.createEvent')}
-              </a>
+              </Link>
             </div>
           </CardContent>
         </Card>
@@ -154,6 +156,21 @@ export const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Deepgram Test Component - Remove this in production */}
+      {import.meta.env.VITE_DEBUG_MODE === 'true' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>🎤 Voice Integration Test</CardTitle>
+            <CardDescription>
+              Test Deepgram voice features (Debug Mode Only)
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DeepgramTestComponent />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

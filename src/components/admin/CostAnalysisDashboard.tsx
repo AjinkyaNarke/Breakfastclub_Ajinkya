@@ -116,40 +116,52 @@ export const CostAnalysisDashboard = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-4">{t('costAnalysis.loading')}</div>;
+    return (
+      <div className="text-center py-8">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 bg-gray-200 rounded"></div>
+            ))}
+          </div>
+        </div>
+        <p className="text-muted-foreground">{t('costAnalysis.loading', 'Loading data...')}</p>
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">{t('costAnalysis.title')}</h2>
+      <h2 className="text-2xl font-bold">{t('costAnalysis.title', 'Cost Analysis')}</h2>
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('costAnalysis.averageCost')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('costAnalysis.averageCost', 'Average Cost')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">€{metrics.averageCost.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">{t('costAnalysis.perDish')}</p>
+            <p className="text-xs text-muted-foreground">{t('costAnalysis.perDish', 'per dish')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('costAnalysis.averagePrice')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('costAnalysis.averagePrice', 'Average Price')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">€{metrics.averagePrice.toFixed(2)}</div>
-            <p className="text-xs text-muted-foreground">{t('costAnalysis.menuPrice')}</p>
+            <p className="text-xs text-muted-foreground">{t('costAnalysis.menuPrice', 'menu price')}</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{t('costAnalysis.averageMargin')}</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('costAnalysis.averageMargin', 'Average Margin')}</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -166,16 +178,16 @@ export const CostAnalysisDashboard = () => {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-green-600" />
-                {t('costAnalysis.mostProfitable')}
+                {t('costAnalysis.mostProfitable', 'Most Profitable Dish')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="font-medium">{metrics.mostProfitable.name}</div>
                 <div className="text-sm text-muted-foreground">
-                  {t('costAnalysis.cost')}: €{metrics.mostProfitable.totalCost?.toFixed(2)} | 
-                  {t('costAnalysis.price')}: €{metrics.mostProfitable.regular_price} | 
-                  {t('costAnalysis.margin')}: {metrics.mostProfitable.margin?.toFixed(1)}%
+                  {t('costAnalysis.cost', 'Cost')}: €{metrics.mostProfitable.totalCost?.toFixed(2)} | 
+                  {t('costAnalysis.price', 'Price')}: €{metrics.mostProfitable.regular_price} | 
+                  {t('costAnalysis.margin', 'Margin')}: {metrics.mostProfitable.margin?.toFixed(1)}%
                 </div>
                 {metrics.mostProfitable.dietary_tags && metrics.mostProfitable.dietary_tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
@@ -196,16 +208,16 @@ export const CostAnalysisDashboard = () => {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <TrendingDown className="h-5 w-5 text-red-600" />
-                {t('costAnalysis.leastProfitable')}
+                {t('costAnalysis.leastProfitable', 'Least Profitable Dish')}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="font-medium">{metrics.leastProfitable.name}</div>
                 <div className="text-sm text-muted-foreground">
-                  {t('costAnalysis.cost')}: €{metrics.leastProfitable.totalCost?.toFixed(2)} | 
-                  {t('costAnalysis.price')}: €{metrics.leastProfitable.regular_price} | 
-                  {t('costAnalysis.margin')}: {metrics.leastProfitable.margin?.toFixed(1)}%
+                  {t('costAnalysis.cost', 'Cost')}: €{metrics.leastProfitable.totalCost?.toFixed(2)} | 
+                  {t('costAnalysis.price', 'Price')}: €{metrics.leastProfitable.regular_price} | 
+                  {t('costAnalysis.margin', 'Margin')}: {metrics.leastProfitable.margin?.toFixed(1)}%
                 </div>
                 {metrics.leastProfitable.dietary_tags && metrics.leastProfitable.dietary_tags.length > 0 && (
                   <div className="flex flex-wrap gap-1">
@@ -227,24 +239,31 @@ export const CostAnalysisDashboard = () => {
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-orange-600" />
-            {t('costAnalysis.expensiveIngredients')}
+            {t('costAnalysis.expensiveIngredients', 'Most Expensive Ingredients')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            {metrics.expensiveIngredients.map((ingredient) => (
-              <div key={ingredient.name} className="flex justify-between items-center p-3 border rounded">
-                <div>
-                  <div className="font-medium">{ingredient.name}</div>
-                  <div className="text-sm text-muted-foreground">
-                    {t('costAnalysis.costPer')} {ingredient.unit}
+            {metrics.expensiveIngredients.length > 0 ? (
+              metrics.expensiveIngredients.map((ingredient) => (
+                <div key={ingredient.name} className="flex justify-between items-center p-3 border rounded">
+                  <div>
+                    <div className="font-medium">{ingredient.name}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('costAnalysis.costPer', 'Cost per')} {ingredient.unit}
+                    </div>
+                  </div>
+                  <div className="text-lg font-bold">
+                    €{ingredient.cost_per_unit?.toFixed(2)}
                   </div>
                 </div>
-                <div className="text-lg font-bold">
-                  €{ingredient.cost_per_unit?.toFixed(2)}
-                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>No ingredients data available</p>
               </div>
-            ))}
+            )}
           </div>
         </CardContent>
       </Card>

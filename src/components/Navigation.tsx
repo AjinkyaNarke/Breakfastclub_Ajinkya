@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Coffee, Calendar, BookOpen, Info } from "lucide-react";
+import { Menu, X, Coffee, Calendar, BookOpen, Info, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import { supabase } from "@/integrations/supabase/client";
 
 const navItems = [
   { name: "home", href: "/", icon: Coffee },
   { name: "events", href: "/events", icon: Calendar, sectionId: "events-section" },
   { name: "menu", href: "/menu", icon: BookOpen, sectionId: "menu-section" },
   { name: "about", href: "/about", icon: Info },
+  { name: "chat", href: "/chat", icon: MessageCircle },
   { name: "reservations", href: "/reservations", icon: Calendar },
 ];
 
@@ -18,6 +20,37 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const { t } = useTranslation('common');
+  const [siteBranding, setSiteBranding] = useState<{
+    site_name: string;
+    tagline: string;
+    logo_url: string | null;
+  } | null>(null);
+
+  // Load site branding data
+  useEffect(() => {
+    const loadSiteBranding = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('site_branding')
+          .select('site_name, tagline, logo_url')
+          .limit(1)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading site branding:', error);
+          return;
+        }
+
+        if (data) {
+          setSiteBranding(data);
+        }
+      } catch (error) {
+        console.error('Error loading site branding:', error);
+      }
+    };
+
+    loadSiteBranding();
+  }, []);
 
   const isActive = (href: string) => {
     if (href === "/") return location.pathname === "/";
@@ -47,12 +80,24 @@ export default function Navigation() {
             className="flex items-center space-x-3 group"
           >
             <div className="relative">
-              <Coffee className="h-8 w-8 text-primary group-hover:text-primary-glow transition-colors duration-300" />
+              {siteBranding?.logo_url ? (
+                <img 
+                  src={siteBranding.logo_url} 
+                  alt={siteBranding.site_name}
+                  className="h-8 w-8 object-contain group-hover:opacity-80 transition-opacity duration-300"
+                />
+              ) : (
+                <Coffee className="h-8 w-8 text-primary group-hover:text-primary-glow transition-colors duration-300" />
+              )}
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-vibrant rounded-full animate-cherry-float"></div>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold text-brand">fckingbreakfastclub</span>
-              <span className="text-xs text-muted-foreground">Asian Fusion • Berlin</span>
+              <span className="text-xl font-bold text-brand">
+                {siteBranding?.site_name || 'fckingbreakfastclub'}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {siteBranding?.tagline || 'Asian Fusion • Berlin'}
+              </span>
             </div>
           </Link>
 

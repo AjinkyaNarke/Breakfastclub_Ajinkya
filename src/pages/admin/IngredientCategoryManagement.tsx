@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Plus, Edit, Trash2, FolderOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useTranslation } from 'react-i18next';
@@ -233,6 +233,9 @@ export const IngredientCategoryManagement = () => {
             <DialogTitle>
               {editingItem?.id ? t('ingredientCategories.form.editTitle') : t('ingredientCategories.form.createNew')}
             </DialogTitle>
+            <DialogDescription>
+              {editingItem?.id ? 'Update the ingredient category details.' : 'Create a new ingredient category for organization.'}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">

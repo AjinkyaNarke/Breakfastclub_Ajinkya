@@ -6,17 +6,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Edit, Trash2, Search, Package } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Package, Mic } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
 import { useTranslation } from 'react-i18next';
+
+import { BulkVoiceIngredientCreation } from '@/components/admin/BulkVoiceIngredientCreation';
+import { StreamlinedIngredientDialog } from '@/components/admin/StreamlinedIngredientDialog';
+import { IngredientImage } from '@/components/IngredientImage';
 
 interface Ingredient {
   id: string;
   name: string;
+  name_de: string;
+  name_en: string;
+  description: string;
+  description_de: string;
+  description_en: string;
   unit: string;
   category_id: string;
   allergens: string[];
@@ -26,6 +32,10 @@ interface Ingredient {
   supplier_info?: string;
   notes?: string;
   is_active: boolean;
+  image_url?: string;
+  image_generated_at?: string;
+  image_generation_cost?: number;
+  image_generation_prompt?: string;
   category?: {
     name: string;
   };
@@ -37,17 +47,7 @@ interface IngredientCategory {
   description?: string;
 }
 
-const ALLERGEN_OPTIONS = [
-  'gluten', 'dairy', 'eggs', 'fish', 'shellfish', 'nuts', 'peanuts', 'soy', 'sesame'
-];
 
-const DIETARY_PROPERTY_OPTIONS = [
-  'vegetarian', 'vegan', 'gluten-free', 'dairy-free', 'nut-free', 'low-sodium', 'organic', 'local'
-];
-
-const SEASON_OPTIONS = ['spring', 'summer', 'fall', 'winter'];
-
-const UNIT_OPTIONS = ['g', 'kg', 'ml', 'l', 'piece', 'cup', 'tbsp', 'tsp', 'oz', 'lb'];
 
 export const IngredientManagement = () => {
   const { t } = useTranslation('admin');
@@ -59,19 +59,16 @@ export const IngredientManagement = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Ingredient | null>(null);
   const { toast } = useToast();
+  const [actionLoading, setActionLoading] = useState<{ [id: string]: string | null }>({}); // { [ingredientId]: 'delete' | null }
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
 
-  const [formData, setFormData] = useState<Partial<Ingredient>>({
-    name: '',
-    unit: 'g',
-    category_id: '',
-    allergens: [],
-    dietary_properties: [],
-    seasonal_availability: [],
-    cost_per_unit: 0,
-    supplier_info: '',
-    notes: '',
-    is_active: true,
-  });
+  // Form data is now handled by StreamlinedIngredientDialog component
+  // We only need to track the editing item for the dialog
+
+  // The StreamlinedIngredientDialog handles its own form state
+  // No need to manage form data here anymore
+
+  // Auto-translation is now handled by the StreamlinedIngredientDialog component
 
   useEffect(() => {
     fetchIngredients();
@@ -103,12 +100,36 @@ export const IngredientManagement = () => {
         .order('name');
 
       if (error) throw error;
-      setIngredients(data || []);
+      setIngredients(
+        (data || []).map((item: any) => ({
+          id: item.id,
+          name: item.name || '',
+          name_de: item.name_de || '',
+          name_en: item.name_en || '',
+          description: item.description || '',
+          description_de: item.description_de || '',
+          description_en: item.description_en || '',
+          unit: item.unit || 'g',
+          category_id: item.category_id || '',
+          allergens: item.allergens || [],
+          dietary_properties: item.dietary_properties || [],
+          seasonal_availability: item.seasonal_availability || [],
+          cost_per_unit: item.cost_per_unit || 0,
+          supplier_info: item.supplier_info || '',
+          notes: item.notes || '',
+          is_active: item.is_active !== false,
+          image_url: item.image_url || null,
+          image_generated_at: item.image_generated_at || null,
+          image_generation_cost: item.image_generation_cost || null,
+          image_generation_prompt: item.image_generation_prompt || null,
+          category: item.category || { name: '' },
+        }))
+      );
     } catch (error) {
       console.error('Error fetching ingredients:', error);
       toast({
-        title: t('ingredients.messages.fetchError'),
-        description: t('ingredients.messages.fetchError'),
+        title: "Error",
+        description: "Failed to fetch ingredients",
         variant: "destructive",
       });
     } finally {
@@ -124,119 +145,48 @@ export const IngredientManagement = () => {
 
   const handleEdit = (item: Ingredient) => {
     setEditingItem(item);
-    setFormData({ ...item });
     setDialogOpen(true);
   };
 
   const handleAdd = () => {
     setEditingItem(null);
-    setFormData({
-      name: '',
-      unit: 'g',
-      category_id: '',
-      allergens: [],
-      dietary_properties: [],
-      seasonal_availability: [],
-      cost_per_unit: 0,
-      supplier_info: '',
-      notes: '',
-      is_active: true,
-    });
     setDialogOpen(true);
   };
 
+  // On save, the StreamlinedIngredientDialog handles the actual saving
+  // This function is just called after successful save to refresh the list
   const handleSave = async () => {
-    if (!formData.name || !formData.category_id) {
-      toast({
-        title: t('ingredients.messages.fillRequired'),
-        description: t('ingredients.messages.fillRequired'),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      const saveData = {
-        name: formData.name!,
-        unit: formData.unit!,
-        category_id: formData.category_id!,
-        cost_per_unit: formData.cost_per_unit,
-        supplier_info: formData.supplier_info,
-        notes: formData.notes,
-        is_active: formData.is_active!,
-        allergens: formData.allergens || [],
-        dietary_properties: formData.dietary_properties || [],
-        seasonal_availability: formData.seasonal_availability || [],
-      };
-
-      if (editingItem?.id) {
-        const { error } = await supabase
-          .from('ingredients')
-          .update(saveData)
-          .eq('id', editingItem.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('ingredients')
-          .insert([saveData]);
-        if (error) throw error;
-      }
-
-      toast({
-        title: editingItem?.id ? t('ingredients.messages.updateSuccess') : t('ingredients.messages.createSuccess'),
-        description: editingItem?.id ? t('ingredients.messages.updateSuccess') : t('ingredients.messages.createSuccess'),
-      });
-
-      setDialogOpen(false);
-      fetchIngredients();
-    } catch (error) {
-      console.error('Error saving ingredient:', error);
-      toast({
-        title: editingItem?.id ? t('ingredients.messages.updateError') : t('ingredients.messages.createError'),
-        description: editingItem?.id ? t('ingredients.messages.updateError') : t('ingredients.messages.createError'),
-        variant: "destructive",
-      });
-    }
+    // The StreamlinedIngredientDialog component handles all validation and saving internally
+    // We just need to refresh the ingredients list after successful save
+    await fetchIngredients();
   };
 
   const deleteIngredient = async (id: string) => {
-    if (!confirm(t('ingredients.deleteConfirm'))) return;
-
+    if (!confirm('Are you sure you want to delete this ingredient?')) return;
+    setActionLoading(prev => ({ ...prev, [id]: 'delete' }));
     try {
       const { error } = await supabase
         .from('ingredients')
         .delete()
         .eq('id', id);
-
       if (error) throw error;
-      
       toast({
-        title: t('ingredients.messages.deleteSuccess'),
-        description: t('ingredients.messages.deleteSuccess'),
+        title: "Success",
+        description: "Ingredient deleted successfully",
       });
-      
       fetchIngredients();
     } catch (error) {
       console.error('Error deleting ingredient:', error);
       toast({
-        title: t('ingredients.messages.deleteError'),
-        description: t('ingredients.messages.deleteError'),
+        title: "Error",
+        description: "Failed to delete ingredient",
         variant: "destructive",
       });
+    } finally {
+      setActionLoading(prev => ({ ...prev, [id]: null }));
     }
   };
 
-  const toggleMultiSelect = (
-    field: keyof Pick<Ingredient, 'allergens' | 'dietary_properties' | 'seasonal_availability'>,
-    value: string
-  ) => {
-    const currentArray = formData[field] as string[] || [];
-    const newArray = currentArray.includes(value)
-      ? currentArray.filter(item => item !== value)
-      : [...currentArray, value];
-    
-    setFormData(prev => ({ ...prev, [field]: newArray }));
-  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-64">{t('ingredients.loading')}</div>;
@@ -252,10 +202,16 @@ export const IngredientManagement = () => {
             {t('ingredients.description')}
           </p>
         </div>
-        <Button onClick={handleAdd}>
-          <Plus className="h-4 w-4 mr-2" />
-          {t('ingredients.addIngredient')}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setBulkDialogOpen(true)}>
+            <Mic className="h-4 w-4 mr-2" />
+            Bulk Add Ingredients
+          </Button>
+          <Button onClick={handleAdd}>
+            <Plus className="h-4 w-4 mr-2" />
+            {t('ingredients.addIngredient')}
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -299,19 +255,29 @@ export const IngredientManagement = () => {
         {filteredIngredients.map((ingredient) => (
           <Card key={ingredient.id}>
             <CardHeader>
-              <div className="flex justify-between items-start">
-                <div>
-                  <CardTitle className="text-lg">{ingredient.name}</CardTitle>
-                  <CardDescription>
-                    {ingredient.category?.name} • {ingredient.unit}
-                    {ingredient.cost_per_unit && (
-                      <span> • €{ingredient.cost_per_unit}/{ingredient.unit}</span>
-                    )}
-                  </CardDescription>
+              <div className="flex gap-3 items-start">
+                <IngredientImage 
+                  ingredient={ingredient} 
+                  size="md"
+                  showGenerateButton={!ingredient.image_url}
+                  onImageGenerated={fetchIngredients}
+                />
+                <div className="flex-1">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg">{ingredient.name}</CardTitle>
+                      <CardDescription>
+                        {ingredient.category?.name} • {ingredient.unit}
+                        {ingredient.cost_per_unit && (
+                          <span> • €{ingredient.cost_per_unit}/{ingredient.unit}</span>
+                        )}
+                      </CardDescription>
+                    </div>
+                    <Badge variant={ingredient.is_active ? "default" : "secondary"}>
+                      {ingredient.is_active ? t('ingredients.active') : t('ingredients.inactive')}
+                    </Badge>
+                  </div>
                 </div>
-                <Badge variant={ingredient.is_active ? "default" : "secondary"}>
-                  {ingredient.is_active ? t('ingredients.active') : t('ingredients.inactive')}
-                </Badge>
               </div>
             </CardHeader>
             
@@ -319,7 +285,7 @@ export const IngredientManagement = () => {
               <div className="space-y-3">
                 {ingredient.dietary_properties && ingredient.dietary_properties.length > 0 && (
                   <div>
-                    <Label className="text-xs text-muted-foreground">{t('ingredients.form.dietaryProperties')}</Label>
+                    <Label className="text-xs text-muted-foreground">Dietary Properties</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {ingredient.dietary_properties.map((prop) => (
                         <Badge key={prop} variant="outline" className="text-xs">
@@ -332,7 +298,7 @@ export const IngredientManagement = () => {
 
                 {ingredient.allergens && ingredient.allergens.length > 0 && (
                   <div>
-                    <Label className="text-xs text-muted-foreground">{t('ingredients.form.allergens')}</Label>
+                    <Label className="text-xs text-muted-foreground">Allergens</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {ingredient.allergens.map((allergen) => (
                         <Badge key={allergen} variant="destructive" className="text-xs">
@@ -345,7 +311,7 @@ export const IngredientManagement = () => {
 
                 {ingredient.seasonal_availability && ingredient.seasonal_availability.length > 0 && (
                   <div>
-                    <Label className="text-xs text-muted-foreground">{t('ingredients.form.seasonalAvailability')}</Label>
+                    <Label className="text-xs text-muted-foreground">Seasonal Availability</Label>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {ingredient.seasonal_availability.map((season) => (
                         <Badge key={season} variant="secondary" className="text-xs">
@@ -361,6 +327,7 @@ export const IngredientManagement = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => handleEdit(ingredient)}
+                    aria-label="Edit Ingredient"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -368,8 +335,14 @@ export const IngredientManagement = () => {
                     size="sm"
                     variant="destructive"
                     onClick={() => deleteIngredient(ingredient.id)}
+                    aria-label="Delete Ingredient"
+                    disabled={actionLoading[ingredient.id] === 'delete'}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {actionLoading[ingredient.id] === 'delete' ? (
+                      <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               </div>
@@ -394,168 +367,21 @@ export const IngredientManagement = () => {
       )}
 
       {/* Ingredient Dialog */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {editingItem?.id ? t('ingredients.form.editTitle') : t('ingredients.form.createNew')}
-            </DialogTitle>
-          </DialogHeader>
+      <StreamlinedIngredientDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        ingredient={editingItem}
+        onSave={handleSave}
+      />
 
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">{t('ingredients.form.name')} *</Label>
-                <Input
-                  id="name"
-                  value={formData.name || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder={t('ingredients.form.namePlaceholder')}
-                />
-              </div>
+      {/* Bulk Voice Ingredient Creation Dialog */}
+      <BulkVoiceIngredientCreation
+        open={bulkDialogOpen}
+        onOpenChange={setBulkDialogOpen}
+        onComplete={fetchIngredients}
+      />
 
-              <div className="space-y-2">
-                <Label htmlFor="category">{t('ingredients.form.category')} *</Label>
-                <Select
-                  value={formData.category_id || ''}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, category_id: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('ingredients.form.selectCategory')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="unit">{t('ingredients.form.unit')}</Label>
-                <Select
-                  value={formData.unit || 'g'}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, unit: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {UNIT_OPTIONS.map((unit) => (
-                      <SelectItem key={unit} value={unit}>
-                        {unit}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="cost">{t('ingredients.form.costPerUnit')}</Label>
-                <Input
-                  id="cost"
-                  type="number"
-                  step="0.01"
-                  value={formData.cost_per_unit || ''}
-                  onChange={(e) => setFormData(prev => ({ ...prev, cost_per_unit: parseFloat(e.target.value) || 0 }))}
-                  placeholder={t('ingredients.form.costPlaceholder')}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('ingredients.form.dietaryProperties')}</Label>
-              <div className="flex flex-wrap gap-2">
-                {DIETARY_PROPERTY_OPTIONS.map((prop) => (
-                  <Badge
-                    key={prop}
-                    variant={formData.dietary_properties?.includes(prop) ? "default" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => toggleMultiSelect('dietary_properties', prop)}
-                  >
-                    {t(`ingredients.dietary.${prop}`, prop)}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('ingredients.form.allergens')}</Label>
-              <div className="flex flex-wrap gap-2">
-                {ALLERGEN_OPTIONS.map((allergen) => (
-                  <Badge
-                    key={allergen}
-                    variant={formData.allergens?.includes(allergen) ? "destructive" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => toggleMultiSelect('allergens', allergen)}
-                  >
-                    {t(`ingredients.allergens.${allergen}`, allergen)}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>{t('ingredients.form.seasonalAvailability')}</Label>
-              <div className="flex flex-wrap gap-2">
-                {SEASON_OPTIONS.map((season) => (
-                  <Badge
-                    key={season}
-                    variant={formData.seasonal_availability?.includes(season) ? "secondary" : "outline"}
-                    className="cursor-pointer"
-                    onClick={() => toggleMultiSelect('seasonal_availability', season)}
-                  >
-                    {t(`ingredients.seasons.${season}`, season)}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="supplier">{t('ingredients.form.supplierInfo')}</Label>
-              <Input
-                id="supplier"
-                value={formData.supplier_info || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, supplier_info: e.target.value }))}
-                placeholder={t('ingredients.form.supplierPlaceholder')}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">{t('ingredients.form.notes')}</Label>
-              <Textarea
-                id="notes"
-                value={formData.notes || ''}
-                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                placeholder={t('ingredients.form.notesPlaceholder')}
-                rows={3}
-              />
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="active"
-                checked={formData.is_active || false}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_active: checked }))}
-              />
-              <Label htmlFor="active">{t('ingredients.form.active')}</Label>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                {t('ingredients.form.cancel')}
-              </Button>
-              <Button onClick={handleSave}>
-                {t('ingredients.form.save')}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          operationName?: string
+          query?: string
+          variables?: Json
+          extensions?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       about_images: {
@@ -509,10 +534,15 @@ export type Database = {
           category_id: string | null
           cost_per_unit: number | null
           created_at: string
+          description: string | null
+          description_de: string | null
+          description_en: string | null
           dietary_properties: string[] | null
           id: string
           is_active: boolean
           name: string
+          name_de: string | null
+          name_en: string | null
           notes: string | null
           seasonal_availability: string[] | null
           supplier_info: string | null
@@ -524,10 +554,15 @@ export type Database = {
           category_id?: string | null
           cost_per_unit?: number | null
           created_at?: string
+          description?: string | null
+          description_de?: string | null
+          description_en?: string | null
           dietary_properties?: string[] | null
           id?: string
           is_active?: boolean
           name: string
+          name_de?: string | null
+          name_en?: string | null
           notes?: string | null
           seasonal_availability?: string[] | null
           supplier_info?: string | null
@@ -539,10 +574,15 @@ export type Database = {
           category_id?: string | null
           cost_per_unit?: number | null
           created_at?: string
+          description?: string | null
+          description_de?: string | null
+          description_en?: string | null
           dietary_properties?: string[] | null
           id?: string
           is_active?: boolean
           name?: string
+          name_de?: string | null
+          name_en?: string | null
           notes?: string | null
           seasonal_availability?: string[] | null
           supplier_info?: string | null
@@ -563,23 +603,35 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
+          description_de: string | null
+          description_en: string | null
           display_order: number | null
           id: string
           name: string
+          name_de: string | null
+          name_en: string | null
         }
         Insert: {
           created_at?: string | null
           description?: string | null
+          description_de?: string | null
+          description_en?: string | null
           display_order?: number | null
           id?: string
           name: string
+          name_de?: string | null
+          name_en?: string | null
         }
         Update: {
           created_at?: string | null
           description?: string | null
+          description_de?: string | null
+          description_en?: string | null
           display_order?: number | null
           id?: string
           name?: string
+          name_de?: string | null
+          name_en?: string | null
         }
         Relationships: []
       }
@@ -587,27 +639,30 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          ingredient_id: string
+          ingredient_id: string | null
           menu_item_id: string
           notes: string | null
+          prep_id: string | null
           quantity: number
           unit: string
         }
         Insert: {
           created_at?: string
           id?: string
-          ingredient_id: string
+          ingredient_id?: string | null
           menu_item_id: string
           notes?: string | null
+          prep_id?: string | null
           quantity: number
           unit: string
         }
         Update: {
           created_at?: string
           id?: string
-          ingredient_id?: string
+          ingredient_id?: string | null
           menu_item_id?: string
           notes?: string | null
+          prep_id?: string | null
           quantity?: number
           unit?: string
         }
@@ -624,6 +679,13 @@ export type Database = {
             columns: ["menu_item_id"]
             isOneToOne: false
             referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_item_ingredients_prep_id_fkey"
+            columns: ["prep_id"]
+            isOneToOne: false
+            referencedRelation: "preps"
             referencedColumns: ["id"]
           },
         ]
@@ -698,6 +760,117 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      prep_ingredients: {
+        Row: {
+          created_at: string
+          id: string
+          ingredient_id: string
+          notes: string | null
+          prep_id: string
+          quantity: number
+          unit: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredient_id: string
+          notes?: string | null
+          prep_id: string
+          quantity: number
+          unit: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredient_id?: string
+          notes?: string | null
+          prep_id?: string
+          quantity?: number
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prep_ingredients_ingredient_id_fkey"
+            columns: ["ingredient_id"]
+            isOneToOne: false
+            referencedRelation: "ingredients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prep_ingredients_prep_id_fkey"
+            columns: ["prep_id"]
+            isOneToOne: false
+            referencedRelation: "preps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      preps: {
+        Row: {
+          batch_yield: string | null
+          batch_yield_amount: number | null
+          batch_yield_unit: string | null
+          cost_per_batch: number | null
+          cost_per_unit: number | null
+          created_at: string
+          description: string | null
+          description_de: string | null
+          description_en: string | null
+          id: string
+          instructions: string | null
+          instructions_de: string | null
+          instructions_en: string | null
+          is_active: boolean
+          name: string
+          name_de: string | null
+          name_en: string | null
+          notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          batch_yield?: string | null
+          batch_yield_amount?: number | null
+          batch_yield_unit?: string | null
+          cost_per_batch?: number | null
+          cost_per_unit?: number | null
+          created_at?: string
+          description?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          id?: string
+          instructions?: string | null
+          instructions_de?: string | null
+          instructions_en?: string | null
+          is_active?: boolean
+          name: string
+          name_de?: string | null
+          name_en?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          batch_yield?: string | null
+          batch_yield_amount?: number | null
+          batch_yield_unit?: string | null
+          cost_per_batch?: number | null
+          cost_per_unit?: number | null
+          created_at?: string
+          description?: string | null
+          description_de?: string | null
+          description_en?: string | null
+          id?: string
+          instructions?: string | null
+          instructions_de?: string | null
+          instructions_en?: string | null
+          is_active?: boolean
+          name?: string
+          name_de?: string | null
+          name_en?: string | null
+          notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       press_articles: {
         Row: {
@@ -891,6 +1064,36 @@ export type Database = {
         }
         Relationships: []
       }
+      site_branding: {
+        Row: {
+          created_at: string
+          favicon_url: string | null
+          id: string
+          logo_url: string | null
+          site_name: string
+          tagline: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          favicon_url?: string | null
+          id?: string
+          logo_url?: string | null
+          site_name?: string
+          tagline?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          favicon_url?: string | null
+          id?: string
+          logo_url?: string | null
+          site_name?: string
+          tagline?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -1025,6 +1228,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

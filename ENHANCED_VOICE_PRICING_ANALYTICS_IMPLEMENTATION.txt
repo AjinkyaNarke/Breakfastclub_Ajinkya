@@ -1,0 +1,81 @@
+ENHANCED VOICE DICTATION, PRICING & ANALYTICS IMPLEMENTATION
+============================================================
+
+1. OVERVIEW
+------------
+This feature enables restaurant admins to add menu items using voice dictation, with automatic extraction of ingredients, weights, prices, and real-time cost analysis. It leverages Deepgram for speech-to-text, advanced parsing for ingredient/cost extraction, and a dynamic UI for cost breakdown, pricing suggestions, and business analytics.
+
+2. ARCHITECTURE
+----------------
+- User (Admin Panel) interacts with EnhancedVoiceInput.tsx
+- Audio is streamed to Deepgram via useDeepgram.tsx (WebSocket)
+- Deepgram returns transcript, which is cleaned and language-detected
+- Speech parsing extracts ingredients, weights, prices, prep time
+- Cost calculation engine computes food cost, pricing, optimization
+- UI updates with cost breakdown, pricing, and analytics
+- Data is saved to Supabase DB for further analysis
+
+3. KEY COMPONENTS
+------------------
+- src/components/EnhancedVoiceInput.tsx: Handles voice recording, browser checks, user feedback
+- src/hooks/useDeepgram.tsx: Manages Deepgram WebSocket, audio streaming, error handling
+- src/lib/deepgramClient.ts: Low-level Deepgram WebSocket client with robust connection logic
+- src/components/admin/MenuItemDialog.tsx & EnhancedMenuItemDialog.tsx: Integrate voice input, cost analysis, translation
+- src/components/CostBreakdownComponent.tsx: Visualizes ingredient-level cost, pricing, optimization
+- src/utils/textCleaning.ts: Cleans and detects language from transcripts
+- ENHANCED_VOICE_DICTATION_DEMO.md: Example usage and feature showcase
+
+4. FEATURE FLOW
+----------------
+1. User clicks mic button in menu item dialog
+2. Browser compatibility checks (WebSocket, MediaRecorder, HTTPS/localhost)
+3. Microphone access requested with optimal constraints; fallback to basic if needed
+4. MediaRecorder captures audio, streams to Deepgram via WebSocket
+5. Deepgram returns transcript; transcript is cleaned and language detected
+6. Speech parsing extracts ingredients, weights, prices, prep time
+7. Cost calculation engine computes food cost, pricing, optimization
+8. UI updates with cost breakdown, pricing, analytics
+9. User can edit, save, or retry as needed
+
+5. ERROR HANDLING & DEBUGGING
+-----------------------------
+- Comprehensive browser checks: User-friendly errors for unsupported browsers, HTTP, or permissions
+- MediaRecorder fallback: Multiple creation strategies, detailed logging, and stream validation
+- Deepgram WebSocket: Robust connection logic, reconnection, and protocol fallback
+- UI feedback: Real-time toasts, error banners, actionable suggestions
+
+6. EXTENSIBILITY & ROADMAP
+---------------------------
+- Speech Parsing: Add more ingredient/unit/price patterns, support more languages
+- Cost Calculation: Integrate with supplier APIs, allergy/dietary analysis
+- UI: Add charts, export options, more granular cost breakdowns
+- Accessibility: Further ARIA improvements, keyboard shortcuts, screen reader support
+- Analytics: Track usage, errors, cost trends, menu profitability, ingredient price history
+- Business Analysis: Add profit margin analysis, sales forecasting, dynamic pricing, and inventory integration
+- Mobile support: Optimize UI and permissions for mobile browsers
+- Testing: Expand with more edge-case and cross-browser tests
+
+7. HOW TO BUILD UPON THIS
+--------------------------
+- Add new languages: Extend textCleaning.ts and i18n files
+- Improve ingredient recognition: Enhance regex and NLP in the speech parsing module
+- Integrate with inventory: Connect cost engine to live ingredient prices
+- Add analytics dashboards: Visualize trends, profitability, and menu performance
+- Add business intelligence: Forecast sales, suggest pricing, optimize menu
+- Expand accessibility: More ARIA, keyboard, and screen reader features
+
+8. REFERENCES
+--------------
+- Deepgram Streaming API Docs: https://developers.deepgram.com/docs/streaming
+- MDN: MediaRecorder API: https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder
+- MDN: WebSocket API: https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+- Supabase Edge Functions: https://supabase.com/docs/guides/functions
+- WCAG 2.1 Accessibility: https://www.w3.org/WAI/WCAG21/quickref/
+
+9. EXAMPLE USAGE
+-----------------
+See ENHANCED_VOICE_DICTATION_DEMO.md for sample voice inputs and expected outputs.
+
+---
+
+This document should be updated as new features, bugfixes, or architectural changes are made. For future analytics and business intelligence, see the Roadmap section for ideas on pricing, profitability, and menu optimization. 

@@ -11,8 +11,10 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Edit, Trash2, Image, ArrowUp, ArrowDown } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Plus, Edit, Trash2, Image, ArrowUp, ArrowDown, Video } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AboutImageManager } from "@/components/admin/AboutImageManager";
+import { AboutVideoManager } from "@/components/admin/AboutVideoManager";
 
 interface AboutSection {
   id: string;
@@ -46,6 +48,12 @@ const AboutManagement = () => {
     section_type: "text",
     is_published: true,
   });
+  const [actionLoading, setActionLoading] = useState<{ [id: string]: string | null }>({}); // { [sectionId]: 'delete' | 'moveUp' | 'moveDown' | null }
+  const [imageManagerOpen, setImageManagerOpen] = useState(false);
+  const [selectedSectionForImages, setSelectedSectionForImages] = useState<AboutSection | null>(null);
+  const [videoManagerOpen, setVideoManagerOpen] = useState(false);
+  const [selectedSectionForVideos, setSelectedSectionForVideos] = useState<AboutSection | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -72,6 +80,19 @@ const AboutManagement = () => {
       
       if (error) throw error;
       return data as AboutImage[];
+    },
+  });
+
+  const { data: videos } = useQuery({
+    queryKey: ["about-videos-admin"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("about_videos")
+        .select("*")
+        .order("display_order");
+      
+      if (error) throw error;
+      return data;
     },
   });
 
@@ -149,44 +170,6 @@ const AboutManagement = () => {
     },
   });
 
-  const resetForm = () => {
-    setFormData({
-      section_key: "",
-      title: "",
-      subtitle: "",
-      content: "",
-      section_type: "text",
-      is_published: true,
-    });
-    setIsEditing(false);
-    setSelectedSection(null);
-  };
-
-  const handleEdit = (section: AboutSection) => {
-    setSelectedSection(section);
-    setFormData({
-      section_key: section.section_key,
-      title: section.title,
-      subtitle: section.subtitle || "",
-      content: section.content || "",
-      section_type: section.section_type,
-      is_published: section.is_published,
-    });
-    setIsEditing(true);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (isEditing && selectedSection) {
-      updateSectionMutation.mutate({
-        id: selectedSection.id,
-        data: formData,
-      });
-    } else {
-      createSectionMutation.mutate(formData);
-    }
-  };
 
   const moveSection = (section: AboutSection, direction: 'up' | 'down') => {
     if (!sections) return;
@@ -202,8 +185,102 @@ const AboutManagement = () => {
     updateOrderMutation.mutate({ id: targetSection.id, newOrder: section.display_order });
   };
 
+  const handleDeleteSection = (id: string) => {
+    setActionLoading(prev => ({ ...prev, [id]: 'delete' }));
+    deleteSectionMutation.mutate(id, {
+      onSettled: () => setActionLoading(prev => ({ ...prev, [id]: null }))
+    });
+  };
+
+  const handleMoveSection = (section: AboutSection, direction: 'up' | 'down') => {
+    setActionLoading(prev => ({ ...prev, [section.id]: direction === 'up' ? 'moveUp' : 'moveDown' }));
+    moveSection(section, direction);
+    setTimeout(() => setActionLoading(prev => ({ ...prev, [section.id]: null })), 1000); // optimistic, since moveSection is not async
+  };
+
   const getSectionImages = (sectionId: string) => {
     return images?.filter(img => img.section_id === sectionId) || [];
+  };
+
+  const handleManageImages = (section: AboutSection) => {
+    setSelectedSectionForImages(section);
+    setImageManagerOpen(true);
+  };
+
+  const handleImagesUpdated = () => {
+    queryClient.invalidateQueries({ queryKey: ["about-images-admin"] });
+  };
+
+  const handleManageVideos = (section: AboutSection) => {
+    setSelectedSectionForVideos(section);
+    setVideoManagerOpen(true);
+  };
+
+  const handleVideosUpdated = () => {
+    queryClient.invalidateQueries({ queryKey: ["about-videos-admin"] });
+  };
+
+  const getSectionVideos = (sectionId: string) => {
+    return videos?.filter(video => video.section_id === sectionId) || [];
+  };
+
+  const resetForm = () => {
+    setFormData({
+      section_key: "",
+      title: "",
+      subtitle: "",
+      content: "",
+      section_type: "text",
+      is_published: true,
+    });
+    setSelectedSection(null);
+    setIsEditing(false);
+  };
+
+  const openAddDialog = () => {
+    resetForm();
+    setEditDialogOpen(true);
+  };
+
+  const handleEdit = (section: AboutSection) => {
+    setFormData({
+      section_key: section.section_key,
+      title: section.title,
+      subtitle: section.subtitle || "",
+      content: section.content || "",
+      section_type: section.section_type,
+      is_published: section.is_published,
+    });
+    setSelectedSection(section);
+    setIsEditing(true);
+    setEditDialogOpen(true);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (isEditing && selectedSection) {
+      updateSectionMutation.mutate({
+        id: selectedSection.id,
+        ...formData,
+      }, {
+        onSuccess: () => {
+          setEditDialogOpen(false);
+          resetForm();
+        }
+      });
+    } else {
+      const maxOrder = Math.max(...(sections?.map(s => s.display_order) || [0]));
+      createSectionMutation.mutate({
+        ...formData,
+        display_order: maxOrder + 1,
+      }, {
+        onSuccess: () => {
+          setEditDialogOpen(false);
+          resetForm();
+        }
+      });
+    }
   };
 
   if (isLoading) {
@@ -214,18 +291,20 @@ const AboutManagement = () => {
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">About Us Management</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button onClick={resetForm}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Section
-            </Button>
-          </DialogTrigger>
+        <Button onClick={openAddDialog} aria-label="Add Section">
+          <Plus className="h-4 w-4 mr-2" />
+          Add Section
+        </Button>
+        
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>
                 {isEditing ? "Edit Section" : "Create New Section"}
               </DialogTitle>
+              <DialogDescription>
+                {isEditing ? "Update the about section details." : "Add a new section to your about page."}
+              </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -298,11 +377,13 @@ const AboutManagement = () => {
               </div>
               
               <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)} aria-label="Cancel">
                   Cancel
                 </Button>
-                <Button type="submit" disabled={createSectionMutation.isPending || updateSectionMutation.isPending}>
-                  {isEditing ? "Update" : "Create"} Section
+                <Button type="submit" disabled={createSectionMutation.isPending || updateSectionMutation.isPending} aria-label={isEditing ? 'Update Section' : 'Create Section'}>
+                  {(createSectionMutation.isPending || updateSectionMutation.isPending) ? (
+                    <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2" />
+                  ) : isEditing ? "Update" : "Create"} Section
                 </Button>
               </div>
             </form>
@@ -336,32 +417,67 @@ const AboutManagement = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => moveSection(section, 'up')}
-                        disabled={index === 0}
+                        onClick={() => handleMoveSection(section, 'up')}
+                        disabled={index === 0 || actionLoading[section.id] === 'moveUp'}
+                        aria-label="Move Section Up"
                       >
-                        <ArrowUp className="h-4 w-4" />
+                        {actionLoading[section.id] === 'moveUp' ? (
+                          <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-1" />
+                        ) : (
+                          <ArrowUp className="h-4 w-4" />
+                        )}
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => moveSection(section, 'down')}
-                        disabled={index === sections.length - 1}
+                        onClick={() => handleMoveSection(section, 'down')}
+                        disabled={index === sections.length - 1 || actionLoading[section.id] === 'moveDown'}
+                        aria-label="Move Section Down"
                       >
-                        <ArrowDown className="h-4 w-4" />
+                        {actionLoading[section.id] === 'moveDown' ? (
+                          <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-1" />
+                        ) : (
+                          <ArrowDown className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleManageImages(section)}
+                        aria-label="Manage Images"
+                        title={`Manage images (${getSectionImages(section.id).length})`}
+                      >
+                        <Image className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleManageVideos(section)}
+                        aria-label="Manage Videos"
+                        title={`Manage videos (${getSectionVideos(section.id).length})`}
+                      >
+                        <Video className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => handleEdit(section)}
+                        aria-label="Edit Section"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => deleteSectionMutation.mutate(section.id)}
+                        onClick={() => handleDeleteSection(section.id)}
+                        aria-label="Delete Section"
+                        disabled={actionLoading[section.id] === 'delete'}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        {actionLoading[section.id] === 'delete' ? (
+                          <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-600 mr-1" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
@@ -394,22 +510,53 @@ const AboutManagement = () => {
         <TabsContent value="preview">
           <Card>
             <CardHeader>
-              <CardTitle>Live Preview</CardTitle>
+              <div className="flex justify-between items-center">
+                <CardTitle>Live Preview</CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.open('/about', '_blank')}
+                  aria-label="Open in new tab"
+                >
+                  Open in New Tab
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <p className="text-muted-foreground">
-                  Visit the{" "}
-                  <a href="/about" target="_blank" className="text-primary underline">
-                    About Us page
-                  </a>{" "}
-                  to see the live preview
-                </p>
+            <CardContent className="p-0">
+              <div className="border rounded-lg overflow-hidden">
+                <iframe
+                  src="/about"
+                  className="w-full h-[800px] border-0"
+                  title="About Us Page Preview"
+                  sandbox="allow-same-origin allow-scripts allow-forms"
+                />
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Image Manager Dialog */}
+      {selectedSectionForImages && (
+        <AboutImageManager
+          open={imageManagerOpen}
+          onOpenChange={setImageManagerOpen}
+          sectionId={selectedSectionForImages.id}
+          sectionTitle={selectedSectionForImages.title}
+          onImagesUpdated={handleImagesUpdated}
+        />
+      )}
+
+      {/* Video Manager Dialog */}
+      {selectedSectionForVideos && (
+        <AboutVideoManager
+          open={videoManagerOpen}
+          onOpenChange={setVideoManagerOpen}
+          sectionId={selectedSectionForVideos.id}
+          sectionTitle={selectedSectionForVideos.title}
+          onVideosUpdated={handleVideosUpdated}
+        />
+      )}
     </div>
   );
 };

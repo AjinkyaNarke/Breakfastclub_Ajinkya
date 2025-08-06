@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useConsent, ConsentPreferences } from '@/hooks/useConsent';
@@ -86,6 +86,9 @@ export const CookieConsentBanner = () => {
                     <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                       <DialogHeader>
                         <DialogTitle>{t('cookies.settings.title')}</DialogTitle>
+                        <DialogDescription>
+                          Customize your cookie preferences to control how we collect and use data.
+                        </DialogDescription>
                       </DialogHeader>
                       <div className="space-y-6">
                         <p className="text-sm text-muted-foreground">

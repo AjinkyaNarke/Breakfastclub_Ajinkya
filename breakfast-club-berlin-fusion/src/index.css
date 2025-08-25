@@ -1,0 +1,265 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Red Chinese Restaurant Design System - fckingbreakfastclub
+All colors MUST be HSL. Inspired by traditional Chinese red, imperial gold, and warm restaurant ambiance.
+*/
+
+@layer base {
+  :root {
+    /* Core Restaurant Colors - Chinese Red Palette */
+    --background: 45 20% 98%;
+    --foreground: 0 10% 10%;
+
+    --card: 45 15% 96%;
+    --card-foreground: 0 10% 10%;
+
+    --popover: 45 20% 98%;
+    --popover-foreground: 0 10% 10%;
+
+    /* Primary - Deep Chinese Red (Restaurant Signature) */
+    --primary: 0 70% 45%;
+    --primary-foreground: 45 20% 98%;
+    --primary-glow: 0 80% 55%;
+
+    /* Secondary - Imperial Gold (More Visible) */
+    --secondary: 42 90% 50%;
+    --secondary-foreground: 0 15% 15%;
+    
+    /* Accent - Warm Restaurant Red */
+    --accent: 5 60% 80%;
+    --accent-foreground: 0 10% 10%;
+    --accent-vibrant: 0 75% 50%;
+
+    /* Warm Restaurant Neutrals */
+    --muted: 40 20% 92%;
+    --muted-foreground: 0 5% 40%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 45 20% 98%;
+
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 0 70% 45%;
+
+    /* Restaurant Atmosphere Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 70% 45%), hsl(0 80% 55%));
+    --gradient-warm: linear-gradient(45deg, hsl(42 90% 50%), hsl(38 85% 45%));
+    --gradient-restaurant: linear-gradient(135deg, hsl(5 60% 80%), hsl(0 75% 50%));
+    --gradient-hero: linear-gradient(180deg, hsl(45 20% 98%), hsl(40 20% 92%));
+
+    /* Restaurant Lighting Effects */
+    --shadow-soft: 0 4px 20px hsl(0 10% 10% / 0.08);
+    --shadow-warm: 0 8px 30px hsl(42 90% 50% / 0.2);
+    --shadow-glow: 0 0 40px hsl(0 80% 55% / 0.25);
+    --shadow-restaurant: 0 12px 40px hsl(0 70% 45% / 0.15);
+
+    /* Smooth Restaurant Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 15% 8%;
+    --foreground: 45 20% 95%;
+    --card: 0 15% 8%;
+    --card-foreground: 45 20% 95%;
+    --popover: 0 15% 8%;
+    --popover-foreground: 45 20% 95%;
+    --primary: 0 80% 55%;
+    --primary-foreground: 0 15% 8%;
+    --secondary: 42 90% 60%;
+    --secondary-foreground: 0 15% 8%;
+    --muted: 0 10% 15%;
+    --muted-foreground: 45 10% 60%;
+    --accent: 0 70% 20%;
+    --accent-foreground: 45 20% 95%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 45 20% 95%;
+    --border: 0 10% 15%;
+    --input: 0 10% 15%;
+    --ring: 0 80% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Restaurant Atmosphere Styles */
+@layer components {
+  /* Hero Section with Restaurant Warmth */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+
+  /* Chinese-inspired Patterns */
+  .restaurant-texture {
+    background-image: 
+      radial-gradient(circle at 25% 25%, hsl(0 70% 45% / 0.03) 2px, transparent 2px),
+      radial-gradient(circle at 75% 75%, hsl(42 90% 50% / 0.03) 2px, transparent 2px);
+    background-size: 50px 50px;
+  }
+
+  /* Warm Restaurant Glow */
+  .restaurant-glow {
+    position: relative;
+  }
+  
+  .restaurant-glow::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 15px;
+    height: 15px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: gentle-pulse 3s ease-in-out infinite;
+  }
+
+  /* Restaurant Hover Effects */
+  .restaurant-lift {
+    transition: var(--transition-smooth);
+  }
+  
+  .restaurant-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-restaurant);
+  }
+
+  /* Restaurant Typography */
+  .text-brand {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Warm Lighting Effect */
+  .warm-lighting {
+    box-shadow: 
+      inset 0 1px 0 hsl(42 90% 50% / 0.1),
+      0 4px 20px hsl(0 70% 45% / 0.1);
+  }
+
+  /* Custom Restaurant Scrollbar */
+  .restaurant-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .restaurant-scrollbar::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  
+  .restaurant-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--gradient-primary);
+    border-radius: 4px;
+  }
+
+  /* Neon Typography for fckingbreakfastclub */
+  .neon-title {
+    font-family: 'Impact', 'Arial Black', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 
+      0 0 5px hsl(var(--primary)),
+      0 0 10px hsl(var(--primary)),
+      0 0 20px hsl(var(--primary)),
+      0 0 40px hsl(var(--primary)),
+      0 0 80px hsl(var(--primary));
+    color: white;
+    animation: neon-flicker 2s ease-in-out infinite alternate;
+  }
+
+  .neon-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    text-shadow: 
+      0 0 10px hsl(var(--secondary)),
+      0 0 20px hsl(var(--secondary)),
+      0 0 30px hsl(var(--secondary));
+    color: hsl(var(--secondary));
+  }
+
+  /* Video Background Styles */
+  .video-overlay {
+    background: linear-gradient(
+      45deg,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.7) 100%
+    );
+  }
+
+  .hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  /* Animation Keyframes */
+  @keyframes gentle-pulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  @keyframes cherry-float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes neon-flicker {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+      text-shadow: 
+        0 0 5px hsl(var(--primary)),
+        0 0 10px hsl(var(--primary)),
+        0 0 20px hsl(var(--primary)),
+        0 0 40px hsl(var(--primary)),
+        0 0 80px hsl(var(--primary));
+    }
+    
+    20%, 24%, 55% {
+      text-shadow: none;
+    }
+  }
+
+  .animate-cherry-float {
+    animation: cherry-float 3s ease-in-out infinite;
+  }
+}

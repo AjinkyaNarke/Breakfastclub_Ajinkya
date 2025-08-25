@@ -7,35 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
-  }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          operationName?: string
-          query?: string
-          variables?: Json
-          extensions?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
   }
   public: {
     Tables: {
@@ -119,6 +94,160 @@ export type Database = {
         }
         Relationships: []
       }
+      about_videos: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string | null
+          display_order: number | null
+          duration: number | null
+          external_video_id: string | null
+          file_size: number | null
+          id: string
+          section_id: string | null
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string | null
+          video_type: string | null
+          video_url: string
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          duration?: number | null
+          external_video_id?: string | null
+          file_size?: number | null
+          id?: string
+          section_id?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+          video_type?: string | null
+          video_url: string
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string | null
+          display_order?: number | null
+          duration?: number | null
+          external_video_id?: string | null
+          file_size?: number | null
+          id?: string
+          section_id?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string | null
+          video_type?: string | null
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "about_videos_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "about_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_chat_conversations: {
+        Row: {
+          admin_user_id: string
+          created_at: string | null
+          id: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          admin_user_id: string
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Update: {
+          admin_user_id?: string
+          created_at?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      admin_chat_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string | null
+          id: string
+          model_used: string | null
+          processing_time_ms: number | null
+          role: string
+          tokens_used: number | null
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string | null
+          id?: string
+          model_used?: string | null
+          processing_time_ms?: number | null
+          role: string
+          tokens_used?: number | null
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string | null
+          id?: string
+          model_used?: string | null
+          processing_time_ms?: number | null
+          role?: string
+          tokens_used?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_chat_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "admin_chat_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_settings: {
+        Row: {
+          ai_credits: number | null
+          ai_credits_limit: number | null
+          created_at: string | null
+          id: string
+          image_generation_enabled: boolean | null
+          max_images_per_month: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_credits?: number | null
+          ai_credits_limit?: number | null
+          created_at?: string | null
+          id?: string
+          image_generation_enabled?: boolean | null
+          max_images_per_month?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_credits?: number | null
+          ai_credits_limit?: number | null
+          created_at?: string | null
+          id?: string
+          image_generation_enabled?: boolean | null
+          max_images_per_month?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string | null
@@ -195,6 +324,8 @@ export type Database = {
           budget_limit: number | null
           created_at: string | null
           id: string
+          image_generation_cost_total: number | null
+          image_generation_count: number | null
           images_generated: number | null
           month_year: string
           total_cost: number | null
@@ -204,6 +335,8 @@ export type Database = {
           budget_limit?: number | null
           created_at?: string | null
           id?: string
+          image_generation_cost_total?: number | null
+          image_generation_count?: number | null
           images_generated?: number | null
           month_year: string
           total_cost?: number | null
@@ -213,10 +346,87 @@ export type Database = {
           budget_limit?: number | null
           created_at?: string | null
           id?: string
+          image_generation_cost_total?: number | null
+          image_generation_count?: number | null
           images_generated?: number | null
           month_year?: string
           total_cost?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      analytics_usage_tracking: {
+        Row: {
+          created_at: string | null
+          error_message: string | null
+          id: string
+          operation: string
+          points_used: number
+          processing_time_ms: number | null
+          request_metadata: Json | null
+          response_metadata: Json | null
+          service: string
+          success: boolean | null
+          user_session: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          operation: string
+          points_used: number
+          processing_time_ms?: number | null
+          request_metadata?: Json | null
+          response_metadata?: Json | null
+          service: string
+          success?: boolean | null
+          user_session?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          operation?: string
+          points_used?: number
+          processing_time_ms?: number | null
+          request_metadata?: Json | null
+          response_metadata?: Json | null
+          service?: string
+          success?: boolean | null
+          user_session?: string | null
+        }
+        Relationships: []
+      }
+      business_metrics_cache: {
+        Row: {
+          cache_key: string
+          created_at: string | null
+          date_range_end: string
+          date_range_start: string
+          expires_at: string
+          id: string
+          is_valid: boolean | null
+          metrics_data: Json
+        }
+        Insert: {
+          cache_key: string
+          created_at?: string | null
+          date_range_end: string
+          date_range_start: string
+          expires_at: string
+          id?: string
+          is_valid?: boolean | null
+          metrics_data: Json
+        }
+        Update: {
+          cache_key?: string
+          created_at?: string | null
+          date_range_end?: string
+          date_range_start?: string
+          expires_at?: string
+          id?: string
+          is_valid?: boolean | null
+          metrics_data?: Json
         }
         Relationships: []
       }
@@ -429,6 +639,51 @@ export type Database = {
         }
         Relationships: []
       }
+      data_summaries: {
+        Row: {
+          compression_ratio: number
+          created_at: string | null
+          folder_id: string
+          id: string
+          key_insights: string[]
+          last_accessed: string | null
+          original_size: number
+          summary_data: Json | null
+          summary_name: string
+          summary_size: number
+          time_range_end: string | null
+          time_range_start: string | null
+        }
+        Insert: {
+          compression_ratio: number
+          created_at?: string | null
+          folder_id: string
+          id?: string
+          key_insights: string[]
+          last_accessed?: string | null
+          original_size: number
+          summary_data?: Json | null
+          summary_name: string
+          summary_size: number
+          time_range_end?: string | null
+          time_range_start?: string | null
+        }
+        Update: {
+          compression_ratio?: number
+          created_at?: string | null
+          folder_id?: string
+          id?: string
+          key_insights?: string[]
+          last_accessed?: string | null
+          original_size?: number
+          summary_data?: Json | null
+          summary_name?: string
+          summary_size?: number
+          time_range_end?: string | null
+          time_range_start?: string | null
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string | null
@@ -539,6 +794,10 @@ export type Database = {
           description_en: string | null
           dietary_properties: string[] | null
           id: string
+          image_generated_at: string | null
+          image_generation_cost: number | null
+          image_generation_prompt: string | null
+          image_url: string | null
           is_active: boolean
           name: string
           name_de: string | null
@@ -559,6 +818,10 @@ export type Database = {
           description_en?: string | null
           dietary_properties?: string[] | null
           id?: string
+          image_generated_at?: string | null
+          image_generation_cost?: number | null
+          image_generation_prompt?: string | null
+          image_url?: string | null
           is_active?: boolean
           name: string
           name_de?: string | null
@@ -579,6 +842,10 @@ export type Database = {
           description_en?: string | null
           dietary_properties?: string[] | null
           id?: string
+          image_generated_at?: string | null
+          image_generation_cost?: number | null
+          image_generation_prompt?: string | null
+          image_url?: string | null
           is_active?: boolean
           name?: string
           name_de?: string | null
@@ -639,30 +906,27 @@ export type Database = {
         Row: {
           created_at: string
           id: string
-          ingredient_id: string | null
+          ingredient_id: string
           menu_item_id: string
           notes: string | null
-          prep_id: string | null
           quantity: number
           unit: string
         }
         Insert: {
           created_at?: string
           id?: string
-          ingredient_id?: string | null
+          ingredient_id: string
           menu_item_id: string
           notes?: string | null
-          prep_id?: string | null
           quantity: number
           unit: string
         }
         Update: {
           created_at?: string
           id?: string
-          ingredient_id?: string | null
+          ingredient_id?: string
           menu_item_id?: string
           notes?: string | null
-          prep_id?: string | null
           quantity?: number
           unit?: string
         }
@@ -679,13 +943,6 @@ export type Database = {
             columns: ["menu_item_id"]
             isOneToOne: false
             referencedRelation: "menu_items"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "menu_item_ingredients_prep_id_fkey"
-            columns: ["prep_id"]
-            isOneToOne: false
-            referencedRelation: "preps"
             referencedColumns: ["id"]
           },
         ]
@@ -763,7 +1020,7 @@ export type Database = {
       }
       prep_ingredients: {
         Row: {
-          created_at: string
+          created_at: string | null
           id: string
           ingredient_id: string
           notes: string | null
@@ -772,7 +1029,7 @@ export type Database = {
           unit: string
         }
         Insert: {
-          created_at?: string
+          created_at?: string | null
           id?: string
           ingredient_id: string
           notes?: string | null
@@ -781,7 +1038,7 @@ export type Database = {
           unit: string
         }
         Update: {
-          created_at?: string
+          created_at?: string | null
           id?: string
           ingredient_id?: string
           notes?: string | null
@@ -813,7 +1070,7 @@ export type Database = {
           batch_yield_unit: string | null
           cost_per_batch: number | null
           cost_per_unit: number | null
-          created_at: string
+          created_at: string | null
           description: string | null
           description_de: string | null
           description_en: string | null
@@ -821,12 +1078,12 @@ export type Database = {
           instructions: string | null
           instructions_de: string | null
           instructions_en: string | null
-          is_active: boolean
+          is_active: boolean | null
           name: string
           name_de: string | null
           name_en: string | null
           notes: string | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           batch_yield?: string | null
@@ -834,7 +1091,7 @@ export type Database = {
           batch_yield_unit?: string | null
           cost_per_batch?: number | null
           cost_per_unit?: number | null
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           description_de?: string | null
           description_en?: string | null
@@ -842,12 +1099,12 @@ export type Database = {
           instructions?: string | null
           instructions_de?: string | null
           instructions_en?: string | null
-          is_active?: boolean
+          is_active?: boolean | null
           name: string
           name_de?: string | null
           name_en?: string | null
           notes?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           batch_yield?: string | null
@@ -855,7 +1112,7 @@ export type Database = {
           batch_yield_unit?: string | null
           cost_per_batch?: number | null
           cost_per_unit?: number | null
-          created_at?: string
+          created_at?: string | null
           description?: string | null
           description_de?: string | null
           description_en?: string | null
@@ -863,12 +1120,12 @@ export type Database = {
           instructions?: string | null
           instructions_de?: string | null
           instructions_en?: string | null
-          is_active?: boolean
+          is_active?: boolean | null
           name?: string
           name_de?: string | null
           name_en?: string | null
           notes?: string | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1064,6 +1321,114 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_categories: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          is_active: boolean | null
+          name: string
+          name_de: string | null
+          name_en: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          name_de?: string | null
+          name_en?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          name_de?: string | null
+          name_en?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sales_data: {
+        Row: {
+          amount: number
+          category: string
+          confidence_score: number | null
+          created_at: string | null
+          created_by: string | null
+          currency: string
+          date: string
+          description: string | null
+          id: string
+          items: number | null
+          location: string | null
+          parsed_fields: Json | null
+          payment_method: string | null
+          raw_transcript: string | null
+          source: string | null
+          staff: string | null
+          updated_at: string | null
+          updated_by: string | null
+          validation_notes: string | null
+          validation_status: string | null
+        }
+        Insert: {
+          amount: number
+          category: string
+          confidence_score?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          date: string
+          description?: string | null
+          id?: string
+          items?: number | null
+          location?: string | null
+          parsed_fields?: Json | null
+          payment_method?: string | null
+          raw_transcript?: string | null
+          source?: string | null
+          staff?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          validation_notes?: string | null
+          validation_status?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string
+          confidence_score?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          currency?: string
+          date?: string
+          description?: string | null
+          id?: string
+          items?: number | null
+          location?: string | null
+          parsed_fields?: Json | null
+          payment_method?: string | null
+          raw_transcript?: string | null
+          source?: string | null
+          staff?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          validation_notes?: string | null
+          validation_status?: string | null
+        }
+        Relationships: []
+      }
       site_branding: {
         Row: {
           created_at: string
@@ -1099,7 +1464,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_prep_costs: {
+        Args: { prep_uuid: string }
+        Returns: undefined
+      }
+      cleanup_expired_cache: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      is_admin_user: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      validate_sales_entry: {
+        Args: {
+          p_amount: number
+          p_category: string
+          p_date: string
+          p_source?: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
@@ -1228,9 +1613,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

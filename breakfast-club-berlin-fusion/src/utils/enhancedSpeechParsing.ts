@@ -1,10 +1,17 @@
 /**
  * Enhanced speech parsing for ingredient costs and pricing
- * Extracts weights, units, and prices from voice input
+ * Extracts weights, units, and prices from voice input with smart matching
  */
 
 import type { ParsedIngredientWithCost, EnhancedVoiceParsingResult } from '../integrations/supabase/enhanced-types';
 import { UNIT_CONVERSIONS } from '../integrations/supabase/unitConversions';
+import { 
+  findBestIngredientMatch, 
+  extractIngredientsFromText,
+  type IngredientMatch,
+  type IngredientContext
+} from './smartIngredientMatching';
+import { cleanVoiceInput } from './textCleaning';
 
 // Regex patterns for parsing quantities, units, and prices
 const QUANTITY_PATTERNS = [
@@ -108,10 +115,14 @@ const GERMAN_INGREDIENTS: Record<string, string> = {
 };
 
 /**
- * Parse enhanced voice input with ingredient costs
+ * Parse enhanced voice input with ingredient costs and smart matching
  */
-export function parseEnhancedVoiceInput(text: string): EnhancedVoiceParsingResult {
+export function parseEnhancedVoiceInput(text: string, availableIngredients?: string[]): EnhancedVoiceParsingResult {
   console.log('🎯 Parsing enhanced voice input:', text);
+  
+  // Clean the voice input first to remove filler words and normalize
+  const { cleanedText, detectedLanguage } = cleanVoiceInput(text);
+  console.log('🧹 Cleaned text:', cleanedText, 'Language:', detectedLanguage);
   
   const result: EnhancedVoiceParsingResult = {
     dishName: '',
@@ -120,44 +131,79 @@ export function parseEnhancedVoiceInput(text: string): EnhancedVoiceParsingResul
     totalEstimatedCost: 0,
     suggestedPrice: 0,
     category: '',
-    cuisineType: '',
+    cuisineType: detectedLanguage === 'de' ? 'German' : detectedLanguage === 'en' ? 'International' : '',
     servingSize: 1,
     confidence: 0.8
   };
   
-  // Extract dish name (reuse existing logic)
-  result.dishName = extractDishName(text);
+  // Extract dish name and build context
+  result.dishName = extractDishName(cleanedText);
+  const context: IngredientContext = {
+    dishType: result.dishName,
+    cuisineType: result.cuisineType,
+  };
   
-  // Extract ingredients with costs
-  result.ingredients = extractIngredientsWithCosts(text);
+  // Extract ingredients with costs using smart matching
+  result.ingredients = extractIngredientsWithCosts(cleanedText, availableIngredients, context);
+  
+  // Update context with found ingredients for better subsequent matching
+  context.previousIngredients = result.ingredients.map(i => i.name);
   
   // Calculate total cost and suggested price
   result.totalEstimatedCost = result.ingredients.reduce((sum, ing) => sum + (ing.quantity * (ing.pricePerKilo || ing.pricePerUnit || 0)), 0);
   result.suggestedPrice = calculateSuggestedPrice(result.totalEstimatedCost);
   
   // Extract serving size if mentioned
-  result.servingSize = extractServingSize(text) || 1;
+  result.servingSize = extractServingSize(cleanedText) || 1;
   
   // Extract preparation time if mentioned
-  result.preparationTime = extractPreparationTime(text);
+  result.preparationTime = extractPreparationTime(cleanedText);
   
-  console.log('🎯 Parsing result:', result);
+  // Calculate overall confidence based on ingredient matches
+  const avgIngredientConfidence = result.ingredients.length > 0 
+    ? result.ingredients.reduce((sum, ing) => sum + ing.confidence, 0) / result.ingredients.length 
+    : 0.5;
+  result.confidence = Math.min(1.0, (avgIngredientConfidence + 0.8) / 2);
+  
+  console.log('🎯 Enhanced parsing result:', result);
   return result;
 }
 
 /**
- * Extract ingredients with quantities, units, and pricing information
+ * Extract ingredients with quantities, units, and pricing information using smart matching
  */
-function extractIngredientsWithCosts(text: string): ParsedIngredientWithCost[] {
+function extractIngredientsWithCosts(
+  text: string, 
+  availableIngredients?: string[], 
+  context?: IngredientContext
+): ParsedIngredientWithCost[] {
   const ingredients: ParsedIngredientWithCost[] = [];
   
-  // Split text into segments for each ingredient
+  // First, try to extract ingredients using smart matching
+  const smartMatches = extractIngredientsFromText(text, availableIngredients, context);
+  
+  // Split text into segments for detailed parsing
   const segments = splitIntoIngredientSegments(text);
   
   for (const segment of segments) {
-    const ingredient = parseIngredientSegment(segment);
+    const ingredient = parseIngredientSegment(segment, smartMatches, availableIngredients, context);
     if (ingredient) {
       ingredients.push(ingredient);
+    }
+  }
+  
+  // If we didn't find ingredients through segment parsing, try smart matching on the whole text
+  if (ingredients.length === 0 && smartMatches.length > 0) {
+    for (const match of smartMatches) {
+      const basicIngredient: ParsedIngredientWithCost = {
+        name: match.ingredient,
+        quantity: 1, // Default quantity
+        unit: 'pieces', // Default unit
+        currency: 'EUR',
+        confidence: match.confidence,
+        originalText: match.originalInput,
+      };
+      ingredients.push(basicIngredient);
     }
   }
   
@@ -190,34 +236,62 @@ function splitIntoIngredientSegments(text: string): string[] {
 }
 
 /**
- * Parse a single ingredient segment
+ * Parse a single ingredient segment with smart matching
  */
-function parseIngredientSegment(segment: string): ParsedIngredientWithCost | null {
+function parseIngredientSegment(
+  segment: string, 
+  smartMatches?: IngredientMatch[],
+  availableIngredients?: string[],
+  context?: IngredientContext
+): ParsedIngredientWithCost | null {
   console.log('🔍 Parsing ingredient segment:', segment);
   
   // Extract quantity and unit
   const quantityUnit = extractQuantityAndUnit(segment);
-  if (!quantityUnit) {
-    return null;
-  }
-  
-  // Extract ingredient name
-  const ingredientName = extractIngredientName(segment, quantityUnit);
   
   // Extract pricing information
   const pricing = extractPricing(segment);
   
+  // Try to find ingredient name using smart matching first
+  let ingredientName = '';
+  let confidence = 0.5;
+  
+  // Check if we already have a smart match for this segment
+  const relevantMatch = smartMatches?.find(match => 
+    segment.toLowerCase().includes(match.originalInput.toLowerCase()) ||
+    match.originalInput.toLowerCase().includes(segment.toLowerCase())
+  );
+  
+  if (relevantMatch) {
+    ingredientName = relevantMatch.ingredient;
+    confidence = relevantMatch.confidence;
+  } else {
+    // Try smart matching on the segment
+    const segmentMatch = findBestIngredientMatch(segment, availableIngredients, context);
+    if (segmentMatch && segmentMatch.confidence >= 0.6) {
+      ingredientName = segmentMatch.ingredient;
+      confidence = segmentMatch.confidence;
+    } else {
+      // Fallback to traditional name extraction
+      ingredientName = extractIngredientName(segment, quantityUnit || { quantity: 1, unit: 'pieces' });
+      confidence = 0.5;
+    }
+  }
+  
+  // If we still don't have quantity/unit but have smart matches, use defaults
+  const finalQuantityUnit = quantityUnit || { quantity: 1, unit: 'pieces' };
+  
   const ingredient: ParsedIngredientWithCost = {
-    name: ingredientName,
-    quantity: quantityUnit.quantity,
-    unit: quantityUnit.unit,
+    name: ingredientName || 'Unknown ingredient',
+    quantity: finalQuantityUnit.quantity,
+    unit: finalQuantityUnit.unit,
     currency: 'EUR',
-    confidence: 0.8,
+    confidence: Math.min(1.0, confidence + (pricing.pricePerKilo || pricing.pricePerUnit ? 0.1 : 0)),
     originalText: segment.trim(),
     ...pricing
   };
   
-  console.log('✅ Parsed ingredient:', ingredient);
+  console.log('✅ Enhanced parsed ingredient:', ingredient);
   return ingredient;
 }
 

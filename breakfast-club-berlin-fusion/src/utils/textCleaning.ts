@@ -33,12 +33,48 @@ const FOOD_NAME_CORRECTIONS: Record<string, string> = {
   // Common ingredients
   'avocado': 'Avocado',
   'avacado': 'Avocado',
+  'avacodo': 'Avocado',
+  'avakado': 'Avocado',
   'tomato': 'Tomato',
   'tomatoe': 'Tomato',
+  'tomatos': 'Tomatoes',
   'mushroom': 'Mushroom',
   'mushrume': 'Mushroom',
+  'mushrooms': 'Mushrooms',
   'spinach': 'Spinach',
   'spinich': 'Spinach',
+  'lemon': 'Lemon',
+  'lemmon': 'Lemon',
+  'lemons': 'Lemons',
+  'onion': 'Onion',
+  'onions': 'Onions',
+  'onyon': 'Onion',
+  'rice': 'Rice',
+  'ryce': 'Rice',
+  'chicken': 'Chicken',
+  'chiken': 'Chicken',
+  'chickin': 'Chicken',
+  'beef': 'Beef',
+  'beaf': 'Beef',
+  'carrot': 'Carrot',
+  'carot': 'Carrot',
+  'carrots': 'Carrots',
+  'pepper': 'Pepper',
+  'peppers': 'Peppers',
+  'peper': 'Pepper',
+  'garlic': 'Garlic',
+  'garlick': 'Garlic',
+  'ginger': 'Ginger',
+  'ginjer': 'Ginger',
+  'cheese': 'Cheese',
+  'cheeze': 'Cheese',
+  'oil': 'Oil',
+  'olive oil': 'Olive Oil',
+  'salt': 'Salt',
+  'sugar': 'Sugar',
+  'suger': 'Sugar',
+  'flour': 'Flour',
+  'flower': 'Flour',
 };
 
 /**
@@ -110,14 +146,53 @@ export function removeStuttersAndRepetitions(text: string): string {
 }
 
 /**
- * Check if a word is a filler word or stutter indicator
+ * Enhanced filler word patterns for better voice recognition cleanup
+ */
+const FILLER_WORDS = [
+  // Basic fillers - extended variations
+  'um', 'uh', 'er', 'ah', 'eh', 'mm', 'hmm', 'umm', 'uhh', 'ahh', 'ohh', 'erm',
+  // German fillers
+  'äh', 'ähm', 'em', 'ähem', 'hm', 'na', 'naja', 'also',
+  // English discourse markers
+  'like', 'you know', 'so', 'well', 'actually', 'basically', 'literally',
+  // False starts and hesitation
+  'i mean', 'that is', 'let me see', 'let me think', 'you see',
+  // Common speech patterns
+  'kind of', 'sort of', 'i guess', 'i think',
+];
+
+const FILLER_PATTERNS = [
+  /\b(um+|ah+|eh+|oh+|uh+)\b/gi,  // Extended sounds like "ummm", "ahhh"
+  /\b\w{1,3}--+\w+/g,              // Stutters like "le--lemon"
+  /\b(\w)\1{2,}\b/g,               // Repeated letters "lllemon", "mmm"
+  /\b\w{1,2}\.{2,}\w+\b/g,         // Partial words "le...lemon"
+  /\b(and|and|und)\s+(um|uh|ah)\b/gi, // "and um", "and uh", "und äh"
+];
+
+/**
+ * Check if a word or phrase is a filler word or stutter indicator
  */
 function isFiller(word: string): boolean {
-  const fillers = [
-    'um', 'uh', 'er', 'ah', 'eh', 'mm', 'hmm',
-    'äh', 'ähm', 'em', // German fillers
-  ];
-  return fillers.includes(word.toLowerCase());
+  const cleanWord = word.toLowerCase().trim();
+  
+  // Check exact matches
+  if (FILLER_WORDS.includes(cleanWord)) {
+    return true;
+  }
+  
+  // Check against patterns
+  for (const pattern of FILLER_PATTERNS) {
+    if (pattern.test(cleanWord)) {
+      return true;
+    }
+  }
+  
+  // Check for very short words that are likely stutters
+  if (cleanWord.length <= 2 && /^[aeiouäöü]+$/.test(cleanWord)) {
+    return true;
+  }
+  
+  return false;
 }
 
 /**

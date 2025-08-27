@@ -239,8 +239,8 @@ async function parseTextToStructuredData(
 
 function createSystemPrompt(language: string, context: string): string {
   const basePrompt = language === 'de' 
-    ? `Du bist ein Experte für Kulinarik und Sprachverarbeitung, spezialisiert auf die präzise Analyse von Sprach- und Textbeschreibungen von Gerichten und Zutaten. Du verstehst sowohl deutsche als auch englische kulinarische Begriffe perfekt.`
-    : `You are an expert in culinary arts and language processing, specialized in precise analysis of speech and text descriptions of dishes and ingredients. You understand both German and English culinary terms perfectly.`;
+    ? `Du bist ein Experte für Kulinarik und Sprachverarbeitung, spezialisiert auf die präzise Analyse von Sprach- und Textbeschreibungen von Gerichten und Zutaten. Du verstehst sowohl deutsche als auch englische kulinarische Begriffe perfekt. Du ignorierst Füllwörter wie "äh", "um", "ahh", "hmm" und ähnliche Störgeräusche aus Spracherkennungsfehlern.`
+    : `You are an expert in culinary arts and language processing, specialized in precise analysis of speech and text descriptions of dishes and ingredients. You understand both German and English culinary terms perfectly. You ignore filler words like "uh", "um", "ahh", "hmm" and similar noise from speech recognition errors.`;
 
   const contextSpecific = context === 'menu_creation'
     ? language === 'de'
@@ -271,6 +271,11 @@ Analysiere den gegebenen Text SEHR SORGFÄLTIG und extrahiere folgende Informati
 8. **Vertrauenswert**: 0-1
 
 **WICHTIGE PARSING-REGELN FÜR DEUTSCHE EINGABEN:**
+- IGNORIERE Füllwörter: "äh", "ähm", "um", "ahh", "hmm", "na", "also", "like", "so", "basically"
+- Ignoriere Stottern und Wiederholungen: "le-le-lemon" → "lemon"
+- INTELLIGENTE INGREDIENZERKENNUNG: Verwende Fuzzy-Matching für ähnlich klingende Zutaten
+  * "lemmon" → "lemon", "tomatoe" → "tomato", "chiken" → "chicken"
+  * "ryce" → "rice", "onyon" → "onion", "avacado" → "avocado"
 - "ein" oder "eine" = Menge 1
 - "cent" in "5 cent" = €0.05 (fünf Cent = 0.05 Euro)
 - "ein euro" = €1.00
@@ -282,7 +287,9 @@ Analysiere den gegebenen Text SEHR SORGFÄLTIG und extrahiere folgende Informati
 - "Bund" ist eine übliche Einheit für Kräuter wie Basilikum
 - Bei unklaren Mengen verwende sinnvolle Standardwerte (z.B. 1 Bund Basilikum)
 - Erkenne zusammengesetzte Preise: "cent und ein euro" = beide Preise addieren
-- Beispiele:
+- BEISPIELE MIT FÜLLWÖRTERN:
+  * "äh umm lemon and ahh rice" → Lemon + Rice
+  * "so like basically we have lemmon and ryce" → Lemon + Rice
   * "cent und ein bunt basilikum ein euro 5" → Basilikum: 1 Bund, €1.05
   * "Eine gurke ein euro" → Gurke: 1 Stück, €1.00
   * "tomaten . Eine gurke ein euro" → Tomaten + Gurke: 1 Stück, €1.00
@@ -308,6 +315,11 @@ Analyze the given text VERY CAREFULLY and extract the following information:
 8. **Confidence score**: 0-1
 
 **IMPORTANT PARSING RULES FOR MIXED LANGUAGE INPUT:**
+- IGNORE filler words: "uh", "um", "ahh", "hmm", "like", "so", "basically", "you know"
+- Ignore stuttering and repetitions: "le-le-lemon" → "lemon"
+- SMART INGREDIENT RECOGNITION: Use fuzzy matching for similar-sounding ingredients
+  * "lemmon" → "lemon", "tomatoe" → "tomato", "chiken" → "chicken"
+  * "ryce" → "rice", "onyon" → "onion", "avacado" → "avocado"
 - "ein" or "eine" (German) = quantity 1
 - "cent" in "5 cent" = €0.05 (five cents = 0.05 euros)
 - "euro" without number = €1.00
@@ -319,7 +331,9 @@ Analyze the given text VERY CAREFULLY and extract the following information:
 - "bunt" (German) means "mixed/colorful" - treat as adjective describing ingredient
 - Use reasonable defaults for unclear quantities
 - Parse compound prices: "cent und ein euro" = add both prices together
-- Examples:
+- EXAMPLES WITH FILLER WORDS:
+  * "uh umm lemon and ahh rice" → Lemon + Rice
+  * "so like basically we have lemmon and ryce" → Lemon + Rice
   * "cent und ein bunt basilikum ein euro 5" → Basil: 1 bunch, €1.05
   * "Eine gurke ein euro" → Cucumber: 1 piece, €1.00
   * "tomaten . Eine gurke ein euro" → Tomatoes + Cucumber: 1 piece, €1.00

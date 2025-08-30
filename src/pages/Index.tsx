@@ -10,22 +10,18 @@ import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background restaurant-scrollbar">
-      <Navigation />
-      <main>
-        <HeroSection />
-        <div id="events-section">
-          <EventsPreview />
-        </div>
-        <div id="menu-section">
-          <MenuShowcase />
-        </div>
-        <PressSection />
-        <RestaurantVideo />
-        <RestaurantGallery />
-      </main>
-      <Footer />
-    </div>
+    <>
+      <HeroSection />
+      <div id="events-section">
+        <EventsPreview />
+      </div>
+      <div id="menu-section">
+        <MenuShowcase />
+      </div>
+      <PressSection />
+      <RestaurantVideo />
+      <RestaurantGallery />
+    </>
   );
 };
 

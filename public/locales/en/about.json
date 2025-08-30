@@ -1,1 +1,10 @@
-{"title":"About","description":"Restaurant information","ourStory":"Our Story","mission":"Mission","contact":"Contact Information"}
+{
+  "title": "About",
+  "description": "Restaurant information",
+  "ourStory": "Our Story",
+  "mission": "Mission",
+  "contact": "Contact Information",
+  "error": {
+    "loadFailed": "Failed to load about content. Please try again later."
+  }
+}

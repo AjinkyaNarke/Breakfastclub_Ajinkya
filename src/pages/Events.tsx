@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { format, isToday, isTomorrow, isThisWeek } from "date-fns";
 import { useTranslation } from "react-i18next";
-import Navigation from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+
 
 interface Event {
   id: string;
@@ -85,23 +84,17 @@ export default function Events() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background restaurant-scrollbar">
-        <Navigation />
-        <div className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="text-lg text-muted-foreground">Loading events...</div>
-          </div>
+      <div className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="text-lg text-muted-foreground">Loading events...</div>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background restaurant-scrollbar">
-      <Navigation />
-      
-      <main className="py-20">
+    <div className="py-20">
+      <main>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-16 animate-fade-in">
@@ -211,8 +204,6 @@ export default function Events() {
           )}
         </div>
       </main>
-      
-      <Footer />
     </div>
   );
 }

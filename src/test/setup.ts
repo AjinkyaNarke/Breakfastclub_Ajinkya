@@ -76,4 +76,74 @@ global.console = {
   ...console,
   warn: vi.fn(),
   error: vi.fn(),
-} 
+}
+
+// Mock SpeechRecognition API
+class MockSpeechRecognition {
+  continuous = false
+  interimResults = false
+  lang = 'en-US'
+  maxAlternatives = 1
+  serviceURI = ''
+  grammars = null
+  
+  // Event handlers
+  onaudiostart = null
+  onaudioend = null
+  onend = null
+  onerror = null
+  onnomatch = null
+  onresult = null
+  onsoundstart = null
+  onsoundend = null
+  onspeechstart = null
+  onspeechend = null
+  onstart = null
+
+  constructor() {
+    this.start = vi.fn().mockImplementation(() => {
+      // Simulate successful recognition
+      setTimeout(() => {
+        if (this.onstart) this.onstart()
+        
+        // Simulate result after a short delay
+        setTimeout(() => {
+          if (this.onresult) {
+            const mockEvent = {
+              results: [{
+                0: {
+                  transcript: 'test transcript',
+                  confidence: 0.95
+                }
+              }]
+            }
+            this.onresult(mockEvent)
+          }
+          if (this.onend) this.onend()
+        }, 10)
+      }, 5)
+    })
+    
+    this.stop = vi.fn().mockImplementation(() => {
+      if (this.onend) this.onend()
+    })
+    
+    this.abort = vi.fn()
+    this.addEventListener = vi.fn()
+    this.removeEventListener = vi.fn()
+  }
+}
+
+// Set up global mocks
+global.SpeechRecognition = MockSpeechRecognition
+global.webkitSpeechRecognition = MockSpeechRecognition
+Object.defineProperty(window, 'SpeechRecognition', {
+  value: MockSpeechRecognition,
+  writable: true,
+  configurable: true
+})
+Object.defineProperty(window, 'webkitSpeechRecognition', {
+  value: MockSpeechRecognition,
+  writable: true,
+  configurable: true
+}) 

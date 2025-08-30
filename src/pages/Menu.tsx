@@ -6,8 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Leaf, GraduationCap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
-import Navigation from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+
 
 interface MenuItem {
   id: string;
@@ -76,23 +75,17 @@ export default function Menu() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background restaurant-scrollbar">
-        <Navigation />
-        <div className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="text-lg text-muted-foreground">Loading menu...</div>
-          </div>
+      <div className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="text-lg text-muted-foreground">Loading menu...</div>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background restaurant-scrollbar">
-      <Navigation />
-      
-      <main className="py-20">
+    <div className="py-20">
+      <main>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-16 animate-fade-in">
@@ -263,8 +256,6 @@ export default function Menu() {
           </div>
         </div>
       </main>
-      
-      <Footer />
     </div>
   );
 }

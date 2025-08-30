@@ -74,6 +74,13 @@ const AdminSettings: React.FC = () => {
   
   const [activeTab, setActiveTab] = useState('general');
   const [loading, setLoading] = useState(false);
+  
+  // Profile management state
+  const [newUsername, setNewUsername] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  
   const [systemSettings, setSystemSettings] = useState<SystemSettings>({
     siteName: 'Berlin Fusion Breakfast Club',
     siteDescription: 'Premium fusion breakfast experience in Berlin',
@@ -192,6 +199,103 @@ const AdminSettings: React.FC = () => {
       toast({
         title: t('settings.messages.error'),
         description: t('settings.messages.usageError'),
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Profile management functions
+  const canUpdateProfile = () => {
+    if (newPassword && newPassword !== confirmPassword) return false;
+    if (newPassword && !currentPassword) return false;
+    if (newUsername && newUsername.trim().length < 3) return false;
+    return true;
+  };
+
+  const handleProfileUpdate = async () => {
+    setLoading(true);
+    try {
+      const currentUsername = user?.username || 'Admin';
+      const updates: { username?: string; password_hash?: string } = {};
+
+      // Verify current password if changing password
+      if (newPassword) {
+        const { data: adminUser, error: queryError } = await supabase
+          .from('admin_users')
+          .select('password_hash')
+          .eq('username', currentUsername)
+          .single();
+
+        if (queryError || !adminUser) {
+          toast({
+            title: 'Error',
+            description: 'Could not verify current password',
+            variant: "destructive"
+          });
+          return;
+        }
+
+        // Verify current password using bcrypt
+        const bcrypt = await import('bcryptjs');
+        const isCurrentPasswordValid = await bcrypt.compare(currentPassword, adminUser.password_hash);
+        
+        if (!isCurrentPasswordValid) {
+          toast({
+            title: 'Error',
+            description: 'Current password is incorrect',
+            variant: "destructive"
+          });
+          return;
+        }
+
+        // Hash new password
+        const newPasswordHash = await bcrypt.hash(newPassword, 10);
+        updates.password_hash = newPasswordHash;
+      }
+
+      // Update username if provided
+      if (newUsername && newUsername.trim()) {
+        updates.username = newUsername.trim();
+      }
+
+      // Update database
+      if (Object.keys(updates).length > 0) {
+        const { error } = await supabase
+          .from('admin_users')
+          .update(updates)
+          .eq('username', currentUsername);
+
+        if (error) throw error;
+
+        // Update local storage if username changed
+        if (updates.username) {
+          localStorage.setItem('adminUsername', updates.username);
+        }
+
+        // Clear form
+        setNewUsername('');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+
+        toast({
+          title: 'Success',
+          description: 'Profile updated successfully',
+          variant: "default"
+        });
+
+        // Refresh page to update user context
+        setTimeout(() => {
+          window.location.reload();
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('Profile update error:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to update profile',
         variant: "destructive"
       });
     } finally {
@@ -819,6 +923,104 @@ const AdminSettings: React.FC = () => {
 
         {/* Account Tab */}
         <TabsContent value="account" className="space-y-6">
+          {/* Profile Management - New Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Profile Management
+              </CardTitle>
+              <CardDescription>
+                Change your admin username and password
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="currentUsername">Current Username</Label>
+                  <Input
+                    id="currentUsername"
+                    value={user?.username || 'Admin'}
+                    disabled
+                    className="bg-muted"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Current username cannot be changed directly
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="newUsername">New Username</Label>
+                  <Input
+                    id="newUsername"
+                    placeholder="Enter new username"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave empty to keep current username
+                  </p>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-medium">Password Change</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input
+                      id="currentPassword"
+                      type="password"
+                      placeholder="Enter current password"
+                      value={currentPassword}
+                      onChange={(e) => setCurrentPassword(e.target.value)}
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input
+                      id="newPassword"
+                      type="password"
+                      placeholder="Enter new password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={handleProfileUpdate} 
+                    disabled={loading || !canUpdateProfile()}
+                    className="flex items-center gap-2"
+                  >
+                    {loading ? (
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Save className="h-4 w-4" />
+                    )}
+                    Update Profile
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>{t('settings.account.title')}</CardTitle>

@@ -1,4 +1,0 @@
-project_id = "ckvwevclnhtcnsdmashv"
-
-[functions.generate-menu-image]
-verify_jwt = false

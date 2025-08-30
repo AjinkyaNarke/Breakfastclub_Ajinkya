@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslation } from "react-i18next";
 
 interface AboutSection {
   id: string;
@@ -41,6 +42,7 @@ interface AboutVideo {
 }
 
 const About = () => {
+  const { t } = useTranslation('about');
   const { data: sections, isLoading: sectionsLoading, error: sectionsError } = useQuery({
     queryKey: ["about-sections"],
     queryFn: async () => {
@@ -100,7 +102,7 @@ const About = () => {
         <div className="container mx-auto px-4 py-16">
           <Alert variant="destructive">
             <AlertDescription>
-              Failed to load about content. Please try again later.
+              {t('error.loadFailed', 'Failed to load about content. Please try again later.')}
             </AlertDescription>
           </Alert>
         </div>
@@ -351,20 +353,30 @@ const About = () => {
     );
   };
 
+  // Always show translated content first, then database content if available
   return (
     <div className="min-h-screen bg-background">
-      {sections?.map((section) => {
-        switch (section.section_type) {
-          case 'hero':
-            return renderHeroSection(section);
-          case 'gallery':
-            return renderGallerySection(section);
-          default:
-            return renderTextSection(section);
-        }
-      })}
+
+
+
+
+      {/* Database Content - Show if Available */}
+      {sections && sections.length > 0 && (
+        <>
+          {sections.map((section) => {
+            switch (section.section_type) {
+              case 'gallery':
+                return renderGallerySection(section);
+              default:
+                return renderTextSection(section);
+            }
+          })}
+        </>
+      )}
     </div>
   );
+
+
 };
 
 export default About;

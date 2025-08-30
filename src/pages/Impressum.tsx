@@ -1,8 +1,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import Navigation from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+
 
 const Impressum = () => {
   const { data: impressumContent, isLoading } = useQuery({
@@ -58,24 +57,19 @@ const Impressum = () => {
 
   if (isLoading || businessLoading || contactLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="container mx-auto px-4 py-16">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-muted rounded w-1/3"></div>
-            <div className="h-4 bg-muted rounded w-full"></div>
-            <div className="h-4 bg-muted rounded w-3/4"></div>
-          </div>
+      <div className="container mx-auto px-4 py-16">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-1/3"></div>
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-3/4"></div>
         </div>
-        <Footer />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
-      <main className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-16">
+      <main>
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">Impressum</h1>
           
@@ -110,7 +104,6 @@ const Impressum = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

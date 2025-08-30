@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Plus, Edit, Trash2, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { VideoUploadDialog } from '@/components/admin/VideoUploadDialog';
+import { VideoEditDialog } from '@/components/admin/VideoEditDialog';
 import { useTranslation } from 'react-i18next';
 
 interface RestaurantVideo {
@@ -27,6 +28,8 @@ export const VideoManagement = () => {
   const [videos, setVideos] = useState<RestaurantVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<RestaurantVideo | null>(null);
   const { toast } = useToast();
   const { t } = useTranslation('admin');
   const [actionLoading, setActionLoading] = useState<{ [id: string]: string | null }>({}); // { [videoId]: 'toggleHero' | 'delete' | null }
@@ -215,7 +218,15 @@ export const VideoManagement = () => {
                     ) : video.featured_for_hero ? t('videos.actions.removeFromHero') : t('videos.actions.setAsHero')}
                   </Button>
                   <div className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline" aria-label={t('videos.aria.editVideo')}>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => {
+                        setSelectedVideo(video);
+                        setShowEditDialog(true);
+                      }}
+                      aria-label={t('videos.aria.editVideo')}
+                    >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
@@ -253,6 +264,13 @@ export const VideoManagement = () => {
         open={showUploadDialog}
         onOpenChange={setShowUploadDialog}
         onVideoAdded={fetchVideos}
+      />
+
+      <VideoEditDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        video={selectedVideo}
+        onVideoUpdated={fetchVideos}
       />
     </div>
   );

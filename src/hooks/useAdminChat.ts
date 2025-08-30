@@ -38,8 +38,14 @@ export const useAdminChat = (): UseAdminChatReturn => {
   const refreshConversations = useCallback(async () => {
     setLoadingConversations(true);
     try {
-      const fetchedConversations = await adminChatService.getConversations();
-      setConversations(fetchedConversations);
+      // TEMPORARY: Disable chat functionality until auth is fixed
+      console.warn('Admin chat temporarily disabled due to authentication mismatch');
+      setConversations([]);
+      toast({
+        title: "Chat Temporarily Disabled",
+        description: "Admin chat feature is being updated. Please check back later.",
+        variant: "default"
+      });
     } catch (error) {
       console.error('Error loading conversations:', error);
       toast({

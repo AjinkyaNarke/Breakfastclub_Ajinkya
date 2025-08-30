@@ -1,1 +1,10 @@
-{"title":"Über uns","description":"Restaurant-Informationen","ourStory":"Unsere Geschichte","mission":"Mission","contact":"Kontakt"}
+{
+  "title": "Über uns",
+  "description": "Restaurant-Informationen",
+  "ourStory": "Unsere Geschichte",
+  "mission": "Mission",
+  "contact": "Kontakt",
+  "error": {
+    "loadFailed": "Fehler beim Laden der Über uns Inhalte. Bitte versuchen Sie es später erneut."
+  }
+}

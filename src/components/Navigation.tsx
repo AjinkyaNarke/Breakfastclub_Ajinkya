@@ -1,18 +1,18 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Coffee, Calendar, BookOpen, Info, MessageCircle } from "lucide-react";
+import { Menu, X, Coffee, Calendar, BookOpen, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { CompactThemeToggle } from "@/components/ThemeToggle";
 
 const navItems = [
   { name: "home", href: "/", icon: Coffee },
   { name: "events", href: "/events", icon: Calendar, sectionId: "events-section" },
   { name: "menu", href: "/menu", icon: BookOpen, sectionId: "menu-section" },
   { name: "about", href: "/about", icon: Info },
-  { name: "chat", href: "/chat", icon: MessageCircle },
   { name: "reservations", href: "/reservations", icon: Calendar },
 ];
 
@@ -72,12 +72,12 @@ export default function Navigation() {
 
   return (
     <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+        <div className="flex justify-between items-center h-16 min-w-0">
           {/* Logo */}
           <Link 
             to="/" 
-            className="flex items-center space-x-3 group"
+            className="flex items-center space-x-2 lg:space-x-3 group flex-shrink-0"
           >
             <div className="relative">
               {siteBranding?.logo_url ? (
@@ -91,18 +91,17 @@ export default function Navigation() {
               )}
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-vibrant rounded-full animate-cherry-float"></div>
             </div>
-            <div className="flex flex-col">
-              <span className="text-xl font-bold text-brand">
+            <div className="flex flex-col min-w-0">
+              <span className="text-lg lg:text-xl font-bold text-brand truncate">
                 {siteBranding?.site_name || 'fckingbreakfastclub'}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground truncate">
                 {siteBranding?.tagline || 'Asian Fusion • Berlin'}
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-6 xl:space-x-8">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -111,22 +110,26 @@ export default function Navigation() {
                   to={item.href}
                   onClick={(e) => handleNavClick(item, e)}
                   className={cn(
-                    "flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-accent/50",
+                    "flex items-center space-x-2 px-2 lg:px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 hover:bg-accent/50 whitespace-nowrap",
                     isActive(item.href)
                       ? "text-primary bg-accent/30 shadow-sm"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{t(`navigation.${item.name}`)}</span>
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  <span className="min-w-0">{t(`navigation.${item.name}`)}</span>
                 </Link>
               );
             })}
-            <LanguageSwitcher />
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              <CompactThemeToggle />
+              <LanguageSwitcher />
+            </div>
           </div>
 
           {/* Mobile menu button and language switcher */}
           <div className="md:hidden flex items-center space-x-2">
+            <CompactThemeToggle />
             <LanguageSwitcher />
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -150,14 +153,14 @@ export default function Navigation() {
                   to={item.href}
                   onClick={(e) => handleNavClick(item, e)}
                   className={cn(
-                    "flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-all duration-300",
+                    "flex items-center space-x-3 px-3 py-3 rounded-md text-base font-medium transition-all duration-300 w-full",
                     isActive(item.href)
                       ? "text-primary bg-accent/30"
                       : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                   )}
                 >
-                  <Icon className="h-5 w-5" />
-                  <span>{t(`navigation.${item.name}`)}</span>
+                  <Icon className="h-5 w-5 flex-shrink-0" />
+                  <span className="flex-1 text-left">{t(`navigation.${item.name}`)}</span>
                 </Link>
               );
             })}

@@ -5,7 +5,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { I18nProvider } from "@/components/I18nProvider";
-import { AuthProvider } from "@/hooks/useAuth";
+
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import DynamicFavicon from "@/components/DynamicFavicon";
 import Index from "./pages/Index";
 import Menu from "./pages/Menu";
@@ -17,9 +18,14 @@ import Impressum from "./pages/Impressum";
 import NotFound from "./pages/NotFound";
 
 // Admin routes
+import { PublicLayout } from "./components/PublicLayout";
 import { AdminLayout } from "./components/admin/AdminLayout";
 import { AdminLogin } from "./components/admin/AdminLogin";
 import { Dashboard } from "./pages/admin/Dashboard";
+import { DashboardSimple } from "./pages/admin/DashboardSimple";
+import { AdminChatDebug } from "./pages/admin/AdminChatDebug";
+import { DashboardTest } from "./components/admin/DashboardTest";
+import { VideoDebugTest } from "./components/admin/VideoDebugTest";
 import { MenuManagement } from "./pages/admin/MenuManagement";
 import { IngredientManagement } from "./pages/admin/IngredientManagement";
 import { IngredientCategoryManagement } from "./pages/admin/IngredientCategoryManagement";
@@ -36,6 +42,7 @@ import { PrepUsageAnalyticsPage } from "./pages/admin/PrepUsageAnalytics";
 // import SalesAnalytics from "./pages/admin/SalesAnalytics";
 import AdminChat from "./pages/admin/AdminChat";
 import AdminSettings from "./pages/admin/AdminSettings";
+import { SystemTest } from "./pages/admin/SystemTest";
 
 const queryClient = new QueryClient();
 
@@ -52,17 +59,19 @@ function App() {
               v7_relativeSplatPath: true,
             }}
           >
-            <AuthProvider>
+            <ThemeProvider>
               <DynamicFavicon />
               <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/menu" element={<Menu />} />
-              <Route path="/reservations" element={<Reservations />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/privacy" element={<Privacy />} />
-                <Route path="/impressum" element={<Impressum />} />
+                {/* Public routes with navigation */}
+                <Route path="/" element={<PublicLayout />}>
+                  <Route index element={<Index />} />
+                  <Route path="menu" element={<Menu />} />
+                  <Route path="reservations" element={<Reservations />} />
+                  <Route path="events" element={<Events />} />
+                  <Route path="about" element={<About />} />
+                  <Route path="privacy" element={<Privacy />} />
+                  <Route path="impressum" element={<Impressum />} />
+                </Route>
                 
                 {/* Admin login route */}
                 <Route path="/admin/login" element={<AdminLogin />} />
@@ -84,14 +93,18 @@ function App() {
                 <Route path="preps" element={<PrepManagement />} />
                 <Route path="prep-analytics" element={<PrepUsageAnalyticsPage />} />
                 <Route path="chat" element={<AdminChat />} />
+                <Route path="chat-debug" element={<AdminChatDebug />} />
+                <Route path="dashboard-test" element={<DashboardTest />} />
+                <Route path="video-debug" element={<VideoDebugTest />} />
                 <Route path="settings" element={<AdminSettings />} />
+                <Route path="test" element={<SystemTest />} />
                 {/* <Route path="sales-analytics" element={<SalesAnalytics />} /> */}
               </Route>
               
                 {/* 404 route */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
-            </AuthProvider>
+            </ThemeProvider>
           </BrowserRouter>
         </TooltipProvider>
       </I18nProvider>

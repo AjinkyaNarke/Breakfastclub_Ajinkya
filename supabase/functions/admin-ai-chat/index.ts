@@ -163,14 +163,30 @@ serve(async (req) => {
     } = await supabaseClient.auth.getUser()
 
     if (authError || !user) {
+      console.error('Auth error in admin-ai-chat:', authError);
       return new Response(
-        JSON.stringify({ error: 'Unauthorized access' }),
+        JSON.stringify({ 
+          error: 'Unauthorized access', 
+          details: authError?.message || 'No user found',
+          action: action || 'unknown'
+        }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     // Handle different actions
     switch (action) {
+      case 'ping':
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            message: 'Admin AI Chat function is working',
+            user_id: user.id,
+            timestamp: new Date().toISOString()
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+
       case 'get_conversations':
         const { data: conversations } = await supabaseClient
           .from('admin_chat_conversations')

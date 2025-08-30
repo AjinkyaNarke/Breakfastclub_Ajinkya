@@ -1,100 +1,127 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 
-interface AuthContextType {
+interface AuthState {
   isAuthenticated: boolean;
-  user: any;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
-  loading: boolean;
+  username: string | null;
+  loginTime: string | null;
+  isLoading: boolean;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const SESSION_TIMEOUT = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [authState, setAuthState] = useState<AuthState>({
+    isAuthenticated: false,
+    username: null,
+    loginTime: null,
+    isLoading: true,
+  });
 
   useEffect(() => {
-    // Check initial auth state
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setIsAuthenticated(true);
-        setUser(user);
+    const checkAuth = () => {
+      const adminAuthenticated = localStorage.getItem('adminAuthenticated');
+      const adminUsername = localStorage.getItem('adminUsername');
+      const adminLoginTime = localStorage.getItem('adminLoginTime');
+
+      if (adminAuthenticated === 'true' && adminUsername && adminLoginTime) {
+        // Check if session has expired
+        const loginTime = new Date(adminLoginTime).getTime();
+        const currentTime = new Date().getTime();
+        const timeDiff = currentTime - loginTime;
+
+        if (timeDiff > SESSION_TIMEOUT) {
+          // Session expired, clear everything
+          if (import.meta.env.DEV) {
+            console.log('Admin session expired, logging out');
+          }
+          logout();
+          return;
+        }
+
+        setAuthState({
+          isAuthenticated: true,
+          username: adminUsername,
+          loginTime: adminLoginTime,
+          isLoading: false,
+        });
+      } else {
+        setAuthState({
+          isAuthenticated: false,
+          username: null,
+          loginTime: null,
+          isLoading: false,
+        });
       }
-      setLoading(false);
     };
 
+    // Check auth on mount
     checkAuth();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          setIsAuthenticated(true);
-          setUser(session.user);
-        } else {
-          setIsAuthenticated(false);
-          setUser(null);
-        }
-        setLoading(false);
-      }
-    );
+    // Set up interval to check session expiration every minute
+    const interval = setInterval(checkAuth, 60 * 1000);
 
-    return () => subscription.unsubscribe();
+    // Listen for storage changes (e.g., from other tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'adminAuthenticated' || e.key === 'adminUsername' || e.key === 'adminLoginTime') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (error) {
-        console.error('Login error:', error);
-        return false;
-      }
-
-      if (data.user) {
-        setIsAuthenticated(true);
-        setUser(data.user);
-        return true;
-      }
-      
-      return false;
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
+  const login = (username: string) => {
+    // Update the auth state immediately when login is called
+    setAuthState({
+      isAuthenticated: true,
+      username: username,
+      loginTime: new Date().toISOString(),
+      isLoading: false,
+    });
+    
+    // SECURITY: Only log in development mode
+    if (import.meta.env.DEV) {
+      console.log('Login function called for:', username);
     }
   };
 
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setIsAuthenticated(false);
-    setUser(null);
-    navigate('/admin/login', { replace: true });
+  const logout = () => {
+    localStorage.removeItem('adminAuthenticated');
+    localStorage.removeItem('adminUsername');
+    localStorage.removeItem('adminLoginTime');
+    
+    setAuthState({
+      isAuthenticated: false,
+      username: null,
+      loginTime: null,
+      isLoading: false,
+    });
+
+    // Note: The redirect to login page will be handled by the AdminLayout guard
   };
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  const extendSession = () => {
+    const adminUsername = localStorage.getItem('adminUsername');
+    if (adminUsername) {
+      const newLoginTime = new Date().toISOString();
+      localStorage.setItem('adminLoginTime', newLoginTime);
+      
+      setAuthState(prev => ({
+        ...prev,
+        loginTime: newLoginTime,
+      }));
+    }
+  };
+
+  return {
+    ...authState,
+    login,
+    logout,
+    extendSession,
+  };
 };

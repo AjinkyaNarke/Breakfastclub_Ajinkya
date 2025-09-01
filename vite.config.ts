@@ -10,7 +10,9 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      jsxRuntime: 'automatic'
+    }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -20,13 +22,20 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     rollupOptions: {
-      external: [],
-      output: {
-        manualChunks: undefined,
+      external: (id) => {
+        // Don't externalize React JSX runtime
+        if (id.includes('react/jsx-runtime') || id.includes('react/jsx-dev-runtime')) {
+          return false;
+        }
+        return false;
       },
+    },
+    commonjsOptions: {
+      include: [/node_modules/],
     },
   },
   optimizeDeps: {
     include: ['react', 'react-dom'],
+    force: true
   },
 }));

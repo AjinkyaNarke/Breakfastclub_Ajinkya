@@ -42,7 +42,9 @@ import { PrepUsageAnalyticsPage } from "./pages/admin/PrepUsageAnalytics";
 // import SalesAnalytics from "./pages/admin/SalesAnalytics";
 import AdminChat from "./pages/admin/AdminChat";
 import AdminSettings from "./pages/admin/AdminSettings";
-import { SystemTest } from "./pages/admin/SystemTest";
+import { AdminSystemTest } from "./components/admin/AdminSystemTest";
+import { QuickAPITest } from "./components/admin/QuickAPITest";
+import { LoadingDiagnostic } from "./components/admin/LoadingDiagnostic";
 
 const queryClient = new QueryClient();
 
@@ -97,7 +99,9 @@ function App() {
                 <Route path="dashboard-test" element={<DashboardTest />} />
                 <Route path="video-debug" element={<VideoDebugTest />} />
                 <Route path="settings" element={<AdminSettings />} />
-                <Route path="test" element={<SystemTest />} />
+                <Route path="test" element={<AdminSystemTest />} />
+                <Route path="api-test" element={<QuickAPITest />} />
+                <Route path="diagnostic" element={<LoadingDiagnostic />} />
                 {/* <Route path="sales-analytics" element={<SalesAnalytics />} /> */}
               </Route>
               

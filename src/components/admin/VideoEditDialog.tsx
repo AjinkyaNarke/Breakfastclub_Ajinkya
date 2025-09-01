@@ -276,3 +276,4 @@ export function VideoEditDialog({ open, onOpenChange, video, onVideoUpdated }: V
     </Dialog>
   );
 }
+

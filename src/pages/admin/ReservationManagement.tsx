@@ -68,6 +68,7 @@ export default function ReservationManagement() {
       const { data, error } = await supabase
         .from('reservations')
         .select('*')
+        .order('created_at', { ascending: false })
         .order('reservation_date', { ascending: true })
         .order('reservation_time', { ascending: true });
 
